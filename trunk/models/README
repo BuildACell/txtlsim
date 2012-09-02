@@ -1,0 +1,11 @@
+This directory contains models of various biomolecular circuits.  For
+now, the models are placed in subdirectories according to the source
+of the models.  Eventually, we'll reorganize as we get a set of
+standard components and a more unified modeling framework.
+
+List of subdirectories:
+
+fbs/	Models from the textbook Feedback Systems, by Astrom and Murray
+txtl/	Baseline and component models for the TX-TL system
+
+RMM, 2 Sep 2012
