@@ -5,7 +5,8 @@ standard components and a more unified modeling framework.
 
 List of subdirectories:
 
-fbs/	Models from the textbook Feedback Systems, by Astrom and Murray
+bfs/ 	Models from the textbook Biomolecular Feedback Systems
+fbs/	Models from the textbook Feedback Systems (Astrom and Murray)
 txtl/	Baseline and component models for the TX-TL system
 
 RMM, 2 Sep 2012

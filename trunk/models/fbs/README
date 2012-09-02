@@ -13,3 +13,5 @@ repressilator.m   MATLAB model for the repressilator transcriptional
 		  oscillator.  Requires genereg_params.m.  Use the script
 		  repressilator_plot.m to generate the figure in Example
 		  2.13 of FBS.
+
+RMM, 2 Sep 2012
