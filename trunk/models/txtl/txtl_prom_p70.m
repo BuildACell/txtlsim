@@ -39,7 +39,10 @@
 function Rlist = txtl_prom_p70(tube, dna, rna)
 
 % Parameters that describe this promoter
-kf70 = 0.2; kr70 = 0.1; ktx70 = 0.2;	% transcription rates
+%! TODO: replace these values with correct values
+kf70 = log(2)/0.1;			% 100 ms bind rate
+kr70 = 10/kf70;				% Km of 10 nM (from VN model)
+ktx70 = log(2)/(rna.UserData/30);	% 30 base/second transcription
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -55,10 +58,14 @@ Pobj1r = addparameter(Kobj1, 'kr', kr70);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
 % Set up the transcription reaction
-%! TODO: set transcription rate based on length of DNA
 Robj2 = addreaction(tube, [DNAbound ' + NTP -> ' DNA ' + ' RNA ' + ' RNAP]);
 Kobj2 = addkineticlaw(Robj2, 'MassAction');
 Pobj2 = addparameter(Kobj2, 'ktx', ktx70);
 set(Kobj2, 'ParameterVariableNames', {'ktx'});
 
 Rlist = [Robj1, Robj2];
+
+% Automatically use MATLAB mode in Emacs (keep at end of file)
+% Local variables:
+% mode: matlab
+% End:

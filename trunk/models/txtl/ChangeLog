@@ -1,5 +1,26 @@
 2012-09-09  Richard Murray  <murray@altura.local>
 
+	* ./: set svn:mime-type to text/plain for all files
+
+	* txtl_protein_deGFP.m: added new protein setup file to include GFP
+	maturation.  Mature deGFP is [protein deGFP*].
+
+	* txtl_rbs_rbs.m: updated reaction rates to try to get them to be
+	more realistic
+
+	* txtl_extract.m: added dilution factor in calculating RNAP and
+	ribosome concentrations; updated concentrations.
+
+	* txtl_prom_ptet.m, txtl_prom_p70.m: updated binding and
+	transcription rates
+
+	* txtl_rbs_rbs.m, txtl_dna.m: moved mRNA degradation from RBS setup
+	file to DNA setup file
+
+	* negautoreg.m: updated plotting format; added in GFP for comparison
+
+2012-09-09  Richard Murray  <murray@altura.local>
+
 	* geneexpr.m (indexlist): new example, intended to eventually match
 	protsynt81bis.m
 

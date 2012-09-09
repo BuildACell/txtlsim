@@ -39,8 +39,10 @@
 function Rlist = txtl_rbs_rbs(tube, rna, protein)
 
 % Parameters that describe this RBS
-kf_rbs = 1; kr_rbs = 0.1; kftl_rbs = 1;	% translation rates
-kRNA_deg = 0.1;				% mRNA degradation rate
+%! TODO: replace these values with correct values
+kf_rbs = log(2)/0.1;			% 100 ms bind rate
+kr_rbs = 100/kf_rbs;			% Km of 0.05 (from VN model)
+ktl_rbs = log(2)/(protein.UserData/10);	% 10 AA/second translation
 
 % Create strings for the reactants and products
 RNA = ['[' rna.Name ']'];
@@ -60,14 +62,13 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 Robj2 = addreaction(tube, ...
   [Ribobound ' + AA -> ' RNA ' + ' Protname ' + ' Ribo]);
 Kobj2 = addkineticlaw(Robj2, 'MassAction');
-Pobj2 = addparameter(Kobj2, 'ktl', kftl_rbs);
+Pobj2 = addparameter(Kobj2, 'ktl', ktl_rbs);
 set(Kobj2, 'ParameterVariableNames', {'ktl'});
 
-% Set up degradation reaction
-Robj3 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
-Kobj3 = addkineticlaw(Robj3,'MassAction');
-Pobj3 = addparameter(Kobj3, 'kf', kRNA_deg);
-set(Kobj3, 'ParameterVariableNames', {'kf'});
-
 % Return the list of reactions that we set up
-Rlist = [Robj1 Robj2 Robj3];
+Rlist = [Robj1 Robj2];
+
+% Automatically use MATLAB mode in Emacs (keep at end of file)
+% Local variables:
+% mode: matlab
+% End:

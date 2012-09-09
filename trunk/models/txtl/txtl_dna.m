@@ -47,7 +47,9 @@
 function dna = txtl_dna(tube, promspec, rbsspec, genespec, amount, type)
 
 % Parameters used in this file
+%! TODO: update these parameters to something reasonable
 kDNA_deg = 0.1;				% Binding rate of RecBCD
+kRNA_deg = log(2)/10;			% mRNA degradation: 10 sec half life
 
 % Extract out the names and lengths of the promoter, RBS and gene
 [prom, promlen] = txtl_parsespec(promspec);
@@ -86,15 +88,15 @@ end
 % DNA degradation
 %! TODO: eventually, we should allow file-based reactions
 if strcmp(type, 'linear')
-  Robj = addreaction(tube, ...
+  Robj1 = addreaction(tube, ...
     [dna.Name ' + RecBCD -> RecBCD']);
-  Kobj = addkineticlaw(Robj,'MassAction');
+  Kobj1 = addkineticlaw(Robj1,'MassAction');
   %! TODO: update to include DNA protection
-  Pobj = addparameter(Kobj, 'kf', kDNA_deg);
-  set(Kobj, 'ParameterVariableNames', {'kf'});
+  Pobj1 = addparameter(Kobj1, 'kf', kDNA_deg);
+  set(Kobj1, 'ParameterVariableNames', {'kf'});
 end
 
-% RNA + translation + degradation
+% Translation
 if exist(['txtl_rbs_' rbs]) == 2
   % Run the RBS specific setup
   Rlist = eval(['txtl_rbs_' rbs '(tube, rna, protein)']);
@@ -104,6 +106,12 @@ else
       '; using default promoter params']);
   txtl_rbs_rbs(tube, rna, protein)
 end
+
+% mRNA degradation
+Robj2 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
+Kobj2 = addkineticlaw(Robj2,'MassAction');
+Pobj2 = addparameter(Kobj2, 'kf', kRNA_deg);
+set(Kobj2, 'ParameterVariableNames', {'kf'});
 
 % Protein reactions + degradation (if tagged)
 if exist(['txtl_protein_' gene]) == 2

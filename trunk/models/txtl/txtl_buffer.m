@@ -36,5 +36,6 @@ function tube = txtl_buffer(name)
 tube = txtl_newtube(name);
 
 % Add in NTPs and amino acids
-addspecies(tube, 'NTP', 1e5);
-addspecies(tube, 'AA', 1e6);
+%! TODO: need to adjust these when reaction usage is updated properly
+addspecies(tube, 'NTP', 1000);
+addspecies(tube, 'AA', 1000);

@@ -17,7 +17,8 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1000)', 100, 'linear');
+dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 50, 'linear');
+dna_tetR = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 50, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 10, 'plasmid');
 
 %
@@ -51,18 +52,54 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 1000)
+set(configsetObj, 'StopTime', 2*60*60)
 [t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
-% Get the name of the species we want to plot
-indexlist = findspecies(Mobj, ...
-  {'DNA ptet=rbs=tetR', 'RNA rbs=tetR', 'protein tetR', ...
-   'RNAP70', 'Ribo', 'protein gamS', 'NTP', 'AA'});
-plot(t_ode, x_ode(:,indexlist));
-legend(names(indexlist), 'Location', 'NorthEastOutside')
-title('Gene Regulation');
-xlabel('Time (seconds)');
-ylabel('Species Amounts');
+% Top row: protein and RNA levels
+figure(1); clf(); subplot(2,1,1);
+iTetR = findspecies(Mobj, 'protein tetR');
+iGamS = findspecies(Mobj, 'protein gamS');
+iGFP = findspecies(Mobj, 'protein deGFP');
+iGFPs = findspecies(Mobj, 'protein deGFP*');
+plot(t_ode/60, x_ode(:, iTetR), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
+  t_ode/60, x_ode(:, iGFP) + x_ode(:, iGFPs), 'g--', ...
+  t_ode/60, x_ode(:, iGFPs), 'g-');
+
+title('Gene Expression');
+lgh = legend({'TetR', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
+legend(lgh, 'boxoff');
+ylabel('Species amounts [nM]');
+xlabel('Time [min]');
+
+% Second row, left: resource limits
+subplot(2,2,3);
+iNTP = findspecies(Mobj, 'NTP');
+iAA  = findspecies(Mobj, 'AA');
+plot(t_ode/60, x_ode(:, iAA), 'b-', t_ode/60, x_ode(:, iNTP), 'r-')
+
+title('Resource usage');
+lgh = legend(names([iAA, iNTP]), 'Location', 'Northeast');
+legend(lgh, 'boxoff');
+ylabel('Species amounts [nM]');
+xlabel('Time [min]');
+
+% Second row, right: DNA and mRNA
+subplot(2,2,4);
+iDNA_tetR = findspecies(Mobj, 'DNA ptet=rbs=tetR');
+iDNA_gamS = findspecies(Mobj, 'DNA p70=rbs=gamS');
+iRNA_tetR = findspecies(Mobj, 'RNA rbs=tetR');
+iRNA_gamS = findspecies(Mobj, 'RNA rbs=gamS');
+plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
+  t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
+  t_ode/60, x_ode(:, iRNA_tetR), 'b--', ...
+  t_ode/60, x_ode(:, iRNA_gamS), 'r--');
+
+title('DNA and mRNA');
+lgh = legend(names([iDNA_tetR, iDNA_gamS]), 'Location', 'Northeast');
+legend(lgh, 'boxoff');
+ylabel('Species amounts [nM]');
+xlabel('Time [min]');
+
 
 %
 % Run a set of experiments to explore the effect of inducers
@@ -73,3 +110,7 @@ ylabel('Species Amounts');
 % Add inducer at a given concentration (must be nanomolar)
 % txtl_addspecies(Mobj, 'aTc', 50);
 
+% Automatically use MATLAB mode in Emacs (keep at end of file)
+% Local variables:
+% mode: matlab
+% End:

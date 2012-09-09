@@ -36,7 +36,7 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-% Automatically use matlab mode in emacs (keep at end of file)
+% Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
 % mode: matlab
 % End:

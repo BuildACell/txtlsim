@@ -36,16 +36,24 @@ function tube = txtl_extract(name)
 tube = txtl_newtube(name);
 
 % Add in ribosomes and RNAP70
-addspecies(tube, 'RNAP70', 100);
-addspecies(tube, 'Ribo', 100);
+%! TODO: update these numbers based on measurements
+df = 1000;				% dilution factor of TX-TL mix
+addspecies(tube, 'RNAP70', 25/df);	% 25 nM based on simulac
+addspecies(tube, 'Ribo', 300/df);	% 300 nM based on simulac
 
 % Add in exonuclease + protection reactions (if [protein gamS] > 0)
+%! TODO: update these numbers based on measurements
 kgamS = 1;				% gamS binding rate
-addspecies(tube, 'RecBCD', 100);
+addspecies(tube, 'RecBCD', 25/df);	% 25 nM to match RNAP
 Robj = addreaction(tube, 'RecBCD + [protein gamS] -> RecBCD:gamS');
 Kobj = addkineticlaw(Robj,'MassAction');
 Pobj = addparameter(Kobj, 'kf', kgamS);
 set(Kobj, 'ParameterVariableNames', {'kf'});
 
 % Add in RNA degradation
-addspecies(tube, 'RNase', 100);
+addspecies(tube, 'RNase', 25/df);	% 25 nM to match RNAP
+
+% Automatically use MATLAB mode in Emacs (keep at end of file)
+% Local variables:
+% mode: matlab
+% End:

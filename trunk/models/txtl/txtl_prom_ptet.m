@@ -39,7 +39,10 @@
 function Rlist = txtl_prom_ptet(tube, dna, rna)
 
 % Parameters that describe this promoter
-kf_ptet = 0.2; kr_ptet = 0.1; ktx_ptet = 0.2;	% transcription rates
+%! TODO: replace these values with correct values
+kf_ptet = log(2)/0.1;			% 100 ms bind rate
+kr_ptet = 10/kf_ptet;			% Km of 10 (same as p70, from VN)
+ktx_ptet = log(2)/(rna.UserData/30);	% 30 base/second transcription
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -55,7 +58,6 @@ Pobj1r = addparameter(Kobj1, 'kr', kr_ptet);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
 % Set up the transcription reaction
-%! TODO: set transcription rate based on length of DNA
 Robj2 = addreaction(tube, [DNAbound ' + NTP -> ' DNA ' + ' RNA ' + ' RNAP]);
 Kobj2 = addkineticlaw(Robj2, 'MassAction');
 Pobj2 = addparameter(Kobj2, 'ktx', ktx_ptet);
