@@ -1,9 +1,9 @@
-% txtl_rbs_rbs.m - promoter information for standard RBS
+% txtl_prom_ptet.m - promoter information for ptet promoter
 % RMM, 8 Sep 2012
 %
-% This file contains a description of a standard ribosome binding site.
-% Calling the function txtl_rbs_rbs() will set up the reactions for
-% translation with the measured binding rates and translation rates.
+% This file contains a description of the ptet promoter.
+% Calling the function txtl_prom_ptet() will set up the reactions for
+% transcription with the measured binding rates and transription rates.
 
 % Written by Richard Murray, Sep 2012
 %
@@ -36,38 +36,42 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_rbs_rbs(tube, rna, protein)
+function Rlist = txtl_prom_ptet(tube, dna, rna)
 
-% Parameters that describe this RBS
-kf_rbs = 1; kr_rbs = 0.1; kftl_rbs = 1;	% translation rates
-kRNA_deg = 0.1;				% mRNA degradation rate
+% Parameters that describe this promoter
+kf_ptet = 0.2; kr_ptet = 0.1; ktx_ptet = 0.2;	% transcription rates
 
-% Create strings for the reactants and products
-RNA = ['[' rna.Name ']'];
-Ribo = 'Ribo';
-Ribobound = ['[' Ribo ':' rna.Name ']'];
-Protname = protein.Name;
+% Create strings for reactants and products
+DNA = ['[' dna.Name ']'];		% DNA species name for reactions
+RNA = ['[' rna.Name ']'];		% RNA species name for reactions
+RNAP = 'RNAP70';			% RNA polymerase name for reactions
+DNAbound = ['[RNAP70:' dna.Name ']'];
 
-% Set up the binding reaction
-Robj1 = addreaction(tube, [RNA ' + ' Ribo ' <-> ' Ribobound]);
+% Set up binding reaction
+Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> ' DNAbound]);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_rbs);
-Pobj1r = addparameter(Kobj1, 'kr', kr_rbs);
+Pobj1f = addparameter(Kobj1, 'kf', kf_ptet);
+Pobj1r = addparameter(Kobj1, 'kr', kr_ptet);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-% Set up the translation reaction
-%! TODO: set translation rate based on length of RNA
-Robj2 = addreaction(tube, ...
-  [Ribobound ' + AA -> ' RNA ' + ' Protname ' + ' Ribo]);
+% Set up the transcription reaction
+%! TODO: set transcription rate based on length of DNA
+Robj2 = addreaction(tube, [DNAbound ' + NTP -> ' DNA ' + ' RNA ' + ' RNAP]);
 Kobj2 = addkineticlaw(Robj2, 'MassAction');
-Pobj2 = addparameter(Kobj2, 'ktl', kftl_rbs);
-set(Kobj2, 'ParameterVariableNames', {'ktl'});
+Pobj2 = addparameter(Kobj2, 'ktx', ktx_ptet);
+set(Kobj2, 'ParameterVariableNames', {'ktx'});
 
-% Set up degradation reaction
-Robj3 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
+% Add reactions for sequestration of promoter by TetR 
+kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
+Robj3 = addreaction(tube, ...
+  [DNA ' + [protein tetR] <-> [DNA tetR:protein tetR]']);
 Kobj3 = addkineticlaw(Robj3,'MassAction');
-Pobj3 = addparameter(Kobj3, 'kf', kRNA_deg);
-set(Kobj3, 'ParameterVariableNames', {'kf'});
+Pobj3 = addparameter(Kobj3, 'k3', kf_tetR);
+Pobj3r = addparameter(Kobj3, 'k3r', kr_tetR);
+set(Kobj3, 'ParameterVariableNames', {'k3', 'k3r'});
 
-% Return the list of reactions that we set up
-Rlist = [Robj1 Robj2 Robj3];
+Rlist = [Robj1, Robj2, Robj3];
+
+% Local variables:
+% mode: matlab
+% End:

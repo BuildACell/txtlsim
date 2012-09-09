@@ -29,14 +29,8 @@ dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 10, 'plasmid');
 % so you can put anything you want here.
 %
 
-% Add reactions for sequestration of promoter by TetR 
-kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
-Robj3 = addreaction(tube3, ...
-  '[DNA ptet=rbs=tetR] + [protein tetR] <-> [DNA tetR:protein tetR]');
-Kobj3 = addkineticlaw(Robj3,'MassAction');
-Pobj3 = addparameter(Kobj3, 'k3', kf_tetR);
-Pobj3r = addparameter(Kobj3, 'k3r', kr_tetR);
-set(Kobj3, 'ParameterVariableNames', {'k3', 'k3r'});
+% No additional reactions required for this circuit
+% TetR-DNA interactions are automatically included in TetR setup
 
 %
 % Describe the actual experiment that we want to run.  This includes 
@@ -53,6 +47,7 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 % At this point, the entire experiment is set up and loaded into 'Mobj'.
 % So now we just use standard Simbiology and MATLAB commands to run
 % and plot our results!
+%
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');

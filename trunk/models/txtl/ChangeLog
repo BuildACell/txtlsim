@@ -1,3 +1,28 @@
+2012-09-09  Richard Murray  <murray@altura.local>
+
+	* geneexpr.m (indexlist): new example, intended to eventually match
+	protsynt81bis.m
+
+	* txtl_dna.m (protein): added call to protein specific file, if it
+	exists
+
+	* txtl_protein_tetR.m: new file to describe aTc, TetR intearctions
+
+	* negautoreg.m, txtl_prom_ptet.m: moved DNA binding reactions for
+	tetR to promoter file from example reactions
+
+	* txtl_*.m: updated copyright info to include the actual copyright,
+	placed in Caltech's name.
+
+2012-09-08  Richard Murray  <murray@altura.local>
+
+	* txtl_prom_ptet.m: added ptet promoter file; still needs correct
+	parameters.
+
+2012-09-08  Richard Murray  <murray@altura.local>
+
+	* txtl_*.m: new structure for TX-TL models using Simbiology
+
 2012-09-05  Richard Murray  <murray@altura.local>
 
 	* gamS_plot.m: initial commit of Clare Chan's model.  Changed the

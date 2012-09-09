@@ -1,6 +1,10 @@
-% txtl_newtube.m - function to create new TX-TL tube
+% txtl_template.m - template file for MATLAB functions
+% RMM, 9 Sep 2012
+%
+% This file is a template that includes the boilerplate for creating a 
+% MATLAB function with all of the BSD licensing information at the top.
 
-% Written by Richard Murray, Sep 2012
+% Written by Richard Murray, 9 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -31,6 +35,8 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Mobj = txtl_newtube(name)
-Mobj = sbiomodel(name);
-Cobj = addcompartment(Mobj, 'contents');
+
+% Automatically use matlab mode in emacs (keep at end of file)
+% Local variables:
+% mode: matlab
+% End:

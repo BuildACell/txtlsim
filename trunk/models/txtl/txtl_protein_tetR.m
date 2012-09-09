@@ -1,6 +1,11 @@
-% txtl_newtube.m - function to create new TX-TL tube
+% txtl_protein_tetR.m - protein information for tetR
+% RMM, 9 Sep 2012
+%
+% This file contains a description of the protein produced by tetR.
+% Calling the function txtl_protein_tetR() will set up the reactions for
+% sequestration by the inducer aTc.
 
-% Written by Richard Murray, Sep 2012
+% Written by Richard Murray, 9 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -31,6 +36,17 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Mobj = txtl_newtube(name)
-Mobj = sbiomodel(name);
-Cobj = addcompartment(Mobj, 'contents');
+function Rlist = txtl_protein_tetR(tube, protein)
+
+% Parameters that describe this RBS
+kf_aTc = 1; kr_aTc = 0.1; 
+
+% Set up the binding reaction
+Robj1 = addreaction(tube, [protein.Name ' + aTc <-> aTc:' protein.Name]);
+Kobj1 = addkineticlaw(Robj1, 'MassAction');
+Pobj1f = addparameter(Kobj1, 'kf', kf_aTc);
+Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
+set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+
+% Return the list of reactions that we set up
+Rlist = [Robj1];

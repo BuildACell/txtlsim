@@ -1,5 +1,5 @@
-%
-%
+% protstyn_plot.m - plot results of protein synthesis run
+% Clare Chen, Sep 2012
 
 % gamS concentrations for sample run
 gamS = [0; 0.02; 0.1; 0.5; 2.5];

@@ -8,13 +8,31 @@
 
 function indexlist = findspecies(Mobj, namelist)
 
-[nrows, len] = size(namelist);
-indexlist = zeros(1, len);
-for i=1:len
+if isstr(namelist)
+  % Initialize the return value to zero, in case we don't find anything
+  indexlist = 0;
+
+  % Search through the list for our species name
   for j =1:length(Mobj.Species)
-    if strcmp(namelist(i), Mobj.Species(j).Name)
-      indexlist(i) = j;
+    if strcmp(namelist, Mobj.Species(j).Name)
+      indexlist = j;
+      return
+    end
+  end
+
+else
+  % Return an array of data of same size as input
+  [nrows, len] = size(namelist);
+  indexlist = zeros(1, len);
+  for i=1:len
+    for j =1:length(Mobj.Species)
+      if strcmp(namelist(i), Mobj.Species(j).Name)
+	indexlist(i) = j;
+      end
     end
   end
 end
-  
+
+% Local variables:
+% mode: matlab
+% End:
