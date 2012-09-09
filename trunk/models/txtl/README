@@ -1,4 +1,8 @@
 This directory contains basic models of the TXTL system.  The current
 models are in MATLAB.
 
+protsynt81bis.m		MATLAB protein synthesis model (via Clare Chen)
+negautoreg.m		Example using TXTL library
+txtl_*.m		Library of functions of setting up TXTL reactions
+
 RMM, 5 Sep 2012
