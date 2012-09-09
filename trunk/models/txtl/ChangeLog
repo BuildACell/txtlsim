@@ -1,5 +1,20 @@
 2012-09-09  Richard Murray  <murray@altura.local>
 
+	* txtl_rnap_rnap70.m: added in enzymatric reaction for transcription
+	to rate limit the effect of NTP usage.  Parameters need to be updated.
+
+	* txtl_prom_p70.m, rxtl_prom_ptet.m, txtl_rnap_rnap70.m: moved
+	generic RNAP70 reactions to rxtl_rnap_rnap70.m since they work for
+	any promoter using RNAP70.
+
+	* txtl_dna.m: added in enzymatic reaction for translation to rate
+	limit the effect of amino acid usage.  Parameters need to be updated.
+
+	* txtl_rbs_rbs.m, txtl_dna.m: moved translation reaction setup to
+	txtl_dna.m
+
+2012-09-09  Richard Murray  <murray@altura.local>
+
 	* ./: set svn:mime-type to text/plain for all files
 
 	* txtl_protein_deGFP.m: added new protein setup file to include GFP

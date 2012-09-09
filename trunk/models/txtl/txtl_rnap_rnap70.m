@@ -1,11 +1,11 @@
-% txtl_prom_ptet.m - promoter information for ptet promoter
-% RMM, 8 Sep 2012
+% txtl_rnap_rnap70.m - reactions for RNAP with sigma70 bound
+% RMM, 9 Sep 2012
 %
-% This file contains a description of the ptet promoter.
-% Calling the function txtl_prom_ptet() will set up the reactions for
-% transcription with the measured binding rates and transription rates.
+% This file sets up the transcription reactions for RNAP bound to
+% sigma70 ("RNAP70").  It can be called by promoter files that need to
+% set up the approriate transcription reactions.
 
-% Written by Richard Murray, Sep 2012
+% Written by Richard Murray, 9 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -36,49 +36,38 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_prom_ptet(tube, dna, rna)
-
-% Parameters that describe this promoter
-%! TODO: replace these values with correct values
-kf_ptet = log(2)/0.1;			% 100 ms bind rate
-kr_ptet = 10 * kf_ptet;			% Km of 10 (same as p70, from VN)
-ktx_ptet = log(2)/(rna.UserData/30);	% 30 base/second transcription
-
-% Create strings for reactants and products
-DNA = ['[' dna.Name ']'];		% DNA species name for reactions
-RNA = ['[' rna.Name ']'];		% RNA species name for reactions
+function Rlist = txtl_rnap_rnap70(tube, dna, rna, RNAPbound)
 RNAP = 'RNAP70';			% RNA polymerase name for reactions
-RNAPbound = ['RNAP70:' dna.Name];
+kf_ntp = log(2) / 0.001;		% binding rate of 1 ms
+kr_ntp = 1 * kf_ntp;			% Km of 100 for NTP usage
+ktx = log(2)/(rna.UserData/30);		% 30 NTP/second transcription
 
-% Set up binding reaction
-Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
+% Compute the number of amino acids required, in 100 NTP blocks
+ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
+if (ntpcnt == 0) 
+  ntpstr = '';
+else
+  ntpstr = int2str(ntpcnt);
+end
+
+% Set up the transcription reaction
+Robj1 = addreaction(tube, ...
+  ['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_ptet);
-Pobj1r = addparameter(Kobj1, 'kr', kr_ptet);
+Pobj1f = addparameter(Kobj1, 'kf', kf_ntp);
+Pobj1r = addparameter(Kobj1, 'kr', kr_ntp);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-%
-% Now put in the reactions for the utilization of NTPs
-% Use an enzymatic reaction to proper rate limiting
-%
+Robj2 = addreaction(tube, ...
+  ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
+Kobj2 = addkineticlaw(Robj2, 'MassAction');
+Pobj2 = addparameter(Kobj2, 'ktx', ktx);
+set(Kobj2, 'ParameterVariableNames', {'ktx'});
 
-Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
-
-%
-% Add reactions for sequestration of promoter by TetR 
-%
-
-kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
-Robj4 = addreaction(tube, ...
-  [DNA ' + [protein tetR] <-> [DNA tetR:protein tetR]']);
-Kobj4 = addkineticlaw(Robj4,'MassAction');
-Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
-Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);
-set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
-
-Rlist = [Robj1, Rlist1, Robj4];
+Rlist = [Robj1, Robj2];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
 % mode: matlab
 % End:
+% Parameters describing the enzymatic process

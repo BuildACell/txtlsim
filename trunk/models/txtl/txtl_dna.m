@@ -87,6 +87,7 @@ end
 
 % DNA degradation
 %! TODO: eventually, we should allow file-based reactions
+%! TODO: allow protection strands by comparing promoter length to ~35
 if strcmp(type, 'linear')
   Robj1 = addreaction(tube, ...
     [dna.Name ' + RecBCD -> RecBCD']);
@@ -96,18 +97,46 @@ if strcmp(type, 'linear')
   set(Kobj1, 'ParameterVariableNames', {'kf'});
 end
 
-% Translation
+% Translation: setup file should return pointer to RBS bound species
 if exist(['txtl_rbs_' rbs]) == 2
   % Run the RBS specific setup
-  Rlist = eval(['txtl_rbs_' rbs '(tube, rna, protein)']);
+  Ribobound = eval(['txtl_rbs_' rbs '(tube, rna, protein)']);
 else
-  % Issue a warning and run the default promoter
+  % Issue a warning and run the default RBS
   warning(['TXTL: can''t find txtl_rbs_' prom ...
       '; using default promoter params']);
-  txtl_rbs_rbs(tube, rna, protein)
+  Ribobound = txtl_rbs_rbs(tube, rna, protein)
 end
 
-% mRNA degradation
+% Now put in the reactions for the utilization of amino acids
+% Use an enzymatic reaction to proper rate limiting
+kf_aa = log(2) / 0.001;			% binding rate of 1 ms
+kr_aa = 1 * kf_aa;			% Km of 100 for amino acid usage
+ktl_rbs = log(2)/(protein.UserData/10);	% 10 AA/second translation
+
+% Compute the number of amino acids required, in 100 AA blocks
+aacnt = floor(protein.UserData/100);	% get number of K amino acids
+if (aacnt == 0) 
+  aastr = '';
+else
+  aastr = int2str(aacnt);
+end
+
+% Set up the translation reaction
+Robj = addreaction(tube, ...
+  ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
+Kobj = addkineticlaw(Robj, 'MassAction');
+Pobjf = addparameter(Kobj, 'kf', kf_aa);
+Pobjr = addparameter(Kobj, 'kr', kr_aa);
+set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+
+Robj1 = addreaction(tube, ...
+  ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo']);
+Kobj1 = addkineticlaw(Robj1, 'MassAction');
+Pobj1 = addparameter(Kobj1, 'ktl', ktl_rbs);
+set(Kobj1, 'ParameterVariableNames', {'ktl'});
+
+% Add in mRNA degradation reactions
 Robj2 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
 Kobj2 = addkineticlaw(Robj2,'MassAction');
 Pobj2 = addparameter(Kobj2, 'kf', kRNA_deg);
@@ -131,3 +160,8 @@ function [name, len] = txtl_parsespec(spec)
   name = tokens{1}{1};
   len = str2num(tokens{1}{2});
   return
+
+% Automatically use MATLAB mode in Emacs (keep at end of file)
+% Local variables:
+% mode: matlab
+% End:

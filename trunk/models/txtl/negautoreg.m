@@ -17,9 +17,9 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 50, 'linear');
-dna_tetR = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 50, 'linear');
-dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 10, 'plasmid');
+dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
+dna_tetR = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -52,7 +52,7 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 2*60*60)
+set(configsetObj, 'StopTime', 6*60*60)
 [t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
 % Top row: protein and RNA levels
@@ -95,7 +95,9 @@ plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
   t_ode/60, x_ode(:, iRNA_gamS), 'r--');
 
 title('DNA and mRNA');
-lgh = legend(names([iDNA_tetR, iDNA_gamS]), 'Location', 'Northeast');
+lgh = legend(...
+  names([iDNA_tetR, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
+  'Location', 'Northeast');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');

@@ -40,30 +40,34 @@ function Rlist = txtl_prom_p70(tube, dna, rna)
 
 % Parameters that describe this promoter
 %! TODO: replace these values with correct values
-kf70 = log(2)/0.1;			% 100 ms bind rate
-kr70 = 10/kf70;				% Km of 10 nM (from VN model)
-ktx70 = log(2)/(rna.UserData/30);	% 30 base/second transcription
+kf_p70 = log(2)/0.1;			% 100 ms bind rate
+kr_p70 = 10 * kf_p70;			% Km of 10 nM (from VN model)
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
 RNA = ['[' rna.Name ']'];		% RNA species name for reactions
 RNAP = 'RNAP70';			% RNA polymerase name for reactions
-DNAbound = ['[RNAP70:' dna.Name ']'];
+RNAPbound = ['RNAP70:' dna.Name];	% Name of bound complex
 
+%
 % Set up binding reaction
-Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> ' DNAbound]);
+%
+
+Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> ' RNAPbound]);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf70);
-Pobj1r = addparameter(Kobj1, 'kr', kr70);
+Pobj1f = addparameter(Kobj1, 'kf', kf_p70);
+Pobj1r = addparameter(Kobj1, 'kr', kr_p70);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-% Set up the transcription reaction
-Robj2 = addreaction(tube, [DNAbound ' + NTP -> ' DNA ' + ' RNA ' + ' RNAP]);
-Kobj2 = addkineticlaw(Robj2, 'MassAction');
-Pobj2 = addparameter(Kobj2, 'ktx', ktx70);
-set(Kobj2, 'ParameterVariableNames', {'ktx'});
+%
+% Now put in the reactions for the utilization of NTPs
+% Use an enzymatic reaction to proper rate limiting
+%
 
-Rlist = [Robj1, Robj2];
+Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
+
+% All done; return the list of reactions that we set up
+Rlist = [Robj1, Rlist1];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

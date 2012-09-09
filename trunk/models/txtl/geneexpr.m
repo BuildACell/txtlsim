@@ -31,16 +31,18 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 %
 
 % Run a simulation
-[t_ode, x_ode, names] = sbiosimulate(Mobj);
+configsetObj = getconfigset(Mobj, 'active');
+set(configsetObj, 'StopTime', 6*60*60)
+[t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
 % Get the name of the species we want to plot
-iGFP = findspecies(Mobj, 'protein deGFP');
+iGFP = findspecies(Mobj, 'protein deGFP*');
 iRNA = findspecies(Mobj, 'RNA rbs=deGFP');
 iNTP = findspecies(Mobj, 'NTP');
 iAA  = findspecies(Mobj, 'AA');
 
 % Top row: protein and RNA levels
-subplot(2,1,1);
+figure(1); clf(); subplot(2,1,1);
 plot(t_ode/60, x_ode(:, iGFP), 'b-', t_ode/60, x_ode(:, iRNA), 'r-')
 
 title('Gene Expression');
@@ -58,8 +60,6 @@ lgh = legend(names([iAA, iNTP]), 'Location', 'West');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-
-% Overall labels
 
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:

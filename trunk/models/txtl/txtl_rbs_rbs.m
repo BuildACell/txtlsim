@@ -36,37 +36,30 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_rbs_rbs(tube, rna, protein)
+function Sobj = txtl_rbs_rbs(tube, rna, protein)
 
 % Parameters that describe this RBS
 %! TODO: replace these values with correct values
 kf_rbs = log(2)/0.1;			% 100 ms bind rate
-kr_rbs = 100/kf_rbs;			% Km of 0.05 (from VN model)
-ktl_rbs = log(2)/(protein.UserData/10);	% 10 AA/second translation
+kr_rbs = 0.05 * kf_rbs;			% Km of ~0.05 (from VN model)
 
 % Create strings for the reactants and products
 RNA = ['[' rna.Name ']'];
-Ribo = 'Ribo';
-Ribobound = ['[' Ribo ':' rna.Name ']'];
 Protname = protein.Name;
 
-% Set up the binding reaction
-Robj1 = addreaction(tube, [RNA ' + ' Ribo ' <-> ' Ribobound]);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_rbs);
-Pobj1r = addparameter(Kobj1, 'kr', kr_rbs);
-set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+% Set up species for bound reaction
+Sobj = addspecies(tube, ['Ribo:' rna.Name]);
 
-% Set up the translation reaction
-%! TODO: set translation rate based on length of RNA
-Robj2 = addreaction(tube, ...
-  [Ribobound ' + AA -> ' RNA ' + ' Protname ' + ' Ribo]);
-Kobj2 = addkineticlaw(Robj2, 'MassAction');
-Pobj2 = addparameter(Kobj2, 'ktl', ktl_rbs);
-set(Kobj2, 'ParameterVariableNames', {'ktl'});
+% Set up the binding reaction
+Robj = addreaction(tube, [RNA ' + Ribo <-> [' Sobj.Name ']']);
+Kobj = addkineticlaw(Robj, 'MassAction');
+Pobjf = addparameter(Kobj, 'kf', kf_rbs);
+Pobjr = addparameter(Kobj, 'kr', kr_rbs);
+set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
 
 % Return the list of reactions that we set up
-Rlist = [Robj1 Robj2];
+%! TODO: optional return list of all reactions
+% Rlist = Robj;
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
