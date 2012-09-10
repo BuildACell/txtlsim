@@ -1,3 +1,10 @@
+2012-09-10  Richard Murray  <murray@altura.local>
+
+	* txtl_buffer.m: Set concentration of NTP in buffer to match
+	what we use in experiments.
+
+	* negautoreg.m (mMperunit): updated plots to show resources in mM
+
 2012-09-09  Richard Murray  <murray@altura.local>
 
 	* txtl_rnap_rnap70.m: added in enzymatric reaction for transcription

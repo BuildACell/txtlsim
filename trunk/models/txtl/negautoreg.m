@@ -75,12 +75,14 @@ xlabel('Time [min]');
 subplot(2,2,3);
 iNTP = findspecies(Mobj, 'NTP');
 iAA  = findspecies(Mobj, 'AA');
-plot(t_ode/60, x_ode(:, iAA), 'b-', t_ode/60, x_ode(:, iNTP), 'r-')
+mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
+plot(t_ode/60, x_ode(:, iAA) * mMperunit, 'b-', ...
+  t_ode/60, x_ode(:, iNTP) * mMperunit, 'r-')
 
 title('Resource usage');
 lgh = legend(names([iAA, iNTP]), 'Location', 'Northeast');
 legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
+ylabel('Species amounts [mM]');
 xlabel('Time [min]');
 
 % Second row, right: DNA and mRNA
