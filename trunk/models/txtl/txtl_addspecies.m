@@ -37,12 +37,12 @@ function Sobj = txtl_addspecies(tube, name, amount)
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-index = findspecies(tube, name)
+index = findspecies(tube, name);
 if (index == 0)
   Sobj = addspecies(tube, name, amount);
 else
   tube.Species(index).InitialAmount = ...
-    tube.Species(index).InitialAmount + amount
+    tube.Species(index).InitialAmount + amount;
   Sobj = tube.Species(index);
 end
 

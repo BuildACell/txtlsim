@@ -1,8 +1,13 @@
 2012-09-11  Richard Murray  <murray@altura.local>
 
+	* induction.m: new function to demonstrate txtl_addspecies.
+
 	* txtl_addspecies.m: new function to add a species to a tube.
 
-	* txtl_dna.m: updated documentation
+2012-09-11  Richard Murray  <murray@altura.local>
+
+	* txtl_dna.m: updated documentation.  Also summary information on
+	Openwetware web site
 
 	* txtl_dna.m: changed txtl_rbs_* to txtl_utr_
 
