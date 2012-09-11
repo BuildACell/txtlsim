@@ -1,3 +1,16 @@
+2012-09-11  Richard Murray  <murray@altura.local>
+
+	* txtl_addspecies.m: new function to add a species to a tube.
+
+	* txtl_dna.m: updated documentation
+
+	* txtl_dna.m: changed txtl_rbs_* to txtl_utr_
+
+	* txtl_rbs_rbs.m: renamed to txtl_utr_rbs.m
+
+	* negautoreg.m (mMperunit): added plots of RNAP and ribosome
+	concentrations and normalized resource plot
+
 2012-09-10  Richard Murray  <murray@altura.local>
 
 	* txtl_buffer.m: Set concentration of NTP in buffer to match

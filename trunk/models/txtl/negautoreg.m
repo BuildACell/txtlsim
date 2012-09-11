@@ -18,7 +18,7 @@ tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
-dna_tetR = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 %
@@ -75,14 +75,21 @@ xlabel('Time [min]');
 subplot(2,2,3);
 iNTP = findspecies(Mobj, 'NTP');
 iAA  = findspecies(Mobj, 'AA');
+iRNAP  = findspecies(Mobj, 'RNAP70');
+iRibo  = findspecies(Mobj, 'Ribo');
 mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
-plot(t_ode/60, x_ode(:, iAA) * mMperunit, 'b-', ...
-  t_ode/60, x_ode(:, iNTP) * mMperunit, 'r-')
+plot(...
+  t_ode/60, x_ode(:, iAA)/x_ode(1, iAA), 'b-', ...
+  t_ode/60, x_ode(:, iNTP)/x_ode(1, iNTP), 'r-', ...
+  t_ode/60, x_ode(:, iRNAP)/x_ode(1, iRNAP), 'b--', ...
+  t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'r--');
 
 title('Resource usage');
-lgh = legend(names([iAA, iNTP]), 'Location', 'Northeast');
+lgh = legend(...
+  {'NTP [mM]', 'AA [mM]', 'RNAP70 [nM]', 'Ribo [nM]'}, ...
+  'Location', 'Northeast');
 legend(lgh, 'boxoff');
-ylabel('Species amounts [mM]');
+ylabel('Species amounts [normalized]');
 xlabel('Time [min]');
 
 % Second row, right: DNA and mRNA

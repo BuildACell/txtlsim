@@ -1,0 +1,7 @@
+* New function: txtl_plot(t_ode, x_ode, names) - smart plotting of
+  protein concentrations, resources and DNA, mRNA concentrations
+  (using TXTL naming conventions)
+
+* Modify DNA degradation to use an enzymatic reaction:
+
+    RecBCD + DNA <-> RecBCD:DNA -> null

@@ -1,17 +1,20 @@
+function dna = txtl_dna(tube, promspec, rbsspec, genespec, amount, type)
 %TXTL_DNA   Set up species and reactions for a DNA segment
 %
-% dna = txtl_dna(tube, promspec, rbsspec, genespec, amount, type)
+%   dna = TXTL_DNA(tube, promspec, rbsspec, genespec, amount, type)
+%   constructs the species and reactions required for transcription,
+%   translation and degradation of DNA, mRNA and proteins in the 
+%   TX-TL system.
 %
-% tube = Simbiology model object
-% promspec = spec of the form 'prom(nn)' where 'prom' is the promoter name
-%   and 'len' is the length of the promoter.
-% rbsspec = spec of the form 'rbs(nn)' where 'rbs' is the RBS name
-%   and 'len' is the length of the RBS.
-% genespec = spec of the form 'gene(nn)' where 'gene' is the gene name
-%   and 'len' is the length of the gene.
-% amount = amount of DNA to put in the tube (in nM)
-% type = 'linear' if you want to include degradation reactions
-% 
+%   * tube = Simbiology model object
+%   * promspec = spec of the form 'prom(nn)' where 'prom' is the 
+%     promoter name and 'len' is the length of the promoter.
+%   * rbsspec = spec of the form 'rbs(nn)' where 'rbs' is the RBS 
+%     name and 'len' is the length of the RBS.
+%   * genespec = spec of the form 'gene(nn)' where 'gene' is the 
+%     gene name and 'len' is the length of the gene.
+%   * amount = amount of DNA to put in the tube (in nM)
+%   * type = 'linear' if you want to include degradation reactions
 
 % Written by Richard Murray, Sep 2012
 %
@@ -43,8 +46,6 @@
 % STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
-
-function dna = txtl_dna(tube, promspec, rbsspec, genespec, amount, type)
 
 % Parameters used in this file
 %! TODO: update these parameters to something reasonable
@@ -98,14 +99,14 @@ if strcmp(type, 'linear')
 end
 
 % Translation: setup file should return pointer to RBS bound species
-if exist(['txtl_rbs_' rbs]) == 2
+if exist(['txtl_utr_' rbs]) == 2
   % Run the RBS specific setup
-  Ribobound = eval(['txtl_rbs_' rbs '(tube, rna, protein)']);
+  Ribobound = eval(['txtl_utr_' rbs '(tube, rna, protein)']);
 else
   % Issue a warning and run the default RBS
-  warning(['TXTL: can''t find txtl_rbs_' prom ...
+  warning(['TXTL: can''t find txtl_utr_' rbs ...
       '; using default promoter params']);
-  Ribobound = txtl_rbs_rbs(tube, rna, protein)
+  Ribobound = txtl_utr_rbs(tube, rna, protein);
 end
 
 % Now put in the reactions for the utilization of amino acids

@@ -1,11 +1,12 @@
-% txtl_rbs_rbs.m - promoter information for standard RBS
-% RMM, 8 Sep 2012
+function Sobj = txtl_addspecies(tube, name, amount)
+%TXTL_ADDSPECIES   Add a molecular species to a tube
 %
-% This file contains a description of a standard ribosome binding site.
-% Calling the function txtl_rbs_rbs() will set up the reactions for
-% translation with the measured binding rates and translation rates.
+% Sobj = TXTL_ADDSPECIES(tube, name, amount) adds a molecule to a
+% tube, in the gen amount (in nM).  The species can be a new species or
+% one that already exists (in which case its concentration is added to
+% what is already present).
 
-% Written by Richard Murray, Sep 2012
+% Written by Richard Murray, 11 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -36,30 +37,14 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Sobj = txtl_rbs_rbs(tube, rna, protein)
-
-% Parameters that describe this RBS
-%! TODO: replace these values with correct values
-kf_rbs = log(2)/0.1;			% 100 ms bind rate
-kr_rbs = 0.05 * kf_rbs;			% Km of ~0.05 (from VN model)
-
-% Create strings for the reactants and products
-RNA = ['[' rna.Name ']'];
-Protname = protein.Name;
-
-% Set up species for bound reaction
-Sobj = addspecies(tube, ['Ribo:' rna.Name]);
-
-% Set up the binding reaction
-Robj = addreaction(tube, [RNA ' + Ribo <-> [' Sobj.Name ']']);
-Kobj = addkineticlaw(Robj, 'MassAction');
-Pobjf = addparameter(Kobj, 'kf', kf_rbs);
-Pobjr = addparameter(Kobj, 'kr', kr_rbs);
-set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
-
-% Return the list of reactions that we set up
-%! TODO: optional return list of all reactions
-% Rlist = Robj;
+index = findspecies(tube, name)
+if (index == 0)
+  Sobj = addspecies(tube, name, amount);
+else
+  tube.Species(index).InitialAmount = ...
+    tube.Species(index).InitialAmount + amount
+  Sobj = tube.Species(index);
+end
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
