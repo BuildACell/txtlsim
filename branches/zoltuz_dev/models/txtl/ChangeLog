@@ -1,0 +1,96 @@
+2012-09-11  Richard Murray  <murray@altura.local>
+
+	* induction.m: new function to demonstrate txtl_addspecies.
+
+	* txtl_addspecies.m: new function to add a species to a tube.
+
+2012-09-11  Richard Murray  <murray@altura.local>
+
+	* txtl_dna.m: updated documentation.  Also summary information on
+	Openwetware web site
+
+	* txtl_dna.m: changed txtl_rbs_* to txtl_utr_
+
+	* txtl_rbs_rbs.m: renamed to txtl_utr_rbs.m
+
+	* negautoreg.m (mMperunit): added plots of RNAP and ribosome
+	concentrations and normalized resource plot
+
+2012-09-10  Richard Murray  <murray@altura.local>
+
+	* txtl_buffer.m: Set concentration of NTP in buffer to match
+	what we use in experiments.
+
+	* negautoreg.m (mMperunit): updated plots to show resources in mM
+
+2012-09-09  Richard Murray  <murray@altura.local>
+
+	* txtl_rnap_rnap70.m: added in enzymatric reaction for transcription
+	to rate limit the effect of NTP usage.  Parameters need to be updated.
+
+	* txtl_prom_p70.m, rxtl_prom_ptet.m, txtl_rnap_rnap70.m: moved
+	generic RNAP70 reactions to rxtl_rnap_rnap70.m since they work for
+	any promoter using RNAP70.
+
+	* txtl_dna.m: added in enzymatic reaction for translation to rate
+	limit the effect of amino acid usage.  Parameters need to be updated.
+
+	* txtl_rbs_rbs.m, txtl_dna.m: moved translation reaction setup to
+	txtl_dna.m
+
+2012-09-09  Richard Murray  <murray@altura.local>
+
+	* ./: set svn:mime-type to text/plain for all files
+
+	* txtl_protein_deGFP.m: added new protein setup file to include GFP
+	maturation.  Mature deGFP is [protein deGFP*].
+
+	* txtl_rbs_rbs.m: updated reaction rates to try to get them to be
+	more realistic
+
+	* txtl_extract.m: added dilution factor in calculating RNAP and
+	ribosome concentrations; updated concentrations.
+
+	* txtl_prom_ptet.m, txtl_prom_p70.m: updated binding and
+	transcription rates
+
+	* txtl_rbs_rbs.m, txtl_dna.m: moved mRNA degradation from RBS setup
+	file to DNA setup file
+
+	* negautoreg.m: updated plotting format; added in GFP for comparison
+
+2012-09-09  Richard Murray  <murray@altura.local>
+
+	* geneexpr.m (indexlist): new example, intended to eventually match
+	protsynt81bis.m
+
+	* txtl_dna.m (protein): added call to protein specific file, if it
+	exists
+
+	* txtl_protein_tetR.m: new file to describe aTc, TetR intearctions
+
+	* negautoreg.m, txtl_prom_ptet.m: moved DNA binding reactions for
+	tetR to promoter file from example reactions
+
+	* txtl_*.m: updated copyright info to include the actual copyright,
+	placed in Caltech's name.
+
+2012-09-08  Richard Murray  <murray@altura.local>
+
+	* txtl_prom_ptet.m: added ptet promoter file; still needs correct
+	parameters.
+
+2012-09-08  Richard Murray  <murray@altura.local>
+
+	* txtl_*.m: new structure for TX-TL models using Simbiology
+
+2012-09-05  Richard Murray  <murray@altura.local>
+
+	* gamS_plot.m: initial commit of Clare Chan's model.  Changed the
+	name of the file to be more descriptive.  Added a comment at the top
+	of the file to desribe what it contains.
+
+	* protsynt81bis.m: initial commit of Clare Chen's model.  Added
+	copyright info (BSD) to top of file.  Made a few minor formatting
+	changes. 
+
