@@ -1,11 +1,9 @@
-% txtl_protein_deGFP.m - protein information for deGFP
-% RMM, 9 Sep 2012
-%
-% This file contains a description of the protein produced by tetR.
-% Calling the function txtl_protein_tetR() will set up the reactions for
-% sequestration by the inducer aTc.
+function modelObj = txtl_continue_simulation(simObj,modelObj)
+% This function resets the initialValues to result of the latest run for each
+% species. In that way the simulation will continue instead of starting
+% over again.
 
-% Written by Richard Murray, 9 Sep 2012
+% Written by Zoltan A Tuza, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -36,27 +34,16 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_protein_deGFP(tube, protein)
 
-% Parameters for maturation rate
-Kmat = log(2)/(15*60);			% protein maturation rate = 15 min
+finaldata = simObj.Data(end,:);
+names = simObj.DataNames;
 
-% Set up the maturation reaction
-Robj1 = addreaction(tube, [protein.Name ' -> ' protein.Name '*']);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', Kmat);
-set(Kobj1, 'ParameterVariableNames', {'kf'});
-
-Robj2 = addreaction(tube, [protein.Name '* -> null']);
-Kobj2 = addkineticlaw(Robj2,'MassAction');
-Pobj2 = addparameter(Kobj2,  'kf', 0.001);
-set(Kobj2, 'ParameterVariableNames','kf');
-
-
-% Return the list of reactions that we set up
-Rlist = [Robj1, Robj2];
-
-% Automatically use MATLAB mode in Emacs (keep at end of file)
-% Local variables:
-% mode: matlab
-% End:
+% Loop through the states (species) and set their initial Amounts
+numSpecies = length(names);
+for c = 1:numSpecies
+speciesObj = sbioselect(modelObj,'type','species','Name',names{c});
+if (abs(finaldata(c)) < eps) % treats values below eps as zero.
+    finaldata(c) = 0;
+end
+speciesObj.InitialAmount = finaldata(c);
+end

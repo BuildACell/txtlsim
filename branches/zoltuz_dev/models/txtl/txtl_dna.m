@@ -158,6 +158,9 @@ function [name, len] = txtl_parsespec(spec)
   %! TODO: use 'split' instead?
   tokens = regexp(spec, '(\w*)\((\d*)\)', 'tokens');
   %! TODO: add error checking
+  if isempty(tokens{1}{1}) | isempty(tokens{1}{2})  
+     error('wrong string format: %s, it should be: name(length), e.g. p70(50)',spec) 
+  end
   name = tokens{1}{1};
   len = str2num(tokens{1}{2});
   return

@@ -1,4 +1,4 @@
-% txtl_protein_deGFP.m - protein information for deGFP
+% txtl_protein_LacI.m - protein information for LacI
 % RMM, 9 Sep 2012
 %
 % This file contains a description of the protein produced by tetR.
@@ -36,25 +36,27 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_protein_deGFP(tube, protein)
+function Rlist = txtl_protein_LacI(tube, protein)
 
-% Parameters for maturation rate
-Kmat = log(2)/(15*60);			% protein maturation rate = 15 min
+% Parameters that describe this RBS
+kf_aTc = 1; kr_aTc = 0.1; 
 
-% Set up the maturation reaction
-Robj1 = addreaction(tube, [protein.Name ' -> ' protein.Name '*']);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', Kmat);
-set(Kobj1, 'ParameterVariableNames', {'kf'});
+% Set up the binding reaction
+%Robj1 = addreaction(tube, [protein.Name ' + aTc <-> aTc:' protein.Name]);
+%Kobj1 = addkineticlaw(Robj1, 'MassAction');
+%Pobj1f = addparameter(Kobj1, 'kf', kf_aTc);
+%Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
+%set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-Robj2 = addreaction(tube, [protein.Name '* -> null']);
+% Set up degradation
+Robj2 = addreaction(tube, [protein.Name ' -> null']);
 Kobj2 = addkineticlaw(Robj2,'MassAction');
 Pobj2 = addparameter(Kobj2,  'kf', 0.001);
 set(Kobj2, 'ParameterVariableNames','kf');
 
+Rlist = [Robj2];
+%Rlist = [];
 
-% Return the list of reactions that we set up
-Rlist = [Robj1, Robj2];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
