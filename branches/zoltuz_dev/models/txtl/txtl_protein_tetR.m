@@ -56,10 +56,7 @@ kr_dimer = 0.00000001; % 1/sec
 
 Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 
-% Set up dimer degradation
-%! TODO valid reacation rates are needed!
-kf_tetRdimer_deg = 0.000096667; % 1 / sec
-Rlist(end+1) = txtl_protein_degradation(tube,protein,[kf_tetRdimer_deg]);
+
 
 
 

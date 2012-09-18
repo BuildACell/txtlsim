@@ -48,22 +48,16 @@ function Rlist = txtl_protein_LacI(tube, protein)
 %Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
 %set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-% Set up degradation
-% Tiggers et al, 2009
-kf_LacI_deg = 0.000096667; % 1 / sec
-Rlist = txtl_protein_degradation(tube,protein,[kf_LacI_deg]);
+
 
 %Set up dimerization
 % Hsieh & Brenowitz 1997 JBC
 kf_dimer = 0.0004637; % 1/(molecule*sec)
 kr_dimer = 0.00000001; % 1/sec
 
-Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
+Rlist = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 
-% Set up dimer degradation
-% Tiggers et al, 2009
-kf_LacIdimer_deg = 0.000096667; % 1 / sec
-Rlist(end+1) = txtl_protein_degradation(tube,protein,[kf_LacIdimer_deg]);
+
 
 %Set up tetramerization
 % Hsieh & Brenowitz 1997 JBC
@@ -71,10 +65,7 @@ kf_tetramer = 0.000602; % 1/(molecule*sec)
 kr_tetramer = 0.000001; % 1/sec
 Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
 
-% Set up tetramer degradation
-% Tiggers et al, 2009
-kf_LacItetramer_deg = 0.000096667; % 1 / sec
-Rlist(end+1) = txtl_protein_degradation(tube,protein,[kf_LacItetramer_deg]);
+
 
 
 
