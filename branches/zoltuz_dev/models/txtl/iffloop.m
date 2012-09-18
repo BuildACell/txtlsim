@@ -38,8 +38,8 @@ names = simData.DataNames;
 txtl_continue_simulation(simData,well_a1);
 
 % add more DNA
-txtl_addspecies(well_a1, 'DNA p70=rbs=LacI', 8);
-txtl_addspecies(well_a1, 'DNA placi=rbs=deGFP', 8);
+txtl_addspecies(well_a1, 'DNA p70=rbs=LacI', 2);
+txtl_addspecies(well_a1, 'DNA placi=rbs=deGFP', 2);
 
 simData_2 = sbiosimulate(well_a1, configsetObj);
 t_ode_2 = simData_2.Time;
@@ -50,8 +50,8 @@ x_ode_2 = simData_2.Data;
 txtl_continue_simulation(simData_2,well_a1);
 
 % add more DNA
-txtl_addspecies(well_a1, 'DNA p70=rbs=LacI', 8);
-txtl_addspecies(well_a1, 'DNA placi=rbs=deGFP', 8);
+txtl_addspecies(well_a1, 'DNA p70=rbs=LacI', 2);
+txtl_addspecies(well_a1, 'DNA placi=rbs=deGFP', 2);
 simData_3 = sbiosimulate(well_a1, configsetObj);
 t_ode_3 = simData_3.Time;
 x_ode_3 = simData_3.Data;
@@ -68,8 +68,8 @@ x_ode = [x_ode; x_ode_2; x_ode_3];
 %% plot the result
 
 figure(1); clf(); subplot(2,1,1);
-% txtl_genexpression_plot(simData,well_a1,{'LacI', 'deGFP', 'deGFP*','gamS'})
-
+%txtl_genexpression_plot(simData,well_a1,{'LacI', 'deGFP', 'deGFP*','gamS'})
+%title('Gene Expression');
 
 iLacI = findspecies(well_a1, 'protein LacI');
 iGFP = findspecies(well_a1, 'protein deGFP');

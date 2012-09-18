@@ -23,7 +23,7 @@ end
 plotID = plot(simObj.Time/60,dataX)
 
 
-title('Gene Expression');
+
 lgh = legend(listOfProtein, 'Location', 'Best');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');

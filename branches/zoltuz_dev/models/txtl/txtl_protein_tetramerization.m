@@ -1,11 +1,10 @@
-% txtl_protein_LacI.m - protein information for LacI
-% RMM, 9 Sep 2012
+% txtl_protein_tetramerization-m - general protein tetramerization
+% Zoltan A. Tuza Sep 2012
 %
 % This file contains a description of the protein produced by tetR.
 % Calling the function txtl_protein_tetR() will set up the reactions for
 % sequestration by the inducer aTc.
 
-% Written by Richard Murray, 9 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -36,51 +35,29 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_protein_LacI(tube, protein)
+function Robj = txtl_protein_tetramerization(tube,protein,reactionRates)
+% function for protein tetramerization.
+% tube: sbiomodel object, where the reaction occurs
+% protein: SimBiology Species Array
+% reacctionRates: 2x1 or 1x2 vector contains the forward and reverse
+% reaction rates. (For forward reaction only, set the reverse reaction rete to zero!)
+%
+% Return: SimBiology Reaction Array
 
-% Parameters that describe this RBS
-% kf_aTc = 1; kr_aTc = 0.1; 
-
-% Set up the binding reaction
-%Robj1 = addreaction(tube, [protein.Name ' + aTc <-> aTc:' protein.Name]);
-%Kobj1 = addkineticlaw(Robj1, 'MassAction');
-%Pobj1f = addparameter(Kobj1, 'kf', kf_aTc);
-%Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
-%set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
-
-% Set up degradation
-% Tiggers et al, 2009
-kf_LacI_deg = 0.000096667; % 1 / sec
-Rlist = txtl_protein_degradation(tube,protein,[kf_LacI_deg]);
-
-%Set up dimerization
-% Hsieh & Brenowitz 1997 JBC
-kf_dimer = 0.0004637; % 1/(molecule*sec)
-kr_dimer = 0.00000001; % 1/sec
-
-Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
-
-% Set up dimer degradation
-% Tiggers et al, 2009
-kf_LacIdimer_deg = 0.000096667; % 1 / sec
-Rlist(end+1) = txtl_protein_degradation(tube,protein,[kf_LacIdimer_deg]);
-
-%Set up tetramerization
-% Hsieh & Brenowitz 1997 JBC
-kf_tetramer = 0.000602; % 1/(molecule*sec)
-kr_tetramer = 0.000001; % 1/sec
-Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
-
-% Set up tetramer degradation
-% Tiggers et al, 2009
-kf_LacItetramer_deg = 0.000096667; % 1 / sec
-Rlist(end+1) = txtl_protein_degradation(tube,protein,[kf_LacItetramer_deg]);
+if reactionRates(2) == 0
+   Robj = addreaction(tube, ['2 ' protein.Name 'dimer ->' protein.Name 'tetramer']);
+   Kobj = addkineticlaw(Robj,'MassAction');
+   Pobj = addparameter(Kobj,  'kf', reactionRates(1));
+   set(Kobj, 'ParameterVariableNames','kf');
+else
+   Robj = addreaction(tube, ['2 ' protein.Name 'dimer <->' protein.Name 'tetramer']); 
+   Kobj = addkineticlaw(Robj,'MassAction');
+   Pobjf = addparameter(Kobj, 'kf', reactionRates(1));
+   Pobjr = addparameter(Kobj, 'kr', reactionRates(2));
+   set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+end
+   
+end
 
 
 
-
-
-% Automatically use MATLAB mode in Emacs (keep at end of file)
-% Local variables:
-% mode: matlab
-% End:
