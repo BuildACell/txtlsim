@@ -48,8 +48,22 @@ Pobj1f = addparameter(Kobj1, 'kf', kf_aTc);
 Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-% Return the list of reactions that we set up
 Rlist = [Robj1];
+% Set up dimerization 
+%! TODO valid reacation rates are needed!
+kf_dimer = 0.0004637; % 1/(molecule*sec)
+kr_dimer = 0.00000001; % 1/sec
+
+Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
+
+% Set up dimer degradation
+%! TODO valid reacation rates are needed!
+kf_tetRdimer_deg = 0.000096667; % 1 / sec
+Rlist(end+1) = txtl_protein_degradation(tube,protein,[kf_tetRdimer_deg]);
+
+
+
+
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

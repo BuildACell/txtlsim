@@ -65,12 +65,12 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 %
-% Add reactions for sequestration of promoter by TetR 
+% Add reactions for sequestration of promoter by TetRdimer 
 %
 
 kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein tetR] <-> [DNA tetR:protein tetR]']);
+  [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
 Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
 Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);
