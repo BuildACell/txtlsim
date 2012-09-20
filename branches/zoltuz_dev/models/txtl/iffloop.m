@@ -67,80 +67,25 @@ x_ode = [x_ode; x_ode_2; x_ode_3];
 
 %% plot the result
 
-figure(1); clf(); subplot(2,1,1);
-%txtl_genexpression_plot(simData,well_a1,{'LacI', 'deGFP', 'deGFP*','gamS'})
-%title('Gene Expression');
 
-iLacI = findspecies(well_a1, 'protein LacI');
-iGFP = findspecies(well_a1, 'protein deGFP');
-iGFPs = findspecies(well_a1, 'protein deGFP*');
-iGamS = findspecies(well_a1, 'protein gamS');
-plot(t_ode/60, x_ode(:, iLacI), 'b-', ...
-  t_ode/60, x_ode(:, iGFP) + x_ode(:, iGFPs), 'g--', ...
-  t_ode/60, x_ode(:, iGFPs), 'g-', ...
-  t_ode/60, x_ode(:, iGamS), 'r-');
-% plot(t_ode/60, x_ode(:, iLacI), 'b-',  t_ode/60, x_ode(:, iGamS), 'r-');
+
+% figure(4)
+% DNA and mRNA plot
+dataGroups{1,1} = 'DNA and mRNA';
+dataGroups{1,2} = {'DNA p70=rbs=LacI','DNA placi=rbs=deGFP'}%,'RNA rbs=LacI','RNA rbs=deGFP'}
+dataGroups{1,3} = {'b-','r-','b--','r--'}
 
 
 
-title('Gene Expression');
-lgh = legend({'LacI', 'GFPt', 'GFP*','GamS'}, 'Location', 'Northeast');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
-xlabel('Time [min]');
-
-subplot(223)
-iDNA_LacI = findspecies(well_a1, 'DNA p70=rbs=LacI');
-iDNA_deGFP = findspecies(well_a1, 'DNA placi=rbs=deGFP');
-iRNA_LacI = findspecies(well_a1, 'RNA rbs=LacI');
-iRNA_deGFP = findspecies(well_a1, 'RNA rbs=deGFP');
-plot(t_ode/60, x_ode(:, iDNA_LacI), 'b-', ...
-  t_ode/60, x_ode(:, iDNA_deGFP), 'r-', ...
-  t_ode/60, x_ode(:, iRNA_LacI), 'b--', ...
-  t_ode/60, x_ode(:, iRNA_deGFP), 'r--');
-
-title('DNA and mRNA');
-lgh = legend(...
-  names([iDNA_LacI, iDNA_deGFP, iRNA_LacI, iRNA_deGFP]), ...
-  'Location', 'Northwest');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
-xlabel('Time [min]');
+% Gene Expression Plot
+dataGroups{2,1} = 'Gene Expression';
+dataGroups{2,2} = {'protein deGFP*','protein gamS','protein LacIdimer', 'protein LacItetramer'};
+dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'}
 
 
 
-subplot(224)
-iNTP = findspecies(well_a1, 'NTP');
-iAA  = findspecies(well_a1, 'AA');
-iRNAP  = findspecies(well_a1, 'RNAP70');
-iRibo  = findspecies(well_a1, 'Ribo');
-mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
-plot(...
-  t_ode/60, x_ode(:, iAA)/x_ode(1, iAA), 'b-', ...
-  t_ode/60, x_ode(:, iNTP)/x_ode(1, iNTP), 'r-', ...
-  t_ode/60, x_ode(:, iRNAP)/x_ode(1, iRNAP), 'b--', ...
-  t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'r--');
+% Resource Plot
+dataGroups{3,1} = 'Resource usage';
 
-title('Resource usage');
-lgh = legend(...
-  {'NTP [mM]', 'AA [mM]', 'RNAP70 [nM]', 'Ribo [nM]'}, ...
-  'Location', 'Northeast');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [normalized]');
-xlabel('Time [min]');
-
-figure(3)
-iDNA_gamS = findspecies(well_a1, 'DNA p70=rbs=gamS');
-iRNA_gamS = findspecies(well_a1, 'RNA rbs=gamS');
-plot(t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
-    t_ode/60, x_ode(:, iRNA_gamS), 'r--');
-
-title('DNA and mRNA');
-lgh = legend(...
-  names([iDNA_gamS, iRNA_gamS]), ...
-  'Location', 'Northwest');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
-xlabel('Time [min]');
-
+txtl_plot(t_ode,x_ode,well_a1,dataGroups)
 
