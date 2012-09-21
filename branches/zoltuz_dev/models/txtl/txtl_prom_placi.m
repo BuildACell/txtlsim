@@ -68,9 +68,9 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 % Add reactions for sequestration of promoter by LacI 
 %
 
-kf_LacI = 0.2; kr_LacI = 1;		% reaction rates (from sbio)
+kf_LacI = 20; kr_LacI = 1;		% reaction rates (from sbio)
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein LacI] <-> [DNA :protein LacItetramer]']);
+  [DNA ' + [protein LacItetramer] <-> [DNA :protein LacItetramer]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
 Pobj4 = addparameter(Kobj4, 'k4', kf_LacI);
 Pobj4r = addparameter(Kobj4, 'k4r', kr_LacI);
