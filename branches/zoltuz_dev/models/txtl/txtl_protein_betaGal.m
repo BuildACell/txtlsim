@@ -48,20 +48,27 @@ function Rlist = txtl_protein_betaGal(tube, protein)
 %Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
 %set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-
-% Mass action type version
-% conversion of Lactose
+% 
+% % Mass action type version
+% % Parameters
+% kf_lacbetaGal = 0.6;
+% kr_lacbetaGal = 1;
+% kf_alloLac = 0.8;
+% kf_allolacbetaGalComplex = 0.45;
+% kr_allolacbetaGalComplex = 1;
+% kf_GluGal = 0.9;
+% % conversion of Lactose - enzyme complex
 % Robj1 = addreaction(tube, [protein.Name ' + Lactose <-> Lactose:' protein.Name]);
 % Kobj1 = addkineticlaw(Robj1, 'MassAction');
 % Pobj1f = addparameter(Kobj1, 'kf', kf_lacbetaGal);
 % Pobj1r = addparameter(Kobj1, 'kr', kr_lacbetaGal);
-% set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+% set(Kobj1, 'ParameterVariableNames', {'kf_LacBetaGal', 'kr_LacBetaGal'});
 % 
-% 
+% % forming product
 % Robj2 = addreaction(tube, ['Lactose:' protein.Name '-> alloLactose + ' protein.Name]);
 % Kobj2 = addkineticlaw(Robj2, 'MassAction');
-% Pobj2f = addparameter(Kobj2, 'kf', kf_allolacbetaGal);
-% set(Kobj2, 'ParameterVariableNames', {'kf'});
+% Pobj2f = addparameter(Kobj2, 'kf', kf_alloLac);
+% set(Kobj2, 'ParameterVariableNames', {'kf_alloLac'});
 % 
 % % conversion of AlloLactose to Glucose and Galactose
 % Robj3 = addreaction(tube, ['alloLactose + ' protein.Name '<-> alloLactose:' protein.Name]);
@@ -72,9 +79,9 @@ function Rlist = txtl_protein_betaGal(tube, protein)
 % 
 % Robj4 = addreaction(tube, ['alloLactose:' protein.Name '-> Glu+Gal+' protein.Name]);
 % Kobj4 = addkineticlaw(Robj4, 'MassAction');
-% Pobj4f = addparameter(Kobj4, 'kf', kf_allolacbetaGalComplex);
-% set(Kobj4, 'ParameterVariableNames', {'kf'});
-% 
+% Pobj4f = addparameter(Kobj4, 'kf', kf_GluGal);
+% set(Kobj4, 'ParameterVariableNames', {'kf_GluGal'});
+
 
 % Parameters
 Vl_lac_alloLac = 0.003; %1/min   \alpha_a 
@@ -89,17 +96,17 @@ Kl_allolac_GluGal =  1.25 %
 % conversion of Lactose
 Rlist = addreaction(tube, 'Lactose -> alloLactose');
 Kobj1 = addkineticlaw(Rlist, 'Henri-Michaelis-Menten');
-Pobj1f = addparameter(Kobj1, 'Vl',Vl_lac_alloLac);
-Pobj1r = addparameter(Kobj1, 'Kl',Kl_lac_alloLac);
-set(Kobj1, 'ParameterVariableNames', {'Vl', 'Kl'});
+Pobj1f = addparameter(Kobj1, 'Vl_alloLac',Vl_lac_alloLac);
+Pobj1r = addparameter(Kobj1, 'Kl_alloLac',Kl_lac_alloLac);
+set(Kobj1, 'ParameterVariableNames', {'Vl_alloLac', 'Kl_alloLac'});
 set(Kobj1,'SpeciesVariableNames', {'Lactose'});
 
 % conversion of AlloLactose to Glucose and Galactose
 Rlist(end+1) = addreaction(tube, 'alloLactose -> Glu+Gal');
 Kobj2 = addkineticlaw(Rlist(end), 'Henri-Michaelis-Menten');
-Pobj2f = addparameter(Kobj2, 'Vl',Vl_allolac_GluGal);
-Pobj2r = addparameter(Kobj2, 'Kl',Kl_allolac_GluGal);
-set(Kobj2, 'ParameterVariableNames', {'Vl', 'Kl'});
+Pobj2f = addparameter(Kobj2, 'Vl_GluGal',Vl_allolac_GluGal);
+Pobj2r = addparameter(Kobj2, 'Kl_GluGal',Kl_allolac_GluGal);
+set(Kobj2, 'ParameterVariableNames', {'Vl_GluGal', 'Kl_GluGal'});
 set(Kobj2,'SpeciesVariableNames', {'alloLactose'});
 
 % sequestration of LacI

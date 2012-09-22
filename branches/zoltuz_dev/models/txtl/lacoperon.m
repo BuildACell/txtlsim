@@ -6,7 +6,7 @@ clear variables
 clc
 close all
 
-%% simulation
+%% set up the tubes and Species
 
 % Set up the standard TXTL tubes
 tube1 = txtl_extract('e1');
@@ -40,7 +40,7 @@ set(Kobj1,'SpeciesVariableNames', {'Lactose_ext'});
 
 get (Robj1, 'ReactionRate')
 
-%% Run a simulation
+%% Run the simulation
 configsetObj = getconfigset(well_a1, 'active');
 simulationTime = 6*60*60;
 set(configsetObj, 'StopTime', simulationTime);
@@ -53,10 +53,11 @@ x_ode = simData.Data;
 names = simData.DataNames;
 
 
-%% plot the result
+%% plot the results
 
 
 % DNA and mRNA plot
+% This should go first to have auto name extraction
 dataGroups{1,1} = 'DNA and mRNA';
 dataGroups{1,2} = {'DNA placi=rbs=betaGal'};
 dataGroups{1,3} = {'r-','b-','r--','b--'};
