@@ -39,23 +39,23 @@
 function Rlist = txtl_protein_LacI(tube, protein)
 
 % Parameters that describe this RBS
-% kf_aTc = 1; kr_aTc = 0.1; 
+ kf_IPTG = 1; kr_IPTG = 0.1; 
 
 % Set up the binding reaction
-%Robj1 = addreaction(tube, [protein.Name ' + aTc <-> aTc:' protein.Name]);
-%Kobj1 = addkineticlaw(Robj1, 'MassAction');
-%Pobj1f = addparameter(Kobj1, 'kf', kf_aTc);
-%Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
-%set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+Robj1 = addreaction(tube, [protein.Name ' + IPTG <-> IPTG:' protein.Name]);
+Kobj1 = addkineticlaw(Robj1, 'MassAction');
+Pobj1f = addparameter(Kobj1, 'kf', kf_IPTG);
+Pobj1r = addparameter(Kobj1, 'kr', kr_IPTG);
+set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-
+Rlist = [Robj1];
 
 %Set up dimerization
 % Hsieh & Brenowitz 1997 JBC
 kf_dimer = 0.0004637; % 1/(molecule*sec)
 kr_dimer = 0.00000001; % 1/sec
 
-Rlist = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
+Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 
 
 
@@ -63,7 +63,7 @@ Rlist = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 % Hsieh & Brenowitz 1997 JBC
 kf_tetramer = 0.000602; % 1/(molecule*sec)
 kr_tetramer = 0.000001; % 1/sec
-Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
+Rlist(end+2) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
 
 
 
