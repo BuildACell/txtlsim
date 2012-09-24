@@ -15,11 +15,21 @@ tube2 = txtl_buffer('e1');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-
+expressed = 'LacI';
 % Define the DNA strands (defines TX-TL species + reactions)
+% check the ptrc2 and lac lengths. In Gardener et al (2000), plasmids are
+% used for tetR and lac. We use linear. Why?
+dna_lac = txtl_dna(tube3, 'ptrc2(50)', 'rbs(20)', 'LacI(647)', 5, 'linear');
 dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
 dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+
+if strcmp( expressed,'LacI')
+    txtl_addspecies(tube2, 'aTc', 50);
+else if strcmp( expressed,'tetR')
+    txtl_addspecies(tube2, 'IPTG', 50);
+    end
+end
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -58,16 +68,18 @@ set(configsetObj, 'SolverType', 'ode23s');
 
 % Top row: protein and RNA levels
 figure(1); clf(); subplot(2,1,1);
+iLacI = findspecies(Mobj, 'protein LacI');
 iTetR = findspecies(Mobj, 'protein tetR');
 iGamS = findspecies(Mobj, 'protein gamS');
 iGFP = findspecies(Mobj, 'protein deGFP');
 iGFPs = findspecies(Mobj, 'protein deGFP*');
-plot(t_ode/60, x_ode(:, iTetR), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
+
+plot(t_ode/60, x_ode(:, iTetR),'k-', t_ode/60, x_ode(:, iLacI), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
   t_ode/60, x_ode(:, iGFP) + x_ode(:, iGFPs), 'g--', ...
   t_ode/60, x_ode(:, iGFPs), 'g-');
 
 title('Gene Expression');
-lgh = legend({'TetR', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
+lgh = legend({'TetR', 'LacI', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
@@ -95,6 +107,7 @@ xlabel('Time [min]');
 
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
+iDNA_LacI = findspecies(Mobj, 'DNA ptrc2=rbs=LacI');
 iDNA_tetR = findspecies(Mobj, 'DNA ptet=rbs=tetR');
 iDNA_gamS = findspecies(Mobj, 'DNA p70=rbs=gamS');
 iRNA_tetR = findspecies(Mobj, 'RNA rbs=tetR');
@@ -106,7 +119,7 @@ plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
 
 title('DNA and mRNA');
 lgh = legend(...
-  names([iDNA_tetR, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
+  names([iDNA_tetR, iDNA_LacI, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
   'Location', 'Northeast');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
