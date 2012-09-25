@@ -1,12 +1,38 @@
-% negautoreg.m - negative autoregulation example
-% R. M. Murray, 8 Sep 2012
+function [Mobj, t_ode, x_ode, names] = gen_switch(varargin)
+
+
+% gen_switch(varargin) - Genetic Toggle Switch example
+% Vipul Singhal, September 2012
+% Modified from negautoreg.m by R. M. Murray, 8 Sep 2012
 %
 % This file contains a simple example of setting up a TXTL simulation
-% for a negatively autoregulated gene.  The constants for this example
-% come from the Simbiology toolbox example page:
+% for a genetic switch.  
 %
-%    http://www.mathworks.com/help/toolbox/simbio/gs/fp58748.html
+%    It can be run just by hitting F5, and uses default inputs in that
+%    case. 
 %
+numvarargs = length(varargin);
+
+%{
+if numvarargs > 6
+    error('myfuns:gen_switch:TooManyInputs', ...
+        'requires at most 6 optional inputs');
+end
+%}
+default1 = 8; %tetR_initialConc
+default2 = 0; %LacI_initialConc
+default3 = 5*60*60; %stopTime in seconds
+default4 = 'IPTG'; % activeInducer
+default5 = 100; %aTc initial conc
+default6 = 100; %IPTG initial conc
+
+
+optargs = {default1, default2, default3, default4, default5, default6};
+optargs(1:numvarargs) = varargin;
+[tetR_initialConc, LacI_initialConc, stopTime, activeInducer, aTc_initialConc, ...
+    IPTG_initialConc] = optargs{:};
+
+
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
@@ -15,21 +41,32 @@ tube2 = txtl_buffer('e1');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-expressed = 'LacI';
 % Define the DNA strands (defines TX-TL species + reactions)
 % check the ptrc2 and lac lengths. In Gardener et al (2000), plasmids are
 % used for tetR and lac. We use linear. Why?
-dna_lac = txtl_dna(tube3, 'ptrc2(50)', 'rbs(20)', 'LacI(647)', 5, 'linear');
+dna_LacI = txtl_dna(tube3, 'ptrc2(50)', 'rbs(20)', 'LacI(647)', 5, 'linear');
 dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
 dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
-if strcmp( expressed,'LacI')
-    txtl_addspecies(tube2, 'aTc', 50);
-else if strcmp( expressed,'tetR')
-    txtl_addspecies(tube2, 'IPTG', 50);
-    end
+if strcmp(activeInducer,'both')
+    txtl_addspecies(tube2, 'aTc', aTc_initialConc);
+    txtl_addspecies(tube2, 'IPTG', IPTG_initialConc);
+    else if strcmp( activeInducer,'aTc')
+        txtl_addspecies(tube2, 'aTc', aTc_initialConc); % express LacI, repress tetR
+        else if strcmp( activeInducer,'IPTG')
+            txtl_addspecies(tube2, 'IPTG', IPTG_initialConc);% express tetR, repress LacI
+            end
+        end
 end
+
+set(tube3.species(3), 'InitialAmount', LacI_initialConc);
+set(tube3.species(21), 'InitialAmount', tetR_initialConc);
+
+
+%disp('flag1') %dubigging code
+%activeInducer
+%pause(10)
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -51,6 +88,8 @@ end
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
+get(tube3.species(3), 'InitialAmount')
+get(tube3.species(3), 'Name')
 
 %
 % Run a simulaton
@@ -62,7 +101,7 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 5*60*60)
+set(configsetObj, 'StopTime', stopTime)
 set(configsetObj, 'SolverType', 'ode23s');
 [t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
@@ -124,6 +163,12 @@ lgh = legend(...
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
+pause(5)
+end
+%Run a parameter sweep with different initial concentrations of the protein
+%species (LacI and tetR), and plot their evolution to show the Bistability
+%of this system. 
+
 
 
 %

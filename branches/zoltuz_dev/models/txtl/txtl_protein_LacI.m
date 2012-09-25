@@ -63,7 +63,7 @@ Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 % Hsieh & Brenowitz 1997 JBC
 kf_tetramer = 0.000602; % 1/(molecule*sec)
 kr_tetramer = 0.000001; % 1/sec
-Rlist(end+2) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
+Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
 
 
 
