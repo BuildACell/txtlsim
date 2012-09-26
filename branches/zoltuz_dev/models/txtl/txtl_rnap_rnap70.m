@@ -42,7 +42,7 @@ kf_ntp = log(2) / 0.001;		% binding rate of 1 ms
 kr_ntp = 1 * kf_ntp;			% Km of 100 for NTP usage
 ktx = log(2)/(rna.UserData/30);		% 30 NTP/second transcription
 
-% Compute the number of amino acids required, in 100 NTP blocks
+% Compute the number of NTPs required, in 100 NTP blocks
 ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
 if (ntpcnt == 0) 
   ntpstr = '';

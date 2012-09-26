@@ -55,7 +55,7 @@ Rlist = [Robj1];
 kf_dimer = 0.0004637; % 1/(molecule*sec)
 kr_dimer = 0.00000001; % 1/sec
 
-Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
+Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]); 
 
 
 
@@ -64,6 +64,7 @@ Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 kf_tetramer = 0.000602; % 1/(molecule*sec)
 kr_tetramer = 0.000001; % 1/sec
 Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
+
 
 
 

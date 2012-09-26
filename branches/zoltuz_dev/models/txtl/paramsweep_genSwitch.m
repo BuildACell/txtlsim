@@ -47,9 +47,9 @@ LacI = [0 4];
 % In 'gen_switch', right up until sbiosimulate, this initial concentration
 % is correct. But something in sbiosimulate divides it by 5. 
 tetR = [0 4];
-activeInducer = {'IPTG', 'aTc'}; % aTc induces LacI, IPTG induces tetR
-aTc_conc = 50;
-IPTG_conc = 50;
+activeInducer = {'both', 'IPTG', 'aTc'}; % aTc induces LacI, IPTG induces tetR
+aTc_conc = 5;
+IPTG_conc = 5;
 timevects_tetR = cell(1,length(LacI)*length(tetR));
 timevects_LacI = cell(1,length(LacI)*length(tetR));
 xvects_tetR = cell(1,length(LacI)*length(tetR));

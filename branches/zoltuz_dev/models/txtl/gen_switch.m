@@ -19,12 +19,12 @@ if numvarargs > 6
         'requires at most 6 optional inputs');
 end
 %}
-default1 = 8; %tetR_initialConc
+default1 = 0; %tetR_initialConc
 default2 = 0; %LacI_initialConc
 default3 = 5*60*60; %stopTime in seconds
-default4 = 'IPTG'; % activeInducer
-default5 = 100; %aTc initial conc
-default6 = 100; %IPTG initial conc
+default4 = 'both'; % activeInducer
+default5 = 5; %aTc initial conc
+default6 = 5; %IPTG initial conc
 
 
 optargs = {default1, default2, default3, default4, default5, default6};
@@ -45,7 +45,7 @@ tube3 = txtl_newtube('circuit');
 % check the ptrc2 and lac lengths. In Gardener et al (2000), plasmids are
 % used for tetR and lac. We use linear. Why?
 dna_LacI = txtl_dna(tube3, 'ptrc2(50)', 'rbs(20)', 'LacI(647)', 5, 'linear');
-dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
+dna_tetR = txtl_dna(tube3, 'ptet2(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
 dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
@@ -60,11 +60,16 @@ if strcmp(activeInducer,'both')
         end
 end
 
-set(tube3.species(3), 'InitialAmount', LacI_initialConc);
-set(tube3.species(21), 'InitialAmount', tetR_initialConc);
+LacIprotein = sbioselect(tube3, 'Name','protein LacI');
+tetRprotein = sbioselect(tube3, 'Name','protein tetR');
+set(LacIprotein, 'InitialAmount', LacI_initialConc);
+set(tetRprotein, 'InitialAmount', tetR_initialConc);
 
 
-%disp('flag1') %dubigging code
+%debug code:
+%disp('flag1')
+%get(LacIprotein, 'InitialAmount')
+%get(tetRprotein, 'InitialAmount')
 %activeInducer
 %pause(10)
 
@@ -88,8 +93,7 @@ set(tube3.species(21), 'InitialAmount', tetR_initialConc);
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
-get(tube3.species(3), 'InitialAmount')
-get(tube3.species(3), 'Name')
+
 
 %
 % Run a simulaton
@@ -147,7 +151,7 @@ xlabel('Time [min]');
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
 iDNA_LacI = findspecies(Mobj, 'DNA ptrc2=rbs=LacI');
-iDNA_tetR = findspecies(Mobj, 'DNA ptet=rbs=tetR');
+iDNA_tetR = findspecies(Mobj, 'DNA ptet2=rbs=tetR');
 iDNA_gamS = findspecies(Mobj, 'DNA p70=rbs=gamS');
 iRNA_tetR = findspecies(Mobj, 'RNA rbs=tetR');
 iRNA_gamS = findspecies(Mobj, 'RNA rbs=gamS');
@@ -163,7 +167,10 @@ lgh = legend(...
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-pause(5)
+clc
+disp(['Inducer = ' activeInducer '; LacI init = ' num2str(LacI_initialConc)...
+    '; tetR init = ' num2str(tetR_initialConc)])
+pause(3)
 end
 %Run a parameter sweep with different initial concentrations of the protein
 %species (LacI and tetR), and plot their evolution to show the Bistability

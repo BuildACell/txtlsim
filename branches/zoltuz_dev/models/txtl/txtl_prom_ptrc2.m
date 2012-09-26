@@ -1,11 +1,13 @@
 % txtl_prom_ptrc2.m - promoter information for ptrc2 promoter
-% VS, 22 Sep 2012
+% RMM, 8 Sep 2012
 %
-% This file contains a description of the ptet promoter.
+% This file contains a description of the ptrc2 promoter.
 % Calling the function txtl_prom_ptrc2() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
+% The binding of the promoter to the tetR repressor is used in the
+% gen_switch example. 
 
-% Written by Vipul Singhal, Sep 2012
+% VS Sep 2012
 % Adapted from Richard Murray's original code. 
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -69,12 +71,12 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 %
 %! TODO: Check if dimerization even occurs for Lac. Right now everything is
 %exactly the same as tetR. -VS, 22 Sep 12
-kf_LacI = 0.2; kr_LacI = 1;		% reaction rates (from sbio)
+kf_tetR = 4; kr_tetR = 0.1;		% 
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein LacIdimer] <-> [DNA LacI:protein LacIdimer]']);
+  [DNA ' + [protein tetR] <-> [DNA LacI:protein tetR]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
-Pobj4 = addparameter(Kobj4, 'k4', kf_LacI);
-Pobj4r = addparameter(Kobj4, 'k4r', kr_LacI);
+Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
+Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);
 set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
 Rlist = [Robj1, Rlist1, Robj4];

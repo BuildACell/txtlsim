@@ -72,7 +72,10 @@ rna = addspecies(tube, rnastr);
 rna.UserData = rbslen + genelen;	% length in NTPs
 
 protstr = ['protein ' gene];
+protein = sbioselect(tube, 'Type', 'species', 'Name', protstr);
+if isempty(protein)
 protein = addspecies(tube, protstr);
+end
 protein.UserData = genelen / 3;		% length in amino acids
 
 % Transcription
