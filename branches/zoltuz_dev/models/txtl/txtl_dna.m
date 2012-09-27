@@ -1,4 +1,4 @@
-function dna = txtl_dna(tube, prepromspec, promspec, rbsspec, genespec, amount, type)
+function dna = txtl_dna(varargin)
 %TXTL_DNA   Set up species and reactions for a DNA segment
 %
 %   dna = TXTL_DNA(tube, promspec, rbsspec, genespec, amount, type)
@@ -48,6 +48,18 @@ function dna = txtl_dna(tube, prepromspec, promspec, rbsspec, genespec, amount, 
 % STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
+numvarargs = length(varargin);
+if numvarargs < 6
+    error('myfuns:txtl_dna:TooFewInputs', ...
+        'requires at least (tube, promspec, rbsspec, genespec, amount, type)');
+end
+[tube, promspec, rbsspec, genespec, amount, type] = varargin{1:6};
+if numvarargs == 7
+    prepromspec = varargin{7};
+else prepromspec = {}
+end
+
+
 
 % Parameters used in this file
 %! TODO: update these parameters to something reasonable
@@ -58,27 +70,44 @@ kRNA_deg = log(2)/10;			% mRNA degradation: 10 sec half life
 % there can be multiple nucleotide sequences before a promoter, and if any
 % of them is a protection secuence, the last one (if there are multiple,
 % there shouldnt be!) will enable a reduction in DNA degradation rate. 
-protectionlength = 0;
-protectDNAflag = false;
+junklength = 0;
+junkDNAflag = false;
+thioDNAflag = false;
+junk = '';
+thio = '';
 if ~isempty(prepromspec)
     preprom = cell(1,length(prepromspec));
     prepromlen =  cell(1,length(prepromspec));
     for i = 1:length(prepromspec)
         [preprom{i}, prepromlen{i}] = txtl_parsespec(prepromspec{i});
-        if preprom{i} == 'protection'
-            protectDNAflag = true;
-            protectionlength = prepromlen{i};
+        if preprom{i} == 'junk'
+            junkDNAflag = true;
+            iJunk = i;
+            junklength = prepromlen{i};
+            junk = 'junk-';
+        end
+        if preprom{i} == 'thio'
+            iThio = i;
+            thioDNAflag = true;
+            thio = 'thio-';
+            %thiolength = prepromlen{i};
         end
     end
 end
 % forward rr for DNA:RecBCD -> RecBCD
-% !TODO: Must read BFS to learn how the number of protection NTPs relate to rr. 
-% For now, use this simple expression. (it ranges from 1 to 0.) 
-if protectDNAflag
-    kDNA_complex_deg = 0.5*(500/(protectionlength+500));	
+% !TODO: Read BFS to learn how the number of protection NTPs relate to rr. 
+% For now, use this simple expression. 
+if junkDNAflag
+    kDNA_complex_deg = log(2)/(1+junklength/100);	
 else
     kDNA_complex_deg = 0.5;
 end
+% currently, we have a simple protection due to thiosulfate. 
+% !TODO: come up with something less arbitrary
+if thioDNAflag
+    kDNA_complex_deg = 0.5*kDNA_complex_deg;
+end
+
 
   
 
@@ -93,9 +122,9 @@ end
 % Store the length of the DNA, transcript or protein in userdata.  Used
 % to calculate out rate constants.
 
-dnastr = ['DNA ' prom '=' rbs '=' gene];
+dnastr = ['DNA ' thio junk prom '=' rbs '=' gene];
 dna = addspecies(tube, dnastr, amount);
-dna.UserData = promlen + rbslen + genelen;
+dna.UserData = junklength + promlen + rbslen + genelen;
 
 rnastr = ['RNA ' rbs '=' gene];
 rna = addspecies(tube, rnastr);
