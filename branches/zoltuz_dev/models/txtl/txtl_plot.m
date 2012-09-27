@@ -67,11 +67,9 @@ for k = 1:numOfGroups
      subplot(223)
     if (~isempty(dataGroups{k,3}))
       [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(dataGroups{k,3});
-      
       for l=1:size(dataX,2)
-            h(l) = line('XData',t_ode/60,'YData',dataX(:,l),'Color',ColorMtx(l,:),'LineStyle',LineStyle{l});
+          line('XData',t_ode/60,'YData',dataX(:,l),'Color',ColorMtx(l,:),'LineStyle',LineStyle{l});
       end
-      set(gca,'Children',[fliplr(h)]) % flip the order of the objects for the correct labeling    
     else
       plotID_dna = plot(t_ode/60,dataX);
     end
@@ -91,15 +89,13 @@ for k = 1:numOfGroups
     dataX = getDataForSpecies(modelObj,x_ode,listOfProteins);
    
  
-    subplot(2,2,1:2);
+   subplot(2,2,1:2);
     
         if (~isempty(dataGroups{k,3}))
-        %gObj = axes();   
-        [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(dataGroups{k,3});
-        for l=1:size(dataX,2)
-            h(l) = line('XData',t_ode/60,'YData',dataX(:,l),'Color',ColorMtx(l,:),'LineStyle',LineStyle{l});
-        end
-        set(gca,'Children',[ fliplr(h)]) % flip the order of the objects for the correct labeling     
+            [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(dataGroups{k,3});
+            for l=1:size(dataX,2)
+              line('XData',t_ode/60,'YData',dataX(:,l),'Color',ColorMtx(l,:),'LineStyle',LineStyle{l});
+            end
         else
         plotID = plot(t_ode/60,dataX);
         end
