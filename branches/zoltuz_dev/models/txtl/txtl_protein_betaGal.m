@@ -117,6 +117,20 @@ Pobj4f = addparameter(Kobj4, 'kf', kf_seqLacI);
 Pobj4r = addparameter(Kobj4, 'kr', kr_seqLacI);
 set(Kobj4, 'ParameterVariableNames', {'kf','kr'});
 
+Vl = 0.006;
+Kl = 1.25;
+% transporting Lactose_ext into the cell
+Rlist(end+1)= addreaction(tube, 'Lactose_ext -> Lactose');
+Kobj1 = addkineticlaw(Rlist(end), 'Henri-Michaelis-Menten');
+Pobj1f = addparameter(Kobj1, 'Vl_Lactose_ext',Vl);
+Pobj1r = addparameter(Kobj1, 'Kl_Lactose_ext',Kl);
+set(Kobj1, 'ParameterVariableNames', {'Vl_Lactose_ext', 'Kl_Lactose_ext'});
+set(Kobj1,'SpeciesVariableNames', {'Lactose_ext'});
+
+% get (Robj1, 'ReactionRate')
+% 
+
+
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
