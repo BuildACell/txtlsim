@@ -44,10 +44,10 @@ tube3 = txtl_newtube('circuit');
 % Define the DNA strands (defines TX-TL species + reactions)
 % check the ptrc2 and lac lengths. In Gardener et al (2000), plasmids are
 % used for tetR and lac. We use linear. Why?
-dna_LacI = txtl_dna(tube3, 'ptrc2(50)', 'rbs(20)', 'LacI(647)', 5, 'linear');
-dna_tetR = txtl_dna(tube3, 'ptet2(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
-dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_LacI = txtl_dna(tube3, {'protection(500)'},'ptrc2(50)', 'rbs(20)', 'LacI(647)', 5, 'linear');
+dna_tetR = txtl_dna(tube3, {'protection(500)'},'ptet2(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
+dna_deGFP = txtl_dna(tube3, {},'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_dna(tube3, {}, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 if strcmp(activeInducer,'both')
     txtl_addspecies(tube2, 'aTc', aTc_initialConc);

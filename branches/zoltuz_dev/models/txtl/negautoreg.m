@@ -17,9 +17,9 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
-dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_tetR = txtl_dna(tube3,{'protection(500)'}, 'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
+dna_deGFP = txtl_dna(tube3, {}, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_dna(tube3, {}, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 %
 % Next we have to set up the reactions that describe how the circuit

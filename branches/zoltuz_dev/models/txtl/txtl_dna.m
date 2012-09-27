@@ -1,4 +1,4 @@
-function dna = txtl_dna(tube, promspec, rbsspec, genespec, amount, type)
+function dna = txtl_dna(tube, prepromspec, promspec, rbsspec, genespec, amount, type)
 %TXTL_DNA   Set up species and reactions for a DNA segment
 %
 %   dna = TXTL_DNA(tube, promspec, rbsspec, genespec, amount, type)
@@ -7,6 +7,8 @@ function dna = txtl_dna(tube, promspec, rbsspec, genespec, amount, type)
 %   TX-TL system.
 %
 %   * tube = Simbiology model object
+%   * prepromspec = Cell array of nucleatide sequences and corresponding
+%   sizes. One example of their use is as a protection from exonucleases. 
 %   * promspec = spec of the form 'prom(nn)' where 'prom' is the 
 %     promoter name and 'len' is the length of the promoter.
 %   * rbsspec = spec of the form 'rbs(nn)' where 'rbs' is the RBS 
@@ -51,8 +53,34 @@ function dna = txtl_dna(tube, promspec, rbsspec, genespec, amount, type)
 %! TODO: update these parameters to something reasonable
 kDNA_recbcd_f = 0.4;	% forward rr for DNA + RecBCD <-> DNA:RecBCD
 kDNA_recbcd_r = 0.1;	% backward rr for DNA + RecBCD <-> DNA:RecBCD
-kDNA_comp_deg = 0.6;	% forward rr for DNA:RecBCD -> RecBCD
 kRNA_deg = log(2)/10;			% mRNA degradation: 10 sec half life
+
+% there can be multiple nucleotide sequences before a promoter, and if any
+% of them is a protection secuence, the last one (if there are multiple,
+% there shouldnt be!) will enable a reduction in DNA degradation rate. 
+protectionlength = 0;
+protectDNAflag = false;
+if ~isempty(prepromspec)
+    preprom = cell(1,length(prepromspec));
+    prepromlen =  cell(1,length(prepromspec));
+    for i = 1:length(prepromspec)
+        [preprom{i}, prepromlen{i}] = txtl_parsespec(prepromspec{i});
+        if preprom{i} == 'protection'
+            protectDNAflag = true;
+            protectionlength = prepromlen{i};
+        end
+    end
+end
+% forward rr for DNA:RecBCD -> RecBCD
+% !TODO: Must read BFS to learn how the number of protection NTPs relate to rr. 
+% For now, use this simple expression. (it ranges from 1 to 0.) 
+if protectDNAflag
+    kDNA_complex_deg = 0.5*(500/(protectionlength+500));	
+else
+    kDNA_complex_deg = 0.5;
+end
+
+  
 
 % Extract out the names and lengths of the promoter, RBS and gene
 [prom, promlen] = txtl_parsespec(promspec);
@@ -95,7 +123,7 @@ end
 %! TODO: eventually, we should allow file-based reactions
 %! TODO: allow protection strands by comparing promoter length to ~35
 if strcmp(type, 'linear')
-   Rlist = txtl_dna_degradation(tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_comp_deg]); 
+   Rlist = txtl_dna_degradation(tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
    % get reaction rates accordingsly, from user data or extraccted from the properties. 
 end
 
