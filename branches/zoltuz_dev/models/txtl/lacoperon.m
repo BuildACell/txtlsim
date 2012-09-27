@@ -28,17 +28,17 @@ txtl_addspecies(well_a1, 'protein LacItetramer', 8);
 % adding external Lactose
 txtl_addspecies(well_a1, 'Lactose_ext', 5);
 
-Vl = 0.006;
-Kl = 1.25;
-% transporting Lactose_ext into the cell
-Robj1= addreaction(well_a1, 'Lactose_ext -> Lactose');
-Kobj1 = addkineticlaw(Robj1, 'Henri-Michaelis-Menten');
-Pobj1f = addparameter(Kobj1, 'Vl',Vl);
-Pobj1r = addparameter(Kobj1, 'Kl',Kl);
-set(Kobj1, 'ParameterVariableNames', {'Vl', 'Kl'});
-set(Kobj1,'SpeciesVariableNames', {'Lactose_ext'});
-
-get (Robj1, 'ReactionRate')
+% Vl = 0.006;
+% Kl = 1.25;
+% % transporting Lactose_ext into the cell
+% Robj1= addreaction(well_a1, 'Lactose_ext -> Lactose');
+% Kobj1 = addkineticlaw(Robj1, 'Henri-Michaelis-Menten');
+% Pobj1f = addparameter(Kobj1, 'Vl_Lactose_ext',Vl);
+% Pobj1r = addparameter(Kobj1, 'Kl_Lactose_ext',Kl);
+% set(Kobj1, 'ParameterVariableNames', {'Vl_Lactose_ext', 'Kl_Lactose_ext'});
+% set(Kobj1,'SpeciesVariableNames', {'Lactose_ext'});
+% 
+% get (Robj1, 'ReactionRate')
 
 %% Run the simulation
 configsetObj = getconfigset(well_a1, 'active');
