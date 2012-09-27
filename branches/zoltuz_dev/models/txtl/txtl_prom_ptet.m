@@ -70,7 +70,7 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']);
+  [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']); %the 'DNA tetR needs to be generalized
 Kobj4 = addkineticlaw(Robj4,'MassAction');
 Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
 Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);
