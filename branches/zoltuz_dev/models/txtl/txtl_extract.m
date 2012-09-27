@@ -38,8 +38,19 @@ tube = txtl_newtube(name);
 % Add in ribosomes and RNAP70
 %! TODO: update these numbers based on measurements
 df = 1000;				% dilution factor of TX-TL mix
-addspecies(tube, 'RNAP70', 25/df);	% 25 nM based on simulac
+addspecies(tube, 'RNAP', 25/df);	% 25 nM based on simulac
+sigma70 = addspecies(tube, 'protein sigma70', 25/df);	% 25 nM based on simulac
 addspecies(tube, 'Ribo', 300/df);	% 300 nM based on simulac
+
+% Add RNAP+Sigma70 <-> RNAP70 reaction
+Kf = 1.7e6;% M^-1s^-1
+Kr = 4.3e-4; % s^-1
+% Set up the reaction
+Robj1 = addreaction(tube, ['RNAP + ' sigma70.Name ' <-> RNAP70']);
+Kobj1 = addkineticlaw(Robj1, 'MassAction');
+Pobj1f = addparameter(Kobj1, 'kf', Kf);
+Pobj1r = addparameter(Kobj1, 'kr', Kr);
+set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
 
 % Add in exonuclease + protection reactions (if [protein gamS] > 0)
 %! TODO: update these numbers based on measurements

@@ -114,7 +114,7 @@ for k = 1:numOfGroups
     
    elseif(strcmp(dataGroups{k,1},'Resource usage'))
        
-    listOfResources = {'NTP','AA','RNAP70','Ribo'};
+    listOfResources = {'NTP','AA','RNAP','Ribo'};
     dataX = getDataForSpecies(modelObj,x_ode,listOfResources);
     
     subplot(224)
@@ -127,7 +127,7 @@ for k = 1:numOfGroups
 
     title('Resource usage');
     lgh = legend(...
-      {'NTP [mM]', 'AA [mM]', 'RNAP70 [nM]', 'Ribo [nM]'}, ...
+      {'NTP [mM]', 'AA [mM]', 'RNAP [nM]', 'Ribo [nM]'}, ...
       'Location', 'Best');
     legend(lgh, 'boxoff');
     ylabel('Species amounts [normalized]');
