@@ -1,7 +1,10 @@
-% txtl_extract.m - function to create a tube of TX-TL extract
-%! TODO: add documentation
+% txtl_protein_sigma28.m - protein information for sigma28 factor
+% Zoltan A Tuza,  Sep 2012
+%
+% This file contains a description of the protein produced by sigma28.
+% Calling the function txtl_protein_sigma28() will set up the reactions for
+% sequestration by the inducer aTc.
 
-% Written by Richard Murray, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -32,37 +35,23 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_extract(name)
-tube = txtl_newtube(name);
+function Rlist = txtl_protein_sigma28(tube, protein)
 
-% Add in ribosomes and RNAP70
-%! TODO: update these numbers based on measurements
-df = 1000;				% dilution factor of TX-TL mix
-addspecies(tube, 'RNAP', 25/df);	% 25 nM based on simulac
-sigma70 = addspecies(tube, 'protein sigma70', 25/df);	% 25 nM based on simulac
-addspecies(tube, 'Ribo', 300/df);	% 300 nM based on simulac
+%sequestration of RNAP by sigma28 factor
+Kf = 1.7e6; % M^-1s^-1
+Kr = 1.2e-3; % s^-1
 
-% Add RNAP+Sigma70 <-> RNAP70 reaction
-Kf = 1.7e6;% M^-1s^-1
-Kr = 4.3e-4; % s^-1
+%RNAP + Sigma70 <-> RNAP70
 % Set up the reaction
-Robj1 = addreaction(tube, ['RNAP + ' sigma70.Name ' <-> RNAP70']);
+Robj1 = addreaction(tube, ['RNAP + ' protein.Name ' <-> RNAP28']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
 Pobj1f = addparameter(Kobj1, 'kf', Kf);
 Pobj1r = addparameter(Kobj1, 'kr', Kr);
 set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
 
-% Add in exonuclease + protection reactions (if [protein gamS] > 0)
-%! TODO: update these numbers based on measurements
-kgamS = 1;				% gamS binding rate
-addspecies(tube, 'RecBCD', 25/df);	% 25 nM to match RNAP
-Robj = addreaction(tube, 'RecBCD + [protein gamS] -> RecBCD:gamS');
-Kobj = addkineticlaw(Robj,'MassAction');
-Pobj = addparameter(Kobj, 'kf', kgamS);
-set(Kobj, 'ParameterVariableNames', {'kf'});
 
-% Add in RNA degradation
-addspecies(tube, 'RNase', 25/df);	% 25 nM to match RNAP
+% Return the list of reactions that we set up
+Rlist = [Robj1];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

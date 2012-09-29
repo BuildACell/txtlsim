@@ -1,7 +1,9 @@
-% txtl_extract.m - function to create a tube of TX-TL extract
-%! TODO: add documentation
+function modelObj = txtl_continue_simulation(simObj,modelObj)
+% This function resets the initialValues to result of the latest run for each
+% species. In that way the simulation will continue instead of starting
+% over again.
 
-% Written by Richard Murray, Sep 2012
+% Written by Zoltan A Tuza, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -32,39 +34,16 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_extract(name)
-tube = txtl_newtube(name);
 
-% Add in ribosomes and RNAP70
-%! TODO: update these numbers based on measurements
-df = 1000;				% dilution factor of TX-TL mix
-addspecies(tube, 'RNAP', 25/df);	% 25 nM based on simulac
-sigma70 = addspecies(tube, 'protein sigma70', 25/df);	% 25 nM based on simulac
-addspecies(tube, 'Ribo', 300/df);	% 300 nM based on simulac
+finaldata = simObj.Data(end,:);
+names = simObj.DataNames;
 
-% Add RNAP+Sigma70 <-> RNAP70 reaction
-Kf = 1.7e6;% M^-1s^-1
-Kr = 4.3e-4; % s^-1
-% Set up the reaction
-Robj1 = addreaction(tube, ['RNAP + ' sigma70.Name ' <-> RNAP70']);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', Kf);
-Pobj1r = addparameter(Kobj1, 'kr', Kr);
-set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
-
-% Add in exonuclease + protection reactions (if [protein gamS] > 0)
-%! TODO: update these numbers based on measurements
-kgamS = 1;				% gamS binding rate
-addspecies(tube, 'RecBCD', 25/df);	% 25 nM to match RNAP
-Robj = addreaction(tube, 'RecBCD + [protein gamS] -> RecBCD:gamS');
-Kobj = addkineticlaw(Robj,'MassAction');
-Pobj = addparameter(Kobj, 'kf', kgamS);
-set(Kobj, 'ParameterVariableNames', {'kf'});
-
-% Add in RNA degradation
-addspecies(tube, 'RNase', 25/df);	% 25 nM to match RNAP
-
-% Automatically use MATLAB mode in Emacs (keep at end of file)
-% Local variables:
-% mode: matlab
-% End:
+% Loop through the states (species) and set their initial Amounts
+numSpecies = length(names);
+for c = 1:numSpecies
+speciesObj = sbioselect(modelObj,'type','species','Name',names{c});
+if (abs(finaldata(c)) < eps) % treats values below eps as zero.
+    finaldata(c) = 0;
+end
+speciesObj.InitialAmount = finaldata(c);
+end

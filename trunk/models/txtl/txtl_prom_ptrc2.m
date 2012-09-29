@@ -1,12 +1,14 @@
-% txtl_prom_ptet.m - promoter information for ptet promoter
+% txtl_prom_ptrc2.m - promoter information for ptrc2 promoter
 % RMM, 8 Sep 2012
 %
-% This file contains a description of the ptet promoter.
-% Calling the function txtl_prom_ptet() will set up the reactions for
+% This file contains a description of the ptrc2 promoter.
+% Calling the function txtl_prom_ptrc2() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
+% The binding of the promoter to the tetR repressor is used in the
+% gen_switch example. 
 
-% Written by Richard Murray, Sep 2012
-%
+% VS Sep 2012
+% Adapted from Richard Murray's original code. 
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
 %
@@ -36,13 +38,13 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_prom_ptet(tube, dna, rna)
+function Rlist = txtl_prom_ptrc2(tube, dna, rna)
 
 % Parameters that describe this promoter
 %! TODO: replace these values with correct values
-kf_ptet = log(2)/0.1;			% 100 ms bind rate
-kr_ptet = 10 * kf_ptet;			% Km of 10 (same as p70, from VN)
-ktx_ptet = log(2)/(rna.UserData/30);	% 30 base/second transcription
+kf_ptrc2 = log(2)/0.1;			% 100 ms bind rate
+kr_ptrc2 = 10 * kf_ptrc2;			% Km of 10 (same as p70, from VN)
+ktx_ptrc2 = log(2)/(rna.UserData/30);	% 30 base/second transcription
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -53,8 +55,8 @@ RNAPbound = ['RNAP70:' dna.Name];
 % Set up binding reaction
 Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_ptet);
-Pobj1r = addparameter(Kobj1, 'kr', kr_ptet);
+Pobj1f = addparameter(Kobj1, 'kf', kf_ptrc2);
+Pobj1r = addparameter(Kobj1, 'kr', kr_ptrc2);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
 %
@@ -67,10 +69,11 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 %
 % Add reactions for sequestration of promoter by TetRdimer 
 %
-
-kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
+%! TODO: Check if dimerization even occurs for Lac. Right now everything is
+%exactly the same as tetR. -VS, 22 Sep 12
+kf_tetR = 4; kr_tetR = 0.1;		% 
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']); %the 'DNA tetR needs to be generalized
+  [DNA ' + [protein tetR] <-> [DNA LacI:protein tetR]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
 Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
 Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);

@@ -1,7 +1,10 @@
-% txtl_extract.m - function to create a tube of TX-TL extract
-%! TODO: add documentation
+% txtl_protein_tetramerization-m - general protein tetramerization
+% Zoltan A. Tuza Sep 2012
+%
+% This file contains a description of the protein produced by tetR.
+% Calling the function txtl_protein_tetR() will set up the reactions for
+% sequestration by the inducer aTc.
 
-% Written by Richard Murray, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -32,39 +35,29 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_extract(name)
-tube = txtl_newtube(name);
+function Robj = txtl_protein_tetramerization(tube,protein,reactionRates)
+% function for protein tetramerization.
+% tube: sbiomodel object, where the reaction occurs
+% protein: SimBiology Species Array
+% reacctionRates: 2x1 or 1x2 vector contains the forward and reverse
+% reaction rates. (For forward reaction only, set the reverse reaction rete to zero!)
+%
+% Return: SimBiology Reaction Array
 
-% Add in ribosomes and RNAP70
-%! TODO: update these numbers based on measurements
-df = 1000;				% dilution factor of TX-TL mix
-addspecies(tube, 'RNAP', 25/df);	% 25 nM based on simulac
-sigma70 = addspecies(tube, 'protein sigma70', 25/df);	% 25 nM based on simulac
-addspecies(tube, 'Ribo', 300/df);	% 300 nM based on simulac
+if reactionRates(2) == 0
+   Robj = addreaction(tube, ['2 ' protein.Name 'dimer ->' protein.Name 'tetramer']);
+   Kobj = addkineticlaw(Robj,'MassAction');
+   Pobj = addparameter(Kobj,  'kf', reactionRates(1));
+   set(Kobj, 'ParameterVariableNames','kf');
+else
+   Robj = addreaction(tube, ['2 ' protein.Name 'dimer <->' protein.Name 'tetramer']); 
+   Kobj = addkineticlaw(Robj,'MassAction');
+   Pobjf = addparameter(Kobj, 'kf', reactionRates(1));
+   Pobjr = addparameter(Kobj, 'kr', reactionRates(2));
+   set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+end
+   
+end
 
-% Add RNAP+Sigma70 <-> RNAP70 reaction
-Kf = 1.7e6;% M^-1s^-1
-Kr = 4.3e-4; % s^-1
-% Set up the reaction
-Robj1 = addreaction(tube, ['RNAP + ' sigma70.Name ' <-> RNAP70']);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', Kf);
-Pobj1r = addparameter(Kobj1, 'kr', Kr);
-set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
 
-% Add in exonuclease + protection reactions (if [protein gamS] > 0)
-%! TODO: update these numbers based on measurements
-kgamS = 1;				% gamS binding rate
-addspecies(tube, 'RecBCD', 25/df);	% 25 nM to match RNAP
-Robj = addreaction(tube, 'RecBCD + [protein gamS] -> RecBCD:gamS');
-Kobj = addkineticlaw(Robj,'MassAction');
-Pobj = addparameter(Kobj, 'kf', kgamS);
-set(Kobj, 'ParameterVariableNames', {'kf'});
 
-% Add in RNA degradation
-addspecies(tube, 'RNase', 25/df);	% 25 nM to match RNAP
-
-% Automatically use MATLAB mode in Emacs (keep at end of file)
-% Local variables:
-% mode: matlab
-% End:

@@ -1,9 +1,12 @@
-% txtl_prom_ptet.m - promoter information for ptet promoter
+% txtl_prom_ptet2.m - promoter information for ptet promoter
 % RMM, 8 Sep 2012
-%
+% 
 % This file contains a description of the ptet promoter.
-% Calling the function txtl_prom_ptet() will set up the reactions for
+% Calling the function txtl_prom_ptet2() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
+% The binding of the promoter to the LacI repressor is used in the
+% gen_switch example. (the original file, txtl_prom_ptet.m is for negative
+% autoregulation, where tetR represses itself. 
 
 % Written by Richard Murray, Sep 2012
 %
@@ -36,7 +39,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_prom_ptet(tube, dna, rna)
+function Rlist = txtl_prom_ptet2(tube, dna, rna)
 
 % Parameters that describe this promoter
 %! TODO: replace these values with correct values
@@ -68,12 +71,12 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 % Add reactions for sequestration of promoter by TetRdimer 
 %
 
-kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
+kf_LacI = 4; kr_LacI = 0.1;		% 
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']); %the 'DNA tetR needs to be generalized
+  [DNA ' + [protein LacI] <-> [DNA tetR:protein LacI]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
-Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
-Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);
+Pobj4 = addparameter(Kobj4, 'k4', kf_LacI);
+Pobj4r = addparameter(Kobj4, 'k4r', kr_LacI);
 set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
 Rlist = [Robj1, Rlist1, Robj4];
