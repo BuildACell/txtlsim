@@ -56,10 +56,8 @@ end
 [tube, promspec, rbsspec, genespec, amount, type] = varargin{1:6};
 if numvarargs == 7
     prepromspec = varargin{7};
-else prepromspec = {}
+else prepromspec = {};
 end
-
-
 
 % Parameters used in this file
 %! TODO: update these parameters to something reasonable

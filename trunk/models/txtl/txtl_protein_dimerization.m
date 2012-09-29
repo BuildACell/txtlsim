@@ -1,6 +1,8 @@
 % txtl_protein_dimerization.m - general protein dimerization
 % Zoltan A. Tuza Sep 2012
 %
+%! TODO: this file should probably be called txtl_dimerize (RMM, 29 Sep)
+%
 % This file contains a description of the protein produced by tetR.
 % Calling the function txtl_protein_tetR() will set up the reactions for
 % sequestration by the inducer aTc.

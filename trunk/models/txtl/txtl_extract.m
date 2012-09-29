@@ -43,8 +43,11 @@ sigma70 = addspecies(tube, 'protein sigma70', 25/df);	% 25 nM based on simulac
 addspecies(tube, 'Ribo', 300/df);	% 300 nM based on simulac
 
 % Add RNAP+Sigma70 <-> RNAP70 reaction
-Kf = 1.7e6;% M^-1s^-1
-Kr = 4.3e-4; % s^-1
+%! TODO: figure out the correct reaction rates; may need to implement
+%    as quasi-steady state??  Original versions generated very stiff equations
+% Kf = 1.7e6;% M^-1s^-1
+% Kr = 4.3e-4; % s^-1
+Kf = 100; Kr = 0.01;
 % Set up the reaction
 Robj1 = addreaction(tube, ['RNAP + ' sigma70.Name ' <-> RNAP70']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');

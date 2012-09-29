@@ -1,5 +1,7 @@
 % txtl_protein_LacI.m - protein information for LacI
 % RMM, 9 Sep 2012
+%! TODO: header information incorrect (RMM didn't write this)
+%! TODO: inconsistent naming - genes should start with lower case (lacI)
 %
 % This file contains a description of the protein produced by tetR.
 % Calling the function txtl_protein_tetR() will set up the reactions for

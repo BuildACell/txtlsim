@@ -50,7 +50,7 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
 Rlist = [Robj1];
 % Set up dimerization 
-%! TODO valid reacation rates are needed!
+%! TODO valid reaction rates are needed!
 kf_dimer = 0.0004637; % 1/(molecule*sec)
 kr_dimer = 0.00000001; % 1/sec
 
@@ -59,15 +59,10 @@ Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 % ! TODO: Check if tetR undergoes tertramerization
 %Set up tetramerization
 % Hsieh & Brenowitz 1997 JBC
+%! TODO: these may be strain/excract dependent
 kf_tetramer = 0.000602; % 1/(molecule*sec)
 kr_tetramer = 0.000001; % 1/sec
 Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
-
-
-
-
-
-
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

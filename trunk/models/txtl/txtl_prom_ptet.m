@@ -68,9 +68,14 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 % Add reactions for sequestration of promoter by TetRdimer 
 %
 
+%! TODO: RMM, 29 Sep 2012
+%! TODO: txtl_protein_tetR defines tetramers, which aren't used
+%! TODO: proper implementation for tetR is via two operator sites (I think)
+
 kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
+%! TODO: the 'DNA tetR needs to be generalized
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']); %the 'DNA tetR needs to be generalized
+  [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']); 
 Kobj4 = addkineticlaw(Robj4,'MassAction');
 Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
 Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);

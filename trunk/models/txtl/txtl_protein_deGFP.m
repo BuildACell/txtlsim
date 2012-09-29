@@ -46,15 +46,18 @@ Robj1 = addreaction(tube, [protein.Name ' -> ' protein.Name '*']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
 Pobj1f = addparameter(Kobj1, 'kf', Kmat);
 set(Kobj1, 'ParameterVariableNames', {'kf'});
+Rlist = [Robj1];
 
-Robj2 = addreaction(tube, [protein.Name '* -> null']);
-Kobj2 = addkineticlaw(Robj2,'MassAction');
-Pobj2 = addparameter(Kobj2,  'kf', 0.001);
-set(Kobj2, 'ParameterVariableNames','kf');
-
+%! TODO: add protein degradation based on ClpXP
+%! Removed degradation since this doesn't occur in TX-TL w/out ClpXP
+% Robj2 = addreaction(tube, [protein.Name '* -> null']);
+% Kobj2 = addkineticlaw(Robj2,'MassAction');
+% Pobj2 = addparameter(Kobj2,  'kf', 0.001);
+% set(Kobj2, 'ParameterVariableNames','kf');
+% Rlist = [Rlist, Robj2];
 
 % Return the list of reactions that we set up
-Rlist = [Robj1, Robj2];
+
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

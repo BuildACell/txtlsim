@@ -17,7 +17,7 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_dna(tube3,'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear', {'thio(0)', 'junk(500)'} );
+dna_tetR = txtl_dna(tube3,'ptet(50)', 'rbs(20)', 'tetR(647)', 5, 'linear');
 dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
@@ -53,7 +53,7 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', 5*60*60)
-set(configsetObj, 'SolverType', 'ode23s');
+% set(configsetObj, 'SolverType', '23s');
 [t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
 % Top row: protein and RNA levels
@@ -82,7 +82,7 @@ mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
 plot(...
   t_ode/60, x_ode(:, iAA)/x_ode(1, iAA), 'b-', ...
   t_ode/60, x_ode(:, iNTP)/x_ode(1, iNTP), 'r-', ...
-  t_ode/60, x_ode(:, iRNAP)/x_ode(1, iRNAP), 'b--', ...
+  t_ode/60, x_ode(:, iRNAP)/max(x_ode(:, iRNAP)), 'b--', ...
   t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'r--');
 
 title('Resource usage');
@@ -95,7 +95,7 @@ xlabel('Time [min]');
 
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
-iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet=rbs=tetR');
+iDNA_tetR = findspecies(Mobj, 'DNA ptet=rbs=tetR');
 iDNA_gamS = findspecies(Mobj, 'DNA p70=rbs=gamS');
 iRNA_tetR = findspecies(Mobj, 'RNA rbs=tetR');
 iRNA_gamS = findspecies(Mobj, 'RNA rbs=gamS');

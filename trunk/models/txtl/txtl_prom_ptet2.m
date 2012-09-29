@@ -1,5 +1,8 @@
 % txtl_prom_ptet2.m - promoter information for ptet promoter
 % RMM, 8 Sep 2012
+%
+%! TODO: Header needs to be updated (RMM didn't write this file; 29 Sep 2012)
+%! TODO: This file is not properly named; promoter is ptet, not ptet2 ??
 % 
 % This file contains a description of the ptet promoter.
 % Calling the function txtl_prom_ptet2() will set up the reactions for
@@ -70,6 +73,9 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 %
 % Add reactions for sequestration of promoter by TetRdimer 
 %
+
+%! TODO: Looks like LacI is used instead of TetR??? (RMM, 29 Sep 2012)
+%! TODO: I don't see the dimer binding; just the monomer??? (RMM, 29 Sep 2012)
 
 kf_LacI = 4; kr_LacI = 0.1;		% 
 Robj4 = addreaction(tube, ...

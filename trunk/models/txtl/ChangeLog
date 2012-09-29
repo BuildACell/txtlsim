@@ -1,3 +1,26 @@
+2012-09-29  Richard Murray  <murray@altura.local>
+
+	* negautoreg.m: got rid of junk DNA in this example; updated
+	plotting to handle new RNAP70 format (starts at zero => normalize by
+	max, not initial)
+
+	* txtl_extract.m: tweaked the RNAP + Sigma70 reaction to prevent
+	generation of very stiff differential equations
+
+	* txtl_protein_deGFP.m: commented out degradation reactions.  These
+	don't occur in TXTL unless ClpXP is present 
+
+	* *.m: added TODOs
+
+	* txtl_dna.m: added missing semicolon that was causing prepromspec
+	to generate extraneous output.
+
+	* negautoreg.m (configsetObj): ode23s is not supported in MATLAB
+	2012a.  Commented out solver type; this example shoudl work with
+	default solver.
+
+	* *.m: Merged changes from Vipul and Zoltan's development branch
+
 2012-09-12  Richard Murray  <murray@altura.local>
 
 	* Pending: added some possible project ideas to Pending list.
