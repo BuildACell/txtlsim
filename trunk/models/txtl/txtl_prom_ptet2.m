@@ -1,5 +1,5 @@
 % txtl_prom_ptet2.m - promoter information for ptet promoter
-% RMM, 8 Sep 2012
+% VS Sep 2012
 %
 %! TODO: Header needs to be updated (RMM didn't write this file; 29 Sep 2012)
 %! TODO: This file is not properly named; promoter is ptet, not ptet2 ??
@@ -11,7 +11,7 @@
 % gen_switch example. (the original file, txtl_prom_ptet.m is for negative
 % autoregulation, where tetR represses itself. 
 
-% Written by Richard Murray, Sep 2012
+% Written by Vipul Singhal, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -76,6 +76,21 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 %! TODO: Looks like LacI is used instead of TetR??? (RMM, 29 Sep 2012)
 %! TODO: I don't see the dimer binding; just the monomer??? (RMM, 29 Sep 2012)
+% VS, 1 Oct 2012: About ptet2: I need to specify the reaction between the promoter ptet and 
+% its repression by LacI. in the original ptet file, tetR represses ptet, 
+% but for the purposes of the genetic switch, we need the LacI dimer to 
+% repress the ptet promoter. 
+
+% So depending on the application (negautoreg or gen_switch), we may want 
+% the promoter to have different interactions with proteins. A possible 
+% solution is that we specify these interactions in a separate file, and not 
+% in the promoter file. 
+
+% I was not aware that dimerization is a requirement for the repression. 
+% In any case, the monomer was temporary, because its concentration was high 
+% enough for the switching due to the repression to be effective. We can replace 
+% this with the dimer, but that will require higher dimerization rates, and 
+% I wanted to discuss how to obtain some of these reaction rates before changing that. 
 
 kf_LacI = 4; kr_LacI = 0.1;		% 
 Robj4 = addreaction(tube, ...

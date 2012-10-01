@@ -55,6 +55,9 @@ for atc = levels
   % Run a simulation
   configsetObj = getconfigset(Mobj, 'active');
   set(configsetObj, 'StopTime', 6*60*60);
+    if ~strcmp(version('-release'),'2012a')
+        set(configsetObj, 'SolverType', 'ode23s');
+    end
   [t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
   % Plot the time trace

@@ -106,7 +106,9 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', stopTime)
-set(configsetObj, 'SolverType', 'ode23s');
+if ~strcmp(version('-release'),'2012a')
+ set(configsetObj, 'SolverType', 'ode23s');
+end
 [t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
 % Top row: protein and RNA levels
