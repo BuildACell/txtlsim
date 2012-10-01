@@ -1,3 +1,8 @@
+2012-10-01 Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* txtl_plot.m: added regular expression handling capability for 
+	Gene Expression and DNA and mRNA plots
+
 2012-09-29  Richard Murray  <murray@altura.local>
 
 	* negautoreg.m: got rid of junk DNA in this example; updated

@@ -3,12 +3,16 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 % t_ode: nx1 time vector, no time scaling is applied inside!
 % x_ode: nxm species vector
 % modelObj: simBiology object of the current model
-% dataGroups: special data structure for the plots
+% dataGroups: special data structure for the plots (regular expressions can added)
 %
 % example of the required data structure
 %  First column is the name of desired plot (available plots are listed
 %  below)
-%  Second column contains name-list of the simulation data, which will be plotted. (RNA and protein names are plotted automatically from DNA sequences)  
+%  Second column contains name-list of the simulation data, which will be plotted. 
+%  (RNA and protein names are plotted automatically from DNA sequences)  
+%  it also handles matlab compatible regular expressions 
+%  (e.g plotting all of the protein in the system: dataGroups{2,2} = {'#(protein \w*)'};)
+%
 %  Third column is optional and it is designated for user defined line coloring
 %
 % Currently 3 types of plots are supported:
@@ -46,23 +50,40 @@ figure(1); clf();
 
 for k = 1:numOfGroups
 
+   %%%%%%%
+   % DNA and mRNA plot
+   %
+   %%%%%%%
    if(strcmp(dataGroups{k,1},'DNA and mRNA'))
 
     %! TODO further refinement of str spliting
-    r = regexp(dataGroups{k,2},'=','split');
-    %! TODO skip already added proteins and mRNAs to avoid duplicates
-    % get each RNAs
-    RNAs = cellfun(@(x) strcat('RNA',{' '},x(2),'=',x(3)),r);
-    % get each proteins
-    proteins = cellfun(@(x) strcat('protein',{' '}, x(3)), r); % adding protein string for each element
-    listOfProteins = horzcat(listOfProteins,proteins);
-    listOfRNAs = horzcat(listOfRNAs,RNAs);
-    
-    % collect the data   
-    listOfDNAs = dataGroups{k,2};
-    listOfDNAsRNAs = horzcat(listOfDNAs,listOfRNAs);
-    dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs);
+    if ~isempty(dataGroups{k,2})
+        regexp_ind = strmatch('#', dataGroups{k,2});
+        if ~isempty(regexp_ind)
+            autoSpecies = extractRegexpAndExecute(regexp_ind,modelObj,dataGroups{k,2});
+            % remove regexp str form dataGroups array
+            dataGroups{k,2}(regexp_ind) = [];
+            listOfDNAs =  horzcat(listOfDNAs,autoSpecies);
+            % delete multiple occurrences
+            listOfDNAs =  unique(listOfDNAs);
+        end
+        listOfDNAs = horzcat(listOfDNAs,dataGroups{k,2});
+        
+        r = regexp(listOfDNAs,'=','split');
+        %! TODO skip already added proteins and mRNAs to avoid duplicates
+        % get each RNAs
+        RNAs = cellfun(@(x) strcat('RNA',{' '},x(2),'=',x(3)),r);
+        % get each proteins
+        proteins = cellfun(@(x) strcat('protein',{' '}, x(3)), r); % adding protein string for each element
+        listOfProteins = horzcat(listOfProteins,proteins);
+        listOfRNAs = horzcat(listOfRNAs,RNAs);
 
+        % collect the data   
+        listOfDNAsRNAs = horzcat(listOfDNAs,listOfRNAs);
+        dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs);
+    else
+        warning('No DNA strings were provided!');
+    end
     % plot the data 
      subplot(223)
     if (~isempty(dataGroups{k,3}))
@@ -81,11 +102,28 @@ for k = 1:numOfGroups
     ylabel('Species amounts [nM]');
     xlabel('Time [min]');
     title(dataGroups{k,1});
-    
+   %%%%%%%%%%
+   % Gene Expression plot
+   %
+   %%%%%%%%%%
    elseif(strcmp(dataGroups{k,1},'Gene Expression'))
       
-   % add extra user defined proteins
-    listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
+    % add extra user defined proteins
+    if ~isempty(dataGroups{k,2}) 
+        regexp_ind = strmatch('#', dataGroups{k,2});
+        if ~isempty(regexp_ind)
+           % if regular expression is present, than it is executed and the result goes to the listOfProteins 
+           auto_species =  extractRegexpAndExecute(regexp_ind,modelObj,dataGroups{k,2});
+           % remove regexp str form dataGroups array
+           dataGroups{k,2}(regexp_ind) = [];
+           
+           listOfProteins =  horzcat(listOfProteins,dataGroups{k,2},auto_species);
+           % delete multiple occurrences
+           listOfProteins =  unique(listOfProteins);
+        else
+           listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
+        end
+    end
     dataX = getDataForSpecies(modelObj,x_ode,listOfProteins);
    
  
@@ -107,7 +145,10 @@ for k = 1:numOfGroups
     xlabel('Time [min]');
     title(dataGroups{k,1});
    
-    
+   %%%%%%%%%%
+   % Resource usage plot
+   %
+   %%%%%%%%%% 
    elseif(strcmp(dataGroups{k,1},'Resource usage'))
        
     listOfResources = {'NTP','AA','RNAP','Ribo'};
@@ -130,14 +171,27 @@ for k = 1:numOfGroups
     xlabel('Time [min]');
 
    else
-       
+       disp('no option were provided!');
    
    end % end of if dataGroups
     
 end % end of for
     
-
 end
+
+function autoSpecies = extractRegexpAndExecute(regexp_ind,modelObj,dataSource)
+autoSpecies = {};
+    for z=1:size(regexp_ind,1)
+        r_str = strrep(dataSource(z),'#','');
+        for l=1:size(modelObj.Species,1)
+          specie_match = regexp(modelObj.Species(l).Name,r_str,'tokens');
+           if(~cellfun(@(x) isempty(x),specie_match))
+           autoSpecies(end+1) = specie_match{1}{1};
+           end
+        end
+    end       
+end
+
 
 function dataX = getDataForSpecies(modelObj,x_ode,listOfSpecies)
 % collect data for the listed species from the simulation result array (x_ode)
@@ -169,4 +223,5 @@ function [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(listOfItems)
          LineStyle{l} = styleOptions{1,l}{1,1}{2}; 
         end
 end
+
 
