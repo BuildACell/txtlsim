@@ -1,0 +1,7 @@
+This is the main directory for the TX-TL cell-free expression toolbox.
+The subdiretories here contain models and code that can be used in
+working with the TX-TL system.
+
+models/	     Subdirectory containing component models
+
+RMM, 2 Sep 2012
