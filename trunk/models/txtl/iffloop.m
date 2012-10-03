@@ -16,7 +16,7 @@ dna_deGFP = txtl_dna(tube3, 'placi(50)', 'rbs(20)', 'deGFP(1000)', 3, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes and add some inducer
-well_a1 = txtl_combine([tube1, tube2, tube3], [22, 18, 2]);
+well_a1 = txtl_combine([tube1, tube2, tube3], [22, 15, 1]);
 
 
 
@@ -29,36 +29,40 @@ set(configsetObj, 'StopTime', simulationTime);
 set(configsetObj, 'SolverType', 'ode23s');
 
 % 1st run
-simData = sbiosimulate(well_a1, configsetObj);
-t_ode = simData.Time;
-x_ode = simData.Data;
-names = simData.DataNames;
+% simData = sbiosimulate(well_a1, configsetObj);
+% t_ode = simData.Time;
+% x_ode = simData.Data;
+% names = simData.DataNames;
+[x_ode,t_ode] = txtl_runsim(well_a1,configsetObj,[],[]);
+
+
 
 % 2nd run
-txtl_continue_simulation(simData,well_a1);
+%txtl_continue_simulation(simData,well_a1);
 
 % add more DNA
 txtl_addspecies(well_a1, 'DNA p70=rbs=LacI', 1);
 txtl_addspecies(well_a1, 'DNA placi=rbs=deGFP', 1);
 
-simData_2 = sbiosimulate(well_a1, configsetObj);
-t_ode_2 = simData_2.Time;
-x_ode_2 = simData_2.Data;
+[x_ode_2,t_ode_2] = txtl_runsim(well_a1,configsetObj,x_ode,t_ode);
+% t_ode_2 = simData_2.Time;
+% x_ode_2 = simData_2.Data;
 
 
 % 3rd run
-txtl_continue_simulation(simData_2,well_a1);
+%txtl_continue_simulation(simData_2,well_a1);
 
 % add more DNA
 txtl_addspecies(well_a1, 'DNA p70=rbs=LacI', 1);
 txtl_addspecies(well_a1, 'DNA placi=rbs=deGFP', 1);
-simData_3 = sbiosimulate(well_a1, configsetObj);
-t_ode_3 = simData_3.Time;
-x_ode_3 = simData_3.Data;
+%simData_3 = sbiosimulate(well_a1, configsetObj);
+%t_ode_3 = simData_3.Time;
+%x_ode_3 = simData_3.Data;
+[x_ode_3,t_ode_3] = txtl_runsim(well_a1,configsetObj,x_ode_2,t_ode_2);
 
 % concatante data
-t_ode = [t_ode; t_ode_2+simulationTime; t_ode_3+simulationTime+simulationTime]; % don't forget to adjust the time
-x_ode = [x_ode; x_ode_2; x_ode_3];
+t_ode = t_ode_3;%[t_ode; t_ode_2+simulationTime; t_ode_3+simulationTime+simulationTime]; % don't forget to adjust the time
+x_ode = x_ode_3;[x_ode; x_ode_2; x_ode_3];
 
 
 

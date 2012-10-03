@@ -1,3 +1,8 @@
+2012-10-02 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* txtl_runsim.m: first version of txtl_runsim, it handles all the simulation 
+	related settings and also can continue a simulation from the end of a previous simulation.
+	(data and time vectors are merged together automatically)
+
 2012-10-01 Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* txtl_plot.m: added regular expression handling capability for 
