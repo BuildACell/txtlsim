@@ -31,7 +31,20 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-function [x_ode,t_ode] = txtl_runsim(modelObj,configsetObj,data,time_vector)
+function [x_ode,t_ode] = txtl_runsim(varargin)
+
+modelObj = varargin{1};
+configsetObj = varargin{2};
+if nargin == 4
+    data = varargin{3};
+    time_vector = varargin{4};
+elseif nargin == 3
+    %in that case the 3rd argument is a SimBiology Simulation Data object
+    data = varargin{3}.Data;
+    time_vector = varargin{3}.Time;
+else
+    error('txtl_runsim should be called either with 3 or 4 arguments!');
+end
 
 if ~isempty(time_vector) && size(time_vector,1) > 1
     prevData = zeros(size(time_vector,1),size(modelObj.Species,1));

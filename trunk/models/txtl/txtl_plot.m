@@ -6,14 +6,23 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 % dataGroups: special data structure for the plots (regular expressions can added)
 %
 % example of the required data structure
-%  First column is the name of desired plot (available plots are listed
-%  below)
-%  Second column contains name-list of the simulation data, which will be plotted. 
-%  (RNA and protein names are plotted automatically from DNA sequences)  
-%  it also handles matlab compatible regular expressions 
-%  (e.g plotting all of the protein in the system: dataGroups{2,2} = {'#(protein \w*)'};)
+%  * First column is the name of desired plot (available plots are listed
+%    below)
 %
-%  Third column is optional and it is designated for user defined line coloring
+%  * Second column contains name-list of the simulation data, which will be plotted. 
+%    (RNA and protein names are exploited and plotted automatically from DNA sequences)  
+%  +-----------------------------------------
+%  |Special strings:
+%  |
+%  | * it handles matlab compatible regular expressions 
+%  |   (e.g. plotting all of the protein in the system: dataGroups{2,2} = {'#(protein \w*)'};)
+%  | * txtl_plot also can calculate the total concentration of selected
+%  | proteins and its variants with sprint "[protein name]_tot", where protein
+%  | is a valid Species name in the modelObj. (e.g. dataGroups{2,2} = {'[protein LacI]_tot'} )
+%  |
+%  +-----------------------------------------
+%
+%  * Third column is optional and it is designated for user defined line coloring
 %
 % Currently 3 types of plots are supported:
 % - DNA and mRNA plot (case sensitive!)
@@ -21,21 +30,21 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 % - Resource usage
 %
 % first the DNA sequences should be provided for automatic name extraction
-% % DNA and mRNA plot
-%dataGroups{1,1} = 'DNA and mRNA';
-%dataGroups{1,2} = {'DNA p70=rbs=LacI','DNA placi=rbs=deGFP'}%,'RNA rbs=LacI','RNA rbs=deGFP'}
-%dataGroups{1,3} = {'b-','r-','b--','r--'}
-
-
-
-% Gene Expression Plot
-%dataGroups{2,1} = 'Gene Expression';
-%dataGroups{2,2} = {'protein deGFP*','protein gamS','protein LacIdimer', 'protein LacItetramer'};
-%dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'}
+% %DNA and mRNA plot
+%  dataGroups{1,1} = 'DNA and mRNA';
+%  dataGroups{1,2} = {'DNA p70=rbs=LacI','DNA placi=rbs=deGFP'}%,'RNA rbs=LacI','RNA rbs=deGFP'}
+%  dataGroups{1,3} = {'b-','r-','b--','r--'}
+%
+%
+%
+% %Gene Expression Plot
+%  dataGroups{2,1} = 'Gene Expression';
+%  dataGroups{2,2} = {'protein deGFP*','protein gamS','protein LacIdimer', 'protein LacItetramer'};
+%  dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'}
 %
 % 
-% Resource Plot
-%dataGroups{3,1} = 'Resource usage';
+% %Resource Plot
+%  dataGroups{3,1} = 'Resource usage';
 %
 
 %%
@@ -107,10 +116,13 @@ for k = 1:numOfGroups
    %
    %%%%%%%%%%
    elseif(strcmp(dataGroups{k,1},'Gene Expression'))
-      
+       
+    % if total amount of selected protein is calculated   
+    totalAmount = {};  
     % add extra user defined proteins
     if ~isempty(dataGroups{k,2}) 
         regexp_ind = strmatch('#', dataGroups{k,2});
+        matchStrings = regexp(dataGroups{k,2},'^\[(protein \w*)\]_tot','tokens')
         if ~isempty(regexp_ind)
            % if regular expression is present, than it is executed and the result goes to the listOfProteins 
            auto_species =  extractRegexpAndExecute(regexp_ind,modelObj,dataGroups{k,2});
@@ -120,11 +132,47 @@ for k = 1:numOfGroups
            listOfProteins =  horzcat(listOfProteins,dataGroups{k,2},auto_species);
            % delete multiple occurrences
            listOfProteins =  unique(listOfProteins);
+           
+        % calculating the total concentration of selected proteins   
+        elseif ~isempty(~cellfun(@(x) isempty(x),matchStrings))
+            for z = 1:size(matchStrings,2)
+              u = 1;  
+              if ~isempty(matchStrings{z})
+                dataGroups{k,2}(z) = [];  
+                totalAmount{u,1} = matchStrings{z}{1}{1};
+                totalAmount{u,2} = [];
+               %! TODO is this the best way to do that? 
+               for l = 1:size(modelObj.Species,1)
+                   regString = [matchStrings{z}{1}{1} '.*'];
+                   matchProtein = regexp(modelObj.Species(l).Name,regString,'match');
+                   if ~isempty(matchProtein)
+                       if isempty(totalAmount{u,2})
+                          totalAmount{u,2} =  x_ode(:,l);
+                       else
+                          totalAmount{u,2} = totalAmount{u,2} + x_ode(:,l);
+                       end
+                   end
+               end
+               u = u +1;
+              end
+            end
+        % no special string in the list, so we add it to the rest.    
         else
            listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
         end
+       
+        
     end
     dataX = getDataForSpecies(modelObj,x_ode,listOfProteins);
+    % adding total protein concentraion into the common data matrix and a
+    % label matrix as well (This could be done before, because the
+    % listOfProteins was used for aquiring Species data by name)
+    if size(totalAmount,1) > 0
+        for k = 1:size(totalAmount,1)
+        listOfProteins(end+1) = {sprintf('[%s]_{tot}',totalAmount{k,1})};     
+        dataX(:,end+1) = totalAmount{k,2};
+        end
+    end 
    
  
    subplot(2,2,1:2);

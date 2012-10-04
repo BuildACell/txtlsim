@@ -1,3 +1,9 @@
+2012-10-04 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* txtl_runsim.m: added SimBiology Simulation Data object handling 
+	capability through varargin.
+	* txtl_plot.m:  calculating and plotting the total concentration of
+	selected proteins.
+
 2012-10-02 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* txtl_runsim.m: first version of txtl_runsim, it handles all the simulation 
 	related settings and also can continue a simulation from the end of a previous simulation.
