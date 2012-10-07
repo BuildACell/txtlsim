@@ -53,7 +53,7 @@ function dna = txtl_adddna(tube, promspec, rbsspec, genespec, amount, type)
 future. 
 numvarargs = length(varargin);
 if numvarargs < 6
-    error('myfuns:txtl_dna:TooFewInputs', ...
+    error('myfuns:txtl_adddna:TooFewInputs', ...
         'requires at least (tube, promspec, rbsspec, genespec, amount, type)');
 end
 [tube, promspec, rbsspec, genespec, amount, type] = varargin{1:6};

@@ -12,9 +12,9 @@ tube2 = txtl_buffer('b1');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-dna_lacI = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 3, 'linear');
-dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 3, 'linear');
-dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_lacI = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 3, 'linear');
+dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 3, 'linear');
+dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes and add some inducer
 well_a1 = txtl_combine([tube1, tube2, tube3], [8, 4, 2]);
@@ -39,7 +39,7 @@ names = simData.DataNames;
 
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'DNA p70=rbs=gamS','DNA p70=rbs=deGFP','DNA p70=rbs=sigma28'}
+dataGroups{1,2} = {'DNA p70--rbs--gamS','DNA p70--rbs--deGFP','DNA p70--rbs--sigma28'}
 dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-'}
 
 

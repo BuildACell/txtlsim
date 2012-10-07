@@ -1,3 +1,23 @@
+2012-10-07  Richard Murray  <murray@altura.local>
+
+	* txtl_dna.m: removed this file, since its functionality is replaced
+	by txtl_adddna()
+
+	* txtl_protection.m, protection.m: moved txtl_protection.m to
+	protection.m.  As a general rule, only functions that are part of
+	the toolbox (rather than examples) should start with txtl_
+
+	* negautoreg.m: changed DNA separator from = to --
+
+	* txtl_prom_placI.m: corrected error in the way that reactions were
+	specified
+
+	* geneexpr.m: changed DNA separator from = to --
+
+	* concurrentSigmaFactors.m: use txtl_adddna() instead of txtl_dna()
+
+	* txtl_plot.m: changed DNA separator from = to --
+
 2012-10-04 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* txtl_runsim.m: added SimBiology Simulation Data object handling 
 	capability through varargin.

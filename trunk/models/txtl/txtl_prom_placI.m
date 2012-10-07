@@ -70,7 +70,8 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 kf_lacI = 20; kr_lacI = 1;		% reaction rates (from sbio)
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein lacItetramer] <-> [' DNA ':protein lacItetramer]']);
+  ['[' dna.Name '] + [protein lacItetramer] <-> ' ...
+   '[' dna.Name ':protein lacItetramer]'])
 Kobj4 = addkineticlaw(Robj4,'MassAction');
 Pobj4 = addparameter(Kobj4, 'k4', kf_lacI);
 Pobj4r = addparameter(Kobj4, 'k4r', kr_lacI);

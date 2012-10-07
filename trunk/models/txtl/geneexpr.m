@@ -14,7 +14,7 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_deGFP = txtl_dna(tube3, ...
+dna_deGFP = txtl_adddna(tube3, ...
   'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
   100, ...					% concentration (nM)
   'plasmid');					% type
@@ -37,7 +37,7 @@ set(configsetObj, 'StopTime', 6*60*60)
 
 % Get the name of the species we want to plot
 iGFP = findspecies(Mobj, 'protein deGFP*');
-iRNA = findspecies(Mobj, 'RNA rbs=deGFP');
+iRNA = findspecies(Mobj, 'RNA rbs--deGFP');
 iNTP = findspecies(Mobj, 'NTP');
 iAA  = findspecies(Mobj, 'AA');
 

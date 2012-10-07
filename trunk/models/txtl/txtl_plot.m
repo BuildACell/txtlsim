@@ -32,7 +32,7 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 % first the DNA sequences should be provided for automatic name extraction
 % %DNA and mRNA plot
 %  dataGroups{1,1} = 'DNA and mRNA';
-%  dataGroups{1,2} = {'DNA p70=rbs=lacI','DNA placi=rbs=deGFP'}%,'RNA rbs=lacI','RNA rbs=deGFP'}
+%  dataGroups{1,2} = {'DNA p70--rbs--lacI','DNA placI--rbs--deGFP'}%,'RNA rbs--lacI','RNA rbs--deGFP'}
 %  dataGroups{1,3} = {'b-','r-','b--','r--'}
 %
 %
@@ -78,10 +78,10 @@ for k = 1:numOfGroups
         end
         listOfDNAs = horzcat(listOfDNAs,dataGroups{k,2});
         
-        r = regexp(listOfDNAs,'=','split');
+        r = regexp(listOfDNAs,'--','split');
         %! TODO skip already added proteins and mRNAs to avoid duplicates
         % get each RNAs
-        RNAs = cellfun(@(x) strcat('RNA',{' '},x(2),'=',x(3)),r);
+        RNAs = cellfun(@(x) strcat('RNA',{' '},x(2),'--',x(3)),r);
         % get each proteins
         proteins = cellfun(@(x) strcat('protein',{' '}, x(3)), r); % adding protein string for each element
         listOfProteins = horzcat(listOfProteins,proteins);
