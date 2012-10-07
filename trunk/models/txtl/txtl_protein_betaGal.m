@@ -90,8 +90,8 @@ Kl_lac_alloLac = 1.25;%
 Vl_allolac_GluGal = 0.001 %1/min
 Kl_allolac_GluGal =  1.25 %
 
- kf_seqLacI = 0.5;
- kr_seqLacI = 0.5;
+ kf_seqlacI = 0.5;
+ kr_seqlacI = 0.5;
 
 % conversion of Lactose
 Rlist = addreaction(tube, 'Lactose -> alloLactose');
@@ -109,12 +109,12 @@ Pobj2r = addparameter(Kobj2, 'Kl_GluGal',Kl_allolac_GluGal);
 set(Kobj2, 'ParameterVariableNames', {'Vl_GluGal', 'Kl_GluGal'});
 set(Kobj2,'SpeciesVariableNames', {'alloLactose'});
 
-% sequestration of LacI
+% sequestration of lacI
 % I'm not sure of that it goes here...
-Rlist(end+1) = addreaction(tube,'alloLactose + protein LacItetramer <-> alloLactose:protien LacItetramer');
+Rlist(end+1) = addreaction(tube,'alloLactose + protein lacItetramer <-> alloLactose:protien lacItetramer');
 Kobj4 = addkineticlaw(Rlist(end), 'MassAction');
-Pobj4f = addparameter(Kobj4, 'kf', kf_seqLacI);
-Pobj4r = addparameter(Kobj4, 'kr', kr_seqLacI);
+Pobj4f = addparameter(Kobj4, 'kf', kf_seqlacI);
+Pobj4r = addparameter(Kobj4, 'kr', kr_seqlacI);
 set(Kobj4, 'ParameterVariableNames', {'kf','kr'});
 
 Vl = 0.006;

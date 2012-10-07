@@ -20,7 +20,7 @@ if numvarargs > 6
 end
 %}
 default1 = 0; %tetR_initialConc
-default2 = 0; %LacI_initialConc
+default2 = 0; %lacI_initialConc
 default3 = 5*60*60; %stopTime in seconds
 default4 = 'both'; % activeInducer
 default5 = 5; %aTc initial conc
@@ -29,7 +29,7 @@ default6 = 5; %IPTG initial conc
 
 optargs = {default1, default2, default3, default4, default5, default6};
 optargs(1:numvarargs) = varargin;
-[tetR_initialConc, LacI_initialConc, stopTime, activeInducer, aTc_initialConc, ...
+[tetR_initialConc, lacI_initialConc, stopTime, activeInducer, aTc_initialConc, ...
     IPTG_initialConc] = optargs{:};
 
 
@@ -44,7 +44,7 @@ tube3 = txtl_newtube('circuit');
 % Define the DNA strands (defines TX-TL species + reactions)
 % check the ptrc2 and lac lengths. In Gardener et al (2000), plasmids are
 % used for tetR and lac. 
-dna_LacI = txtl_adddna(tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lav(40)-terminator(100)', 5, 'linear');
+dna_lacI = txtl_adddna(tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lav(40)-terminator(100)', 5, 'linear');
 dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lav(40)-terminator(100)', 5, 'linear');
 dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_adddna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
@@ -53,22 +53,22 @@ if strcmp(activeInducer,'both')
     txtl_addspecies(tube2, 'aTc', aTc_initialConc);
     txtl_addspecies(tube2, 'IPTG', IPTG_initialConc);
     else if strcmp( activeInducer,'aTc')
-        txtl_addspecies(tube2, 'aTc', aTc_initialConc); % express LacI, repress tetR
+        txtl_addspecies(tube2, 'aTc', aTc_initialConc); % express lacI, repress tetR
         else if strcmp( activeInducer,'IPTG')
-            txtl_addspecies(tube2, 'IPTG', IPTG_initialConc);% express tetR, repress LacI
+            txtl_addspecies(tube2, 'IPTG', IPTG_initialConc);% express tetR, repress lacI
             end
         end
 end
 
-LacIprotein = sbioselect(tube3, 'Name','protein LacI');
+lacIprotein = sbioselect(tube3, 'Name','protein lacI');
 tetRprotein = sbioselect(tube3, 'Name','protein tetR');
-set(LacIprotein, 'InitialAmount', LacI_initialConc);
+set(lacIprotein, 'InitialAmount', lacI_initialConc);
 set(tetRprotein, 'InitialAmount', tetR_initialConc);
 
 
 %debug code:
 %disp('flag1')
-%get(LacIprotein, 'InitialAmount')
+%get(lacIprotein, 'InitialAmount')
 %get(tetRprotein, 'InitialAmount')
 %activeInducer
 %pause(10)
@@ -83,7 +83,7 @@ set(tetRprotein, 'InitialAmount', tetR_initialConc);
 %
 
 % No additional reactions required for this circuit
-% TetR-DNA interactions are automatically included in TetR setup
+% tetR-DNA interactions are automatically included in tetR setup
 
 %
 % Describe the actual experiment that we want to run.  This includes 
@@ -124,7 +124,7 @@ plot(t_ode/60, x_ode(:, iTetR),'k-', t_ode/60, x_ode(:, iLacI), 'b-', t_ode/60, 
   t_ode/60, x_ode(:, iGFPs), 'g-');
 
 title('Gene Expression');
-lgh = legend({'TetR', 'lacI', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
+lgh = legend({'tetR', 'lacI', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
@@ -152,7 +152,7 @@ xlabel('Time [min]');
 
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
-iDNA_LacI = findspecies(Mobj, 'DNA thio-junk-ptrc2--rbs--tetR-lav-terminator');
+iDNA_lacI = findspecies(Mobj, 'DNA thio-junk-ptrc2--rbs--tetR-lav-terminator');
 iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--lacI-lav-terminator');
 iDNA_gamS = findspecies(Mobj, 'DNA p70--rbs--gamS');
 iRNA_tetR = findspecies(Mobj, 'RNA rbs--tetR-lav-terminator');
@@ -164,18 +164,18 @@ plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
 
 title('DNA and mRNA');
 lgh = legend(...
-  names([iDNA_tetR, iDNA_LacI, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
+  names([iDNA_tetR, iDNA_lacI, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
   'Location', 'Northeast');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 clc
-disp(['Inducer = ' activeInducer '; lacI init = ' num2str(LacI_initialConc)...
+disp(['Inducer = ' activeInducer '; lacI init = ' num2str(lacI_initialConc)...
     '; tetR init = ' num2str(tetR_initialConc)])
 pause(3)
 end
 %Run a parameter sweep with different initial concentrations of the protein
-%species (LacI and tetR), and plot their evolution to show the Bistability
+%species (lacI and tetR), and plot their evolution to show the Bistability
 %of this system. 
 
 

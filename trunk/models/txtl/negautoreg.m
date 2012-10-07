@@ -31,7 +31,7 @@ dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 %
 
 % No additional reactions required for this circuit
-% TetR-DNA interactions are automatically included in TetR setup
+% tetR-DNA interactions are automatically included in tetR setup
 
 %
 % Describe the actual experiment that we want to run.  This includes 

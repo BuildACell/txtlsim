@@ -18,7 +18,7 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 %  |   (e.g. plotting all of the protein in the system: dataGroups{2,2} = {'#(protein \w*)'};)
 %  | * txtl_plot also can calculate the total concentration of selected
 %  | proteins and its variants with sprint "[protein name]_tot", where protein
-%  | is a valid Species name in the modelObj. (e.g. dataGroups{2,2} = {'[protein LacI]_tot'} )
+%  | is a valid Species name in the modelObj. (e.g. dataGroups{2,2} = {'[protein lacI]_tot'} )
 %  |
 %  +-----------------------------------------
 %
@@ -32,14 +32,14 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 % first the DNA sequences should be provided for automatic name extraction
 % %DNA and mRNA plot
 %  dataGroups{1,1} = 'DNA and mRNA';
-%  dataGroups{1,2} = {'DNA p70=rbs=LacI','DNA placi=rbs=deGFP'}%,'RNA rbs=LacI','RNA rbs=deGFP'}
+%  dataGroups{1,2} = {'DNA p70=rbs=lacI','DNA placi=rbs=deGFP'}%,'RNA rbs=lacI','RNA rbs=deGFP'}
 %  dataGroups{1,3} = {'b-','r-','b--','r--'}
 %
 %
 %
 % %Gene Expression Plot
 %  dataGroups{2,1} = 'Gene Expression';
-%  dataGroups{2,2} = {'protein deGFP*','protein gamS','protein LacIdimer', 'protein LacItetramer'};
+%  dataGroups{2,2} = {'protein deGFP*','protein gamS','protein lacIdimer', 'protein lacItetramer'};
 %  dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'}
 %
 % 

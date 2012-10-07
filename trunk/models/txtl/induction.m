@@ -30,7 +30,7 @@ dna_deGFP = txtl_dna(tube3, 'ptet(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 %
 
 % No additional reactions required for this circuit
-% TetR-DNA interactions are automatically included in TetR setup
+% tetR-DNA interactions are automatically included in tetR setup
 
 %
 % Describe the actual experiment that we want to run.  This includes 

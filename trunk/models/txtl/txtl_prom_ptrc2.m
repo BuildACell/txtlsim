@@ -67,7 +67,7 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 %
-% Add reactions for sequestration of promoter by TetRdimer 
+% Add reactions for sequestration of promoter by tetRdimer 
 %
 %! TODO: Check if dimerization even occurs for Lac. Right now everything is
 %exactly the same as tetR. -VS, 22 Sep 12

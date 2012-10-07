@@ -12,7 +12,7 @@ tube2 = txtl_buffer('b1');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-dna_LacI = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 3, 'linear');
+dna_lacI = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 3, 'linear');
 dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 3, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 

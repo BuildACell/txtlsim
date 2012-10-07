@@ -7,7 +7,7 @@
 % This file contains a description of the ptet promoter.
 % Calling the function txtl_prom_ptet2() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
-% The binding of the promoter to the LacI repressor is used in the
+% The binding of the promoter to the lacI repressor is used in the
 % gen_switch example. (the original file, txtl_prom_ptet.m is for negative
 % autoregulation, where tetR represses itself. 
 
@@ -71,14 +71,14 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 %
-% Add reactions for sequestration of promoter by TetRdimer 
+% Add reactions for sequestration of promoter by tetRdimer 
 %
 
-%! TODO: Looks like LacI is used instead of TetR??? (RMM, 29 Sep 2012)
+%! TODO: Looks like lacI is used instead of tetR??? (RMM, 29 Sep 2012)
 %! TODO: I don't see the dimer binding; just the monomer??? (RMM, 29 Sep 2012)
 % VS, 1 Oct 2012: About ptet2: I need to specify the reaction between the promoter ptet and 
-% its repression by LacI. in the original ptet file, tetR represses ptet, 
-% but for the purposes of the genetic switch, we need the LacI dimer to 
+% its repression by lacI. in the original ptet file, tetR represses ptet, 
+% but for the purposes of the genetic switch, we need the lacI dimer to 
 % repress the ptet promoter. 
 
 % So depending on the application (negautoreg or gen_switch), we may want 
@@ -92,12 +92,12 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 % this with the dimer, but that will require higher dimerization rates, and 
 % I wanted to discuss how to obtain some of these reaction rates before changing that. 
 
-kf_LacI = 4; kr_LacI = 0.1;		% 
+kf_lacI = 4; kr_lacI = 0.1;		% 
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein LacI] <-> [DNA tetR:protein LacI]']);
+  [DNA ' + [protein lacI] <-> [DNA tetR:protein lacI]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
-Pobj4 = addparameter(Kobj4, 'k4', kf_LacI);
-Pobj4r = addparameter(Kobj4, 'k4r', kr_LacI);
+Pobj4 = addparameter(Kobj4, 'k4', kf_lacI);
+Pobj4r = addparameter(Kobj4, 'k4r', kr_lacI);
 set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
 Rlist = [Robj1, Rlist1, Robj4];

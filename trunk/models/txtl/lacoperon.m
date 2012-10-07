@@ -15,7 +15,7 @@ tube2 = txtl_buffer('b1');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-dna_deGFP = txtl_dna(tube3, 'placi(50)', 'rbs(20)', 'betaGal(1000)', 5, 'linear');
+dna_deGFP = txtl_dna(tube3, 'placI(50)', 'rbs(20)', 'betaGal(1000)', 5, 'linear');
 dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 
@@ -23,8 +23,8 @@ dna_gamS = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 well_a1 = txtl_combine([tube1, tube2, tube3], [20, 8, 2]);
 
 
-% The concentration of LacI is constant
-txtl_addspecies(well_a1, 'protein LacItetramer', 8);
+% The concentration of lacI is constant
+txtl_addspecies(well_a1, 'protein lacItetramer', 8);
 % adding external Lactose
 txtl_addspecies(well_a1, 'Lactose_ext', 5);
 
@@ -59,14 +59,14 @@ names = simData.DataNames;
 % DNA and mRNA plot
 % This should go first to have auto name extraction
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'DNA placi=rbs=betaGal'};
+dataGroups{1,2} = {'DNA placI=rbs=betaGal'};
 dataGroups{1,3} = {'r-','b-','r--','b--'};
 
 
 
 % Gene Expression Plot
 dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'Lactose','alloLactose','protein LacItetramer','Glu+Gal'};
+dataGroups{2,2} = {'Lactose','alloLactose','protein lacItetramer','Glu+Gal'};
 dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'};
 
 

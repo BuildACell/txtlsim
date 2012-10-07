@@ -65,7 +65,7 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 %
-% Add reactions for sequestration of promoter by LacI 
+% Add reactions for sequestration of promoter by lacI 
 %
 
 kf_lacI = 20; kr_lacI = 1;		% reaction rates (from sbio)
