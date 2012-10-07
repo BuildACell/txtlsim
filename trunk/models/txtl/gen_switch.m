@@ -43,11 +43,11 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 % Define the DNA strands (defines TX-TL species + reactions)
 % check the ptrc2 and lac lengths. In Gardener et al (2000), plasmids are
-% used for tetR and lac. We use linear. Why?
-dna_LacI = txtl_dna(tube3,'ptrc2(50)', 'rbs(20)', 'LacI(647)', 5, 'linear', {'junk(500)','thio(0)'});
-dna_tetR = txtl_dna(tube3, 'ptet2(50)', 'rbs(20)', 'tetR(647)', 5, 'linear',{'junk(500)','thio(0)'});
-dna_deGFP = txtl_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_dna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+% used for tetR and lac. 
+dna_LacI = txtl_adddna(tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lav(40)-terminator(100)', 5, 'linear');
+dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lav(40)-terminator(100)', 5, 'linear');
+dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_adddna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 if strcmp(activeInducer,'both')
     txtl_addspecies(tube2, 'aTc', aTc_initialConc);
@@ -113,8 +113,8 @@ end
 
 % Top row: protein and RNA levels
 figure(1); clf(); subplot(2,1,1);
-iLacI = findspecies(Mobj, 'protein LacI');
-iTetR = findspecies(Mobj, 'protein tetR');
+iLacI = findspecies(Mobj, 'protein lacI-lav-terminator')
+iTetR = findspecies(Mobj, 'protein tetR-lav-terminator')
 iGamS = findspecies(Mobj, 'protein gamS');
 iGFP = findspecies(Mobj, 'protein deGFP');
 iGFPs = findspecies(Mobj, 'protein deGFP*');
@@ -124,7 +124,7 @@ plot(t_ode/60, x_ode(:, iTetR),'k-', t_ode/60, x_ode(:, iLacI), 'b-', t_ode/60, 
   t_ode/60, x_ode(:, iGFPs), 'g-');
 
 title('Gene Expression');
-lgh = legend({'TetR', 'LacI', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
+lgh = legend({'TetR', 'lacI', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
@@ -152,11 +152,11 @@ xlabel('Time [min]');
 
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
-iDNA_LacI = findspecies(Mobj, 'DNA thio-junk-ptrc2=rbs=LacI');
-iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet2=rbs=tetR');
-iDNA_gamS = findspecies(Mobj, 'DNA p70=rbs=gamS');
-iRNA_tetR = findspecies(Mobj, 'RNA rbs=tetR');
-iRNA_gamS = findspecies(Mobj, 'RNA rbs=gamS');
+iDNA_LacI = findspecies(Mobj, 'DNA thio-junk-ptrc2--rbs--tetR-lav-terminator');
+iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--lacI-lav-terminator');
+iDNA_gamS = findspecies(Mobj, 'DNA p70--rbs--gamS');
+iRNA_tetR = findspecies(Mobj, 'RNA rbs--tetR-lav-terminator');
+iRNA_gamS = findspecies(Mobj, 'RNA rbs--gamS');
 plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
   t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
   t_ode/60, x_ode(:, iRNA_tetR), 'b--', ...
@@ -170,7 +170,7 @@ legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 clc
-disp(['Inducer = ' activeInducer '; LacI init = ' num2str(LacI_initialConc)...
+disp(['Inducer = ' activeInducer '; lacI init = ' num2str(LacI_initialConc)...
     '; tetR init = ' num2str(tetR_initialConc)])
 pause(3)
 end
