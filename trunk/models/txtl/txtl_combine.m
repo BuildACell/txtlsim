@@ -60,6 +60,10 @@ for m = 1:length(tubelist)
       % Increase the concentration, scaled by volume (normalized at bottom)
       species.InitialAmount = species.InitialAmount + ...
 	species_list(i).InitialAmount * vollist(m);
+      if ~isempty(species.UserData)
+          warning('%s.UserData was not empty!',species.Name)
+      end
+      species.UserData = species_list(i).UserData;
     end
   end
 
