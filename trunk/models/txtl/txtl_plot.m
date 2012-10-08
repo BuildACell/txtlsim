@@ -54,6 +54,7 @@ numOfGroups = size(dataGroups,1);
 listOfProteins = {};
 listOfRNAs = {};
 listOfDNAs = {};
+[~,listOfSpecies] = getstoichmatrix(modelObj);
 
 figure(1); clf(); 
 
@@ -122,7 +123,13 @@ for k = 1:numOfGroups
     % add extra user defined proteins
     if ~isempty(dataGroups{k,2}) 
         regexp_ind = strmatch('#', dataGroups{k,2});
-        matchStrings = regexp(dataGroups{k,2},'^\[(protein \w*)\]_tot','tokens')
+        matchStrings = regexp(dataGroups{k,2},'^\[(protein \w*)\]_tot','tokens','once');
+        % saving the indexies of special strings
+        needlessStr = find(cellfun(@(x) isempty(x),matchStrings) == 0)
+        % combining the result into one cellarray;
+        matchStrings = vertcat(matchStrings{:});
+        
+        %%% checking for special strings
         if ~isempty(regexp_ind)
            % if regular expression is present, than it is executed and the result goes to the listOfProteins 
            auto_species =  extractRegexpAndExecute(regexp_ind,modelObj,dataGroups{k,2});
@@ -133,30 +140,23 @@ for k = 1:numOfGroups
            % delete multiple occurrences
            listOfProteins =  unique(listOfProteins);
            
-        % calculating the total concentration of selected proteins   
-        elseif ~isempty(~cellfun(@(x) isempty(x),matchStrings))
-            for z = 1:size(matchStrings,2)
-              u = 1;  
-              if ~isempty(matchStrings{z})
-                dataGroups{k,2}(z) = [];  
-                totalAmount{u,1} = matchStrings{z}{1}{1};
-                totalAmount{u,2} = [];
-               %! TODO is this the best way to do that? 
-               for l = 1:size(modelObj.Species,1)
-                   regString = [matchStrings{z}{1}{1} '.*'];
-                   matchProtein = regexp(modelObj.Species(l).Name,regString,'match');
-                   if ~isempty(matchProtein)
-                       if isempty(totalAmount{u,2})
-                          totalAmount{u,2} =  x_ode(:,l);
-                       else
-                          totalAmount{u,2} = totalAmount{u,2} + x_ode(:,l);
-                       end
-                   end
-               end
-               u = u +1;
-              end
-            end
-        % no special string in the list, so we add it to the rest.    
+        %%% calculating the total concentration of selected proteins   
+        elseif ~isempty(matchStrings)
+            
+            totalAmount = cell(size(matchStrings,1),2);
+            for z = 1:size(matchStrings,1)                
+              totalAmount{z,1} = matchStrings{z};
+              totalAmount{z,2} = [];
+              regString = [matchStrings{z} '.*'];
+              matchProtein = regexp(listOfSpecies,regString,'match');
+              binVec = cellfun(@(x) isempty(x),matchProtein);
+              indx = find(binVec == 0);
+              totalAmount{z,2} =  sum(x_ode(:,indx),2);
+            end % end for z =
+            % deleting special strings
+            dataGroups{k,2}(needlessStr) = [];
+            
+        %%% no special string in the list, so we add it to the rest.    
         else
            listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
         end
@@ -271,5 +271,3 @@ function [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(listOfItems)
          LineStyle{l} = styleOptions{1,l}{1,1}{2}; 
         end
 end
-
-
