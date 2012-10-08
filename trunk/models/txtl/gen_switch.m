@@ -94,7 +94,7 @@ set(tetRprotein, 'InitialAmount', tetR_initialConc);
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 
-
+txtl_setup_parameters(Mobj);
 %
 % Run a simulaton
 %

@@ -38,10 +38,7 @@
 
 function Rlist = txtl_prom_p70(tube, dna, rna)
 
-% Parameters that describe this promoter
-%! TODO: replace these values with correct values
-kf_p70 = log(2)/0.1;			% 100 ms bind rate
-kr_p70 = 10 * kf_p70;			% Km of 10 nM (from VN model)
+
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -52,12 +49,9 @@ RNAPbound = ['RNAP70:' dna.Name];	% Name of bound complex
 %
 % Set up binding reaction
 %
-
 Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> ' RNAPbound]);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_p70);
-Pobj1r = addparameter(Kobj1, 'kr', kr_p70);
-set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+set(Kobj1, 'ParameterVariableNames', {'TXTL_DNA_RNAP70_F', 'TXTL_DNA_RNAP70_R'});
 
 %
 % Now put in the reactions for the utilization of NTPs

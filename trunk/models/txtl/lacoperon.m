@@ -24,6 +24,7 @@ dna_gamS = txtl_adddna(tube3, ...
 % Mix the contents of the individual tubes and add some inducer
 well_a1 = txtl_combine([tube1, tube2, tube3], [20, 8, 2]);
 
+txtl_setup_parameters(well_a1);
 
 % The concentration of lacI is constant
 txtl_addspecies(well_a1, 'protein lacItetramer', 8);

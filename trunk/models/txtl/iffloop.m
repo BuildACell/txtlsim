@@ -21,17 +21,20 @@ dna_gamS = txtl_adddna(tube3, ...
 % Mix the contents of the individual tubes and add some inducer
 well_a1 = txtl_combine([tube1, tube2, tube3], [22, 15, 1]);
 
+txtl_setup_parameters(well_a1);
+
 %% Run a simulation
 configsetObj = getconfigset(well_a1, 'active');
 simulationTime = 4.5*60*60;
+set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 % set(configsetObj, 'SolverType', 'ode23s');
 
 % 1st run
-% simData = sbiosimulate(well_a1, configsetObj);
-% t_ode = simData.Time;
-% x_ode = simData.Data;
-% names = simData.DataNames;
+simData = sbiosimulate(well_a1, configsetObj);
+t_ode = simData.Time;
+x_ode = simData.Data;
+names = simData.DataNames;
 [x_ode,t_ode] = txtl_runsim(well_a1,configsetObj,[],[]);
 
 
@@ -43,7 +46,7 @@ set(configsetObj, 'StopTime', simulationTime);
 txtl_addspecies(well_a1, 'DNA p70--rbs--lacI', 1);
 txtl_addspecies(well_a1, 'DNA placI--rbs--deGFP', 1);
 
-[x_ode_2,t_ode_2] = txtl_runsim(well_a1,configsetObj,x_ode,t_ode);
+[x_ode_2,t_ode_2] = txtl_runsim(well_a1,configsetObj,simData);
 % t_ode_2 = simData_2.Time;
 % x_ode_2 = simData_2.Data;
 
@@ -67,13 +70,14 @@ x_ode = x_ode_3;[x_ode; x_ode_2; x_ode_3];
 
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'DNA p70--rbs--lacI','DNA placI--rbs--deGFP'}%,'RNA rbs--lacI','RNA rbs--deGFP'}
-dataGroups{1,3} = {'b-','r-','b--','r--'}
+%dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'}
+dataGroups{1,2} = {'DNA p70--rbs--lacI'};
+dataGroups{1,3} = {'b-','r-','b--','r--'};
 
 % Gene Expression Plot
 dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein deGFP*','protein gamS','protein lacIdimer', 'protein lacItetramer'};
-dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'}
+dataGroups{2,2} = {'protein deGFP*','protein gamS','[protein lacI]_tot','[protein gamS]_tot'};
+dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'};
 
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';

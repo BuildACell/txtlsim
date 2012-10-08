@@ -38,8 +38,8 @@
 function Rlist = txtl_protein_sigma28(tube, protein)
 
 %sequestration of RNAP by sigma28 factor
-Kf = 1.7e6; % M^-1s^-1
-Kr = 1.2e-3; % s^-1
+Kf = 100; % nM^-1s^-1
+Kr = 0.1; % s^-1
 
 %RNAP + Sigma70 <-> RNAP70
 % Set up the reaction

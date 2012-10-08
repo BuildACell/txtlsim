@@ -1,3 +1,10 @@
+2012-10-07  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* txtl_combine: bugfix, to carry UserData during mixing
+	* txtl_plot: improved calculation of total concentration
+	* txtl_setupparameters: new config file to handle core parameters
+	at one place. (many other files have been adjusted becouse of that)
+
 2012-10-07  Richard Murray  <murray@altura.local>
 
 	* txtl_dna.m: removed this file, since its functionality is replaced

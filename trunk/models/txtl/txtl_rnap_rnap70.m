@@ -38,9 +38,6 @@
 
 function Rlist = txtl_rnap_rnap70(tube, dna, rna, RNAPbound)
 RNAP = 'RNAP70';			% RNA polymerase name for reactions
-kf_ntp = log(2) / 0.001;		% binding rate of 1 ms
-kr_ntp = 1 * kf_ntp;			% Km of 100 for NTP usage
-ktx = log(2)/(rna.UserData/30);		% 30 NTP/second transcription
 
 % Compute the number of NTPs required, in 100 NTP blocks
 ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
@@ -54,15 +51,16 @@ end
 Robj1 = addreaction(tube, ...
   ['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_ntp);
-Pobj1r = addparameter(Kobj1, 'kr', kr_ntp);
-set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});
 
 Robj2 = addreaction(tube, ...
   ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
 Kobj2 = addkineticlaw(Robj2, 'MassAction');
-Pobj2 = addparameter(Kobj2, 'ktx', ktx);
-set(Kobj2, 'ParameterVariableNames', {'ktx'});
+%generating unique parameter name for the current RNA
+rN = regexprep(rna.Name, {'( )'}, {''});
+uniqueName = sprintf('TXTL_TX_rate_%s',rN);
+set(Kobj2, 'ParameterVariableNames', uniqueName);
+
 
 Rlist = [Robj1, Robj2];
 

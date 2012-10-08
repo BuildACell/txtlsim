@@ -67,7 +67,6 @@ end
 %! TODO: update these parameters to something reasonable
 kDNA_recbcd_f = 0.4;	% forward rr for DNA + RecBCD <-> DNA:RecBCD
 kDNA_recbcd_r = 0.1;	% backward rr for DNA + RecBCD <-> DNA:RecBCD
-kRNA_deg = log(2)/10;			% mRNA degradation: 10 sec half life
 % Extract out the names and lengths of the promoter, RBS and gene as cell
 % arrays
 [promFull, promlen] = txtl_parsespec(promspec);
@@ -209,11 +208,6 @@ else
 end
 
 % Now put in the reactions for the utilization of amino acids
-% Use an enzymatic reaction to proper rate limiting
-kf_aa = log(2) / 0.001;			% binding rate of 1 ms
-kr_aa = 1 * kf_aa;			% Km of 100 for amino acid usage
-% !TODO: check how the adding of degradation tag and termination site affects this.
-ktl_rbs = log(2)/(protein.UserData/10);	% 10 AA/second translation 
 
 
 % Compute the number of amino acids required, in 100 AA blocks
@@ -231,21 +225,21 @@ end
 Robj = addreaction(tube, ...
   ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
 Kobj = addkineticlaw(Robj, 'MassAction');
-Pobjf = addparameter(Kobj, 'kf', kf_aa);
-Pobjr = addparameter(Kobj, 'kr', kr_aa);
-set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+
 
 Robj1 = addreaction(tube, ...
   ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1 = addparameter(Kobj1, 'ktl', ktl_rbs);
-set(Kobj1, 'ParameterVariableNames', {'ktl'});
+%generate unique parameter name for the current protein
+rN = regexprep(protein.Name, {'( )'}, {''});
+uniqueName = sprintf('TXTL_TL_rate_%s',rN);
+set(Kobj1, 'ParameterVariableNames', uniqueName);
 
 % Add in mRNA degradation reactions
 Robj2 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
 Kobj2 = addkineticlaw(Robj2,'MassAction');
-Pobj2 = addparameter(Kobj2, 'kf', kRNA_deg);
-set(Kobj2, 'ParameterVariableNames', {'kf'});
+set(Kobj2, 'ParameterVariableNames', {'TXTL_RNAdeg_F'});
 
 % Protein reactions + degradation (if tagged)
 if exist(['txtl_protein_' justGene]) == 2

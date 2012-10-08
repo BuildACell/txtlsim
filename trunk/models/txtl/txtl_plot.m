@@ -125,7 +125,7 @@ for k = 1:numOfGroups
         regexp_ind = strmatch('#', dataGroups{k,2});
         matchStrings = regexp(dataGroups{k,2},'^\[(protein \w*)\]_tot','tokens','once');
         % saving the indexies of special strings
-        needlessStr = find(cellfun(@(x) isempty(x),matchStrings) == 0)
+        needlessStr = find(cellfun(@(x) isempty(x),matchStrings) == 0);
         % combining the result into one cellarray;
         matchStrings = vertcat(matchStrings{:});
         
