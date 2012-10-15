@@ -250,7 +250,7 @@ end
 %! TODO: add protein degradation capability
 if protDEGflag
   % Run the protein degradation
-  degradationRate = [0.1 0.001 0.5]; % !TODO: Find a reasonable value
+  degradationRate = 0.0001; % !TODO: Find a reasonable value
   Rlist = txtl_protein_degradation(tube, protein,degradationRate);
 end
 % All done!

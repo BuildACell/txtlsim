@@ -17,7 +17,7 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lav(40)-terminator(100)', 5, 'linear');%
+dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
 dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
@@ -64,7 +64,7 @@ end
 
 % Top row: protein and RNA levels
 figure(1); clf(); subplot(2,1,1);
-iTetR = findspecies(Mobj, 'protein tetR-lav-terminator');
+iTetR = findspecies(Mobj, 'protein tetR-lva-terminator');
 iGamS = findspecies(Mobj, 'protein gamS');
 iGFP = findspecies(Mobj, 'protein deGFP');
 iGFPs = findspecies(Mobj, 'protein deGFP*');
@@ -101,9 +101,9 @@ xlabel('Time [min]');
 
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
-iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--tetR-lav-terminator');%
+iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--tetR-lva-terminator');%
 iDNA_gamS = findspecies(Mobj, 'DNA p70--rbs--gamS');
-iRNA_tetR = findspecies(Mobj, 'RNA rbs--tetR-lav-terminator');
+iRNA_tetR = findspecies(Mobj, 'RNA rbs--tetR-lva-terminator');
 iRNA_gamS = findspecies(Mobj, 'RNA rbs--gamS');
 plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
   t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
