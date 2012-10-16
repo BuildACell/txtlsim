@@ -1,3 +1,7 @@
+2012-10-15  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* via SF shell access: svn post-commit script has been added
+
 2012-10-07  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* txtl_combine: bugfix, to carry UserData during mixing
