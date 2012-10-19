@@ -37,8 +37,8 @@ tube = txtl_newtube(name);
 
 % Add in NTPs and amino acids
 %! TODO: need to adjust these when reaction usage is updated properly
-addspecies(tube, 'NTP', 70);		% 100 ntp's/unit
-addspecies(tube, 'AA', 300);		% 100 aa's/unit
+addspecies(tube, 'NTP', 250);		% 100 ntp's/unit
+addspecies(tube, 'AA', 1000);		% 100 aa's/unit
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

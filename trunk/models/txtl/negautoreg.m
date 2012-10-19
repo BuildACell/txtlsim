@@ -40,7 +40,7 @@ dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 %
 
 % Mix the contents of the individual tubes
-Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
+Mobj = txtl_combine([tube1, tube2, tube3], [6, 0.6, 1.5]);
 
 
 txtl_setup_parameters(Mobj);
