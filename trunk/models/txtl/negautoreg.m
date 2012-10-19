@@ -68,16 +68,17 @@ iTetR = findspecies(Mobj, 'protein tetR-lva-terminator');
 iGamS = findspecies(Mobj, 'protein gamS');
 iGFP = findspecies(Mobj, 'protein deGFP');
 iGFPs = findspecies(Mobj, 'protein deGFP*');
-plot(t_ode/60, x_ode(:, iTetR), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
+p = plot(t_ode/60, x_ode(:, iTetR), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
   t_ode/60, x_ode(:, iGFP) + x_ode(:, iGFPs), 'g--', ...
   t_ode/60, x_ode(:, iGFPs), 'g-');
-
-title('Gene Expression');
-lgh = legend({'TetR', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
-legend(lgh, 'boxoff');
+set(p, 'LineWidth',2);
+set(gca, 'FontSize', 14);
+title('Negative Autoregulation Example - Gene Expression');
+lgh = legend({'TetR', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'NortheastOutside');
+%legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-
+axis([0 100 0 10]);
 % Second row, left: resource limits
 subplot(2,2,3);
 iNTP = findspecies(Mobj, 'NTP');
@@ -85,39 +86,41 @@ iAA  = findspecies(Mobj, 'AA');
 iRNAP  = findspecies(Mobj, 'RNAP70');
 iRibo  = findspecies(Mobj, 'Ribo');
 mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
-plot(...
+p = plot(...
   t_ode/60, x_ode(:, iAA)/x_ode(1, iAA), 'b-', ...
   t_ode/60, x_ode(:, iNTP)/x_ode(1, iNTP), 'r-', ...
-  t_ode/60, x_ode(:, iRNAP)/max(x_ode(:, iRNAP)), 'b--', ...
-  t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'r--');
-
+  t_ode/60, x_ode(:, iRNAP)/max(x_ode(:, iRNAP)), 'r--', ...
+  t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'b--');
+set(p, 'LineWidth',2);
+set(gca, 'FontSize', 14);
 title('Resource usage');
 lgh = legend(...
-  {'NTP [mM]', 'AA [mM]', 'RNAP70 [nM]', 'Ribo [nM]'}, ...
+  {'AA [mM]', 'NTP [mM]', 'RNAP70 [nM]', 'Ribo [nM]'}, ...
   'Location', 'Northeast');
-legend(lgh, 'boxoff');
+%legend(lgh, 'boxoff');
 ylabel('Species amounts [normalized]');
 xlabel('Time [min]');
-
+axis([0 100 0 1]);
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
 iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--tetR-lva-terminator');%
 iDNA_gamS = findspecies(Mobj, 'DNA p70--rbs--gamS');
 iRNA_tetR = findspecies(Mobj, 'RNA rbs--tetR-lva-terminator');
 iRNA_gamS = findspecies(Mobj, 'RNA rbs--gamS');
-plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
+p = plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
   t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
   t_ode/60, x_ode(:, iRNA_tetR), 'b--', ...
   t_ode/60, x_ode(:, iRNA_gamS), 'r--');
-
+set(p, 'LineWidth',2);
+set(gca, 'FontSize', 14);
 title('DNA and mRNA');
 lgh = legend(...
   names([iDNA_tetR, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
-  'Location', 'Northeast');
-legend(lgh, 'boxoff');
+  'Location', 'NortheastOutside');
+%legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-
+axis([0 100 0 1]);
 
 %
 % Run a set of experiments to explore the effect of inducers

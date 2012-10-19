@@ -37,8 +37,14 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 function Rlist = txtl_prom_p70(tube, dna, rna)
-
-
+%{
+if action == 'user'
+    a = 1;
+else if action == 'defaults'
+        a = 2;
+    end
+end
+%}
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -56,7 +62,7 @@ set(Kobj1, 'ParameterVariableNames', {'TXTL_DNA_RNAP70_F', 'TXTL_DNA_RNAP70_R'})
 %
 % Now put in the reactions for the utilization of NTPs
 % Use an enzymatic reaction to proper rate limiting
-%
+% 
 
 Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 

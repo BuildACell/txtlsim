@@ -56,7 +56,7 @@ Microbiology, vol. 64, Jun. 1998, pp. 2240–2246.
 %}
 protease = sbioselect(tube, 'Type', 'species', 'Name', 'ClpXP');
 if isempty(protease)
-protease = addspecies(tube, 'ClpXP'); %amount?
+protease = addspecies(tube, 'ClpXP', 1); %amount?
 end
 
 
@@ -75,7 +75,7 @@ else
 end
 
 % Degradation
-   Robj2 = addreaction(tube, ['[' protein.Name ':ClpXP] -> null']);
+   Robj2 = addreaction(tube, ['[' protein.Name ':ClpXP] -> ClpXP']);
    Kobj2 = addkineticlaw(Robj2,'MassAction');
    Pobj = addparameter(Kobj2,  'kf', reactionRate(3));
    set(Kobj2, 'ParameterVariableNames','kf');
