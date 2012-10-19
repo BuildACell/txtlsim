@@ -36,7 +36,27 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_rnap_rnap70(tube, dna, rna, RNAPbound)
+function Rlist = txtl_rnap_rnap70(varargin)
+if nargin < 4
+    error('the number of argument should at least 4, not %d',nargin);
+elseif nargin > 4
+    extraSpecies = varargin{5};
+    % processing the extraSpecies
+    extraStr = extraSpecies{1};
+    for k=2:size(extraSpecies,1)
+        extraStr = [extraStr '+' extraSpecies{k}];
+    end
+    %! TODO come up with a better parameter handling - zoltuz
+    if nargin == 6
+        ktx = varargin{6};
+    end
+end
+
+tube = varargin{1};
+dna = varargin{2};
+rna = varargin{3};
+RNAPbound = varargin{4};    
+   
 RNAP = 'RNAP70';			% RNA polymerase name for reactions
 
 % Compute the number of NTPs required, in 100 NTP blocks
@@ -53,13 +73,26 @@ Robj1 = addreaction(tube, ...
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
 set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});
 
+
+
+if nargin == 4
 Robj2 = addreaction(tube, ...
   ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
+else
+Robj2 = addreaction(tube, ...
+  ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr]);    
+end
 Kobj2 = addkineticlaw(Robj2, 'MassAction');
-%generating unique parameter name for the current RNA
-rN = regexprep(rna.Name, {'( )'}, {''});
-uniqueName = sprintf('TXTL_TX_rate_%s',rN);
-set(Kobj2, 'ParameterVariableNames', uniqueName);
+if nargin == 6 && ~isempty(ktx)
+    addparameter(Kobj2, 'TX_rate', ktx);
+    set(Kobj2, 'ParameterVariableNames', 'TX_rate');
+    
+else
+    %generating unique parameter name for the current RNA
+    rN = regexprep(rna.Name, {'( )'}, {''});
+    uniqueName = sprintf('TXTL_TX_rate_%s',rN);
+    set(Kobj2, 'ParameterVariableNames', uniqueName);
+end
 
 
 Rlist = [Robj1, Robj2];

@@ -1,3 +1,14 @@
+2012-10-18  Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* txtl_combine.m: carrying the name of the tubes using it as 
+	a window name in txtl_plot.
+	* txtl_plot.m: bugfix, handle non existing species in total 
+	concentration. Window name is given by the tubename
+	* concurentSigmaFactors.m: simulating two circuits at once.
+	* txtl_rnap_ranp70.m: modification for combinatorial promoter
+	* txtl_prom_p28.m: added sigma28 promoter
+	* txtl_prom_p28_ptet.m: added combinatorial promoter
+	* combinatorial_promoter.m: added example file for combinatorial
+	promoter.
 2012-10-15  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* via SF shell access: svn post-commit script has been added 

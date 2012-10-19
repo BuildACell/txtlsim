@@ -39,11 +39,11 @@
 function Mobj = txtl_combine(tubelist, vollist)
 
 % Create a model for the mixture
-Mobj = txtl_newtube('mix');
+Mobj = txtl_newtube('mix_of_');
 
 for m = 1:length(tubelist)
   tube = tubelist(m);
-  
+  Mobj.Name = [Mobj.Name tube.Name '_'];
   % Start with species, keeping track of total amount
   species_list = get(tube, 'Species');
   for i = 1:length(species_list)
@@ -74,6 +74,7 @@ for m = 1:length(tubelist)
   copyobjlist(tube.Rules, Mobj);
 end
 
+Mobj.Name = Mobj.Name(1:end-1); % deleting the last '_' character
 % Go through and normalize species concentration
 totalvol = sum(vollist, 'double');
 for i = 1:length(Mobj.Species)

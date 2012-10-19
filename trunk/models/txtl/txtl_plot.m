@@ -1,9 +1,11 @@
 function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
-% initial version for txtl_plot, the RNAs and proteins are automatically exploited from the provided DNA sequence. 
+% initial version for txtl_plot, the RNAs and proteins are automatically 
+% exploited from the provided DNA sequence. 
 % t_ode: nx1 time vector, no time scaling is applied inside!
 % x_ode: nxm species vector
 % modelObj: simBiology object of the current model
-% dataGroups: special data structure for the plots (regular expressions can added)
+% dataGroups: special data structure for the plots 
+% (regular expressions can be added)
 %
 % example of the required data structure
 %  * First column is the name of desired plot (available plots are listed
@@ -22,7 +24,8 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 %  |
 %  +-----------------------------------------
 %
-%  * Third column is optional and it is designated for user defined line coloring
+%  * Third column is optional and it is designated for user defined 
+%    line style and coloring
 %
 % Currently 3 types of plots are supported:
 % - DNA and mRNA plot (case sensitive!)
@@ -32,7 +35,7 @@ function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
 % first the DNA sequences should be provided for automatic name extraction
 % %DNA and mRNA plot
 %  dataGroups{1,1} = 'DNA and mRNA';
-%  dataGroups{1,2} = {'DNA p70--rbs--lacI','DNA placI--rbs--deGFP'}%,'RNA rbs--lacI','RNA rbs--deGFP'}
+%  dataGroups{1,2} = {'DNA p70--rbs--lacI','DNA placI--rbs--deGFP'}
 %  dataGroups{1,3} = {'b-','r-','b--','r--'}
 %
 %
@@ -56,7 +59,7 @@ listOfRNAs = {};
 listOfDNAs = {};
 [~,listOfSpecies] = getstoichmatrix(modelObj);
 
-figure(1); clf(); 
+figure('Name',modelObj.Name); clf(); 
 
 for k = 1:numOfGroups
 
@@ -95,6 +98,8 @@ for k = 1:numOfGroups
         warning('No DNA strings were provided!');
     end
     % plot the data 
+    %! TODO zoltuz 18 Oct
+    %! TODO handling color/line style vector when regular expr is present 
      subplot(223)
     if (~isempty(dataGroups{k,3}))
       [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(dataGroups{k,3});
@@ -143,15 +148,21 @@ for k = 1:numOfGroups
         %%% calculating the total concentration of selected proteins   
         elseif ~isempty(matchStrings)
             
-            totalAmount = cell(size(matchStrings,1),2);
-            for z = 1:size(matchStrings,1)                
-              totalAmount{z,1} = matchStrings{z};
-              totalAmount{z,2} = [];
+            %totalAmount = cell(size(matchStrings,1),2);
+            for z = 1:size(matchStrings,1)
+              p = 1;  
               regString = [matchStrings{z} '.*'];
               matchProtein = regexp(listOfSpecies,regString,'match');
-              binVec = cellfun(@(x) isempty(x),matchProtein);
-              indx = find(binVec == 0);
-              totalAmount{z,2} =  sum(x_ode(:,indx),2);
+              if ~isempty(vertcat(matchProtein{:}))
+                totalAmount{p,1} = matchStrings{z};
+                totalAmount{p,2} = [];
+                binVec = cellfun(@(x) isempty(x),matchProtein);
+                indx = find(binVec == 0);
+                totalAmount{p,2} =  sum(x_ode(:,indx),2);
+                p = p+1;
+              else
+                warning('total concetration: no match was found for: %s',regString);
+              end
             end % end for z =
             % deleting special strings
             dataGroups{k,2}(needlessStr) = [];
