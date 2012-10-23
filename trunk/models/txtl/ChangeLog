@@ -1,3 +1,11 @@
+2012-10-22  Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* txtl_prom_p28.m: modification in the reaction modeling
+	* txtl_prom_p28_ptet.m: modification in the reaction modeling
+	* txtl_protein_tetR.m: tetramerization is taken out
+	* txtl_protein_sigma28.m: reverse reaction is adjusted to RNAP70's reaction rate 
+	* incoherent_ff_loop.m: implementation of incoherent ff_loop based on Zach's circuit
+	* txtl_rnap_rnap28.m: added: TX file for RNAP28 complex
+
 2012-10-18  Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* txtl_combine.m: carrying the name of the tubes using it as 
 	a window name in txtl_plot.

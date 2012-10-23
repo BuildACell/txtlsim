@@ -60,7 +60,7 @@ if geneDefaultUsed ~= 0
 end
 %sequestration of RNAP by sigma28 factor
 Kf = 100; % nM^-1s^-1
-Kr = 0.1; % s^-1
+Kr = 0.01; % s^-1
 
 %RNAP + Sigma70 <-> RNAP70
 % Set up the reaction

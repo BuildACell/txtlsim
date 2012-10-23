@@ -36,7 +36,30 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_prom_p28(tube, dna, rna)
+function [Rlist, promlen] = txtl_prom_p28(tube, dna, rna, promFull, promlen)
+
+% set up promoter default lengths
+promDefaultUsed = 0;
+for i = 1: length(promFull)
+    if isempty(promlen{i})
+        promDefaultUsed = promDefaultUsed+1;
+        promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
+    end
+end
+
+if promDefaultUsed ~= 0
+    for i = 1:length(promDefIdx)
+        switch promFull{promDefIdx(i)}
+            case 'p28'
+                promlen{promDefIdx(i)} = 50;
+            case 'junk'
+                promlen{promDefIdx(i)} = 500; 
+            case 'thio'
+                promlen{promDefIdx(i)} = 0; 
+        end
+    end
+end
+
 
 % Parameters that describe this promoter
 %! TODO: replace these values with correct values
@@ -62,7 +85,7 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 % Use an enzymatic reaction to proper rate limiting
 %
 
-Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
+Rlist1 = txtl_rnap_rnap28(tube, dna, rna, RNAPbound);
 
 % %
 % % Add reactions for sequestration of promoter by TetRdimer 
