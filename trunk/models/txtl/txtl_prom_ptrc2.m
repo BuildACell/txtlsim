@@ -38,8 +38,29 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_prom_ptrc2(tube, dna, rna)
+function [Rlist, promlen] = txtl_prom_ptrc2(tube, dna, rna, promFull, promlen)
 
+% set up promoter default lengths
+promDefaultUsed = 0;
+for i = 1: length(promFull)
+    if isempty(promlen{i})
+        promDefaultUsed = promDefaultUsed+1;
+        promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
+    end
+end
+
+if promDefaultUsed ~= 0
+    for i = 1:length(promDefIdx)
+        switch promFull{promDefIdx(i)}
+            case 'ptrc2'
+                promlen{promDefIdx(i)} = 50;
+            case 'junk'
+                promlen{promDefIdx(i)} = 500; 
+            case 'thio'
+                promlen{promDefIdx(i)} = 0; 
+        end
+    end
+end
 % Parameters that describe this promoter
 %! TODO: replace these values with correct values
 kf_ptrc2 = log(2)/0.1;			% 100 ms bind rate
@@ -67,19 +88,30 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 
 %
-% Add reactions for sequestration of promoter by tetRdimer 
-%
-%! TODO: Check if dimerization even occurs for Lac. Right now everything is
-%exactly the same as tetR. -VS, 22 Sep 12
-kf_lacI = 4; kr_lacI = 0.1;		% 
+% Add reactions for sequestration of promoter by lacIdimer and lacItetramer
+% Ptrc-2 only has 1 operator site: Olac. I think both lacIdimer and lacItetramer
+% should be able to bind to this. -VS, 10/22
+% See supplementary info in the genetic toggle switch paper, gardener and
+% collins, 2000. 
+
+kf1_lacI = 4; kr1_lacI = 0.1;		% 
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein lacIdimer] <-> [' dna.Name ':protein lacIdimer]']); % note: cannot use DNA in the complex, it has extra []
+  [DNA ' + [protein lacIdimer] <-> [' dna.Name ':protein lacIdimer]']); 
 Kobj4 = addkineticlaw(Robj4,'MassAction');
-Pobj4 = addparameter(Kobj4, 'k4', kf_lacI);
-Pobj4r = addparameter(Kobj4, 'k4r', kr_lacI);
+Pobj4 = addparameter(Kobj4, 'k4', kf1_lacI);
+Pobj4r = addparameter(Kobj4, 'k4r', kr1_lacI);
 set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
-Rlist = [Robj1, Rlist1, Robj4];
+kf2_lacI = 4; kr2_lacI = 0.1;		% 
+Robj5 = addreaction(tube, ...
+  [DNA ' + [protein lacItetramer] <-> [' dna.Name ':protein lacItetramer]']); 
+Kobj5 = addkineticlaw(Robj5,'MassAction');
+Pobj5 = addparameter(Kobj5, 'k5', kf2_lacI);
+Pobj5r = addparameter(Kobj5, 'k5r', kr2_lacI);
+set(Kobj5, 'ParameterVariableNames', {'k5', 'k5r'});
+
+
+Rlist = [Robj1, Rlist1, Robj4, Robj5];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

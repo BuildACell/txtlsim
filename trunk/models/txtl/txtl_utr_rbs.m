@@ -36,7 +36,28 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Sobj = txtl_utr_rbs(tube, rna, protein)
+function [Sobj, rbslen] = txtl_utr_rbs(tube, rna, protein, rbsFull, rbslen)
+
+
+% set up promoter default lengths
+rbsDefaultUsed = 0;
+for i = 1: length(rbsFull)
+    if isempty(rbslen{i})
+        rbsDefaultUsed = rbsDefaultUsed+1;
+        rbsDefIdx(rbsDefaultUsed) = i; %idx of segments to set defaults for
+    end
+end
+
+if rbsDefaultUsed ~= 0
+    for i = 1:length(rbsDefIdx)
+        switch rbsFull{rbsDefIdx(i)}
+            case 'rbs'
+                rbslen{rbsDefIdx(i)} = 20;
+            case 'spacer'
+                rbslen{rbsDefIdx(i)} = 200; 
+        end
+    end
+end
 
 % Parameters that describe this RBS
 %! TODO: replace these values with correct values

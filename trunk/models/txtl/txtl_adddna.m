@@ -48,40 +48,135 @@ function dna = txtl_adddna(tube, promspec, rbsspec, genespec, amount, type)
 % STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
-%{
-% leave this here for now, in case variable arguments are needed in the
-future. 
-numvarargs = length(varargin);
-if numvarargs < 6
-    error('myfuns:txtl_adddna:TooFewInputs', ...
-        'requires at least (tube, promspec, rbsspec, genespec, amount, type)');
-end
-[tube, promspec, rbsspec, genespec, amount, type] = varargin{1:6};
-if numvarargs == 7
-    prepromspec = varargin{7};
-else prepromspec = {};
-end
-%}
 
 % Parameters used in this file
-%! TODO: update these parameters to something reasonable
-kDNA_recbcd_f = 0.4;	% forward rr for DNA + RecBCD <-> DNA:RecBCD
-kDNA_recbcd_r = 0.1;	% backward rr for DNA + RecBCD <-> DNA:RecBCD
-% Extract out the names and lengths of the promoter, RBS and gene as cell
-% arrays
+kDNA_recbcd_f = 0.4;% forward rr for DNA + RecBCD <-> DNA:RecBCD
+kDNA_recbcd_r = 0.1;% backward rr for DNA + RecBCD <-> DNA:RecBCD
+% Extract out the names and lengths
 [promFull, promlen] = txtl_parsespec(promspec);
 [rbsFull, rbslen] = txtl_parsespec(rbsspec);
 [geneFull, genelen] = txtl_parsespec(genespec);
 
-[promFull, promlen, rbsFull, rbslen, geneFull, genelen] = txtl_default_lengths(promFull, promlen, rbsFull, rbslen, geneFull, genelen);
+% set up protein reactions and data, followed by utr followed by promoter
+% (promoter reactions require the lengths of the rna, therefore need to be
+% set up after the protein and utr files are called.
 
-% forward rr for DNA:RecBCD -> RecBCD
-% !TODO: Find out how the number of protection NTPs relate to rr. 
+%% Protein properties, parameters and reactions 
+protDEGflag = false; % check for degradation tag and terminator
+protTERMflag = false;
+for i = 1:length(geneFull)
+    if strcmp(geneFull{i}, 'lva')
+        protDEGflag = true;
+    end
+    if strcmp(geneFull{i},'terminator') % does not do anything yet
+        protTERMflag = true;
+    end
+end
+if length(geneFull)>=1 % construct gene string
+    genestr = geneFull{1}; 
+    justGene = geneFull{1}; %assuming the format is gene-lva-...-terminator
+end
+if length(geneFull)>=2
+    for i = 2:length(geneFull)
+        genestr = [genestr '-' geneFull{i}]; %expect: gene-lva-terminator
+    end
+end
+protstr = ['protein ' genestr]; % protstr looks something like 'protein tetR-lva-terminator'
+protein = sbioselect(tube, 'Type', 'species', 'Name', protstr);
+if isempty(protein)
+protein = addspecies(tube, protstr);
+end
+genelen{:}
+if exist(['txtl_protein_' justGene]) == 2
+  % Run the protein specific setup
+  [Rlist, genelen] = eval(['txtl_protein_' justGene '(tube, protein, geneFull, genelen)']);
+end
+genelen{:}
+geneFull{:}
+length(geneFull)
+% protein lengths
+if length(geneFull)>=1
+    genelenTot = genelen{1};
+end
+if length(geneFull)>=2 
+    for i = 2:length(geneFull)
+        genelenTot = genelenTot+ genelen{i};
+    end
+end
+protein.UserData = genelenTot / 3
+genelenTot
+%% Untranslated Region properties, parameters and reactions 
+if length(rbsFull)>=1 % construct rbs string
+    rbsstr = rbsFull{1};
+    justRbs = rbsFull{1};
+end
+if length(rbsFull)>=2
+    for i = 2:length(rbsFull)
+        rbsstr = [rbsstr '-' rbsFull{i}]; %expect: rbs-spacer
+    end
+end
+rnastr = ['RNA ' rbsstr '--' genestr];
+rna = addspecies(tube, rnastr);
+% Translation: setup file should return pointer to RBS bound species
+if exist(['txtl_utr_' justRbs]) == 2
+  % Run the RBS specific setup
+  [Ribobound, rbslen] = eval(['txtl_utr_' justRbs '(tube, rna, protein, rbsFull, rbslen)']);
+else
+  % Issue a warning and run the default RBS
+  warning(['TXTL: can''t find txtl_utr_' justRbs ...
+      '; using default rbs params']);
+  [Ribobound, rbslen] = txtl_utr_rbs(tube, rna, protein, rbsFull, rbslen);
+end
+% utr lengths
+if length(rbsFull)>=1
+    rbslenTot = rbslen{1};
+end
+if length(rbsFull)>=2 
+    for i = 2:length(rbsFull)
+        rbslenTot = rbslenTot+ rbslen{i};
+    end
+end
+
+rna.UserData = rbslenTot + genelenTot
+rna.UserData
+
+%% Promoter properties, parameters and reactions 
+if length(promFull)>=1 
+    promstr = promFull{1};
+    justProm = promFull{end}; % assuming {'thio','junk','prom'}
+end
+if length(promFull)>=2
+    for i = 2:length(promFull)
+        promstr = [promstr '-' promFull{i}]; % expect: 'thio-junk-prom'
+    end
+end
+dnastr = ['DNA ' promstr '--' rbsstr '--' genestr];
+dna = addspecies(tube, dnastr, amount);
+
+% Transcription
+if exist(['txtl_prom_' justProm]) == 2    
+  [Rlist, promlen] = eval(['txtl_prom_' justProm '(tube, dna, rna, promFull, promlen)']);
+else
+  warning(['TXTL: can''t find txtl_prom_' justProm ...
+      '; using default promoter params']);
+  [Rlist, promlen] = txtl_prom_p70(tube, dna, rna, promFull, promlen);
+end
+
+% promoter lengths
+if length(promFull)>=1
+    promlenTot = promlen{1};
+end
+if length(promFull)>=2 
+    for i = 2:length(promFull)
+        promlenTot = promlenTot+ promlen{i};
+    end
+end
+
+%junk and thio dna
 junklength = 0;
 thiolength = 0;
 junkDNAflag = false;
 thioDNAflag = false;
-% The format of the DNA is: DNA thio-junk-ptet--rbs-spacer--gene-lva-terminator 
 for i = 1:length(promFull)
     if strcmp(promFull{i}, 'junk')
         junkDNAflag = true;
@@ -92,129 +187,28 @@ for i = 1:length(promFull)
         thiolength = promlen{i};
     end
 end
-
 if junkDNAflag
     kDNA_complex_deg = log(2)/(1+junklength/100);	
 else
     kDNA_complex_deg = 0.5;
 end
-% currently, we have a simple protection due to thiosulfate. 
-% !TODO: come up with something less arbitrary
 if thioDNAflag
     kDNA_complex_deg = 0.5*kDNA_complex_deg;
-    % thiolength does not do anything for now. 
-end
-%
-% Create the species for the DNA, RNA and protein
-%
-% Store the length of the DNA, transcript or protein in userdata.  Used
-% to calculate out rate constants.
-
-if length(promFull)>=1
-    promstr = promFull{1};
-    promlenTot = promlen{1};
-    justProm = promFull{end}; % assuming thio-junk-...-prom
-end
-if length(promFull)>=2
-    for i = 2:length(promFull)
-        promstr = [promstr '-' promFull{i}]; % expect: thio-junk-prom
-        promlenTot = promlenTot+ promlen{i};
-    end
-    
-end
-if length(rbsFull)>=1
-    rbsstr = rbsFull{1};
-    rbslenTot = rbslen{1};
-    justRbs = rbsFull{1};
-end
-if length(rbsFull)>=2
-    for i = 2:length(rbsFull)
-        rbsstr = [rbsstr '-' rbsFull{i}]; %expect: rbs-spacer
-        rbslenTot = rbslenTot+ rbslen{i};
-    end
 end
 
-protDEGflag = false;
-protTERMflag = false;
-for i = 1:length(geneFull)
-    if strcmp(geneFull{i}, 'lva')
-        protDEGflag = true;
-    end
-    if strcmp(geneFull{i},'terminator')
-        protTERMflag = true;
-    end
-end
-if length(geneFull)>=1
-    genestr = geneFull{1}; 
-    genelenTot = genelen{1};
-    justGene = geneFull{1}; %assuming the format is gene-lva-...-terminator
-end
-if length(geneFull)>=2
-    for i = 2:length(geneFull)
-        genestr = [genestr '-' geneFull{i}]; %expect: gene-lva-terminator
-        genelenTot = genelenTot+ genelen{i};
-    end
-end
-
-dnastr = ['DNA ' promstr '--' rbsstr '--' genestr];
-dna = addspecies(tube, dnastr, amount);
+% total dna length
 dna.UserData = promlenTot + rbslenTot + genelenTot;
 
-rnastr = ['RNA ' rbsstr '--' genestr];
-rna = addspecies(tube, rnastr);
-rna.UserData = rbslenTot + genelenTot;	% length in NTPs
-
-% protstr looks something like 'protein tetR-lva-terminator'
-% !Question: Should we change it to just 'protein tetR'?
-protstr = ['protein ' genestr]; 
-protein = sbioselect(tube, 'Type', 'species', 'Name', protstr);
-if isempty(protein)
-protein = addspecies(tube, protstr);
-end
-protein.UserData = genelenTot / 3;		% length in amino acids
-% should this be total gene length / 3 or some part of it? Depends on what
-% the gene will be made of. apart from degradation tags, what is there?
-
-% Transcription
-if exist(['txtl_prom_' justProm]) == 2 
-    % instead of using the full thio-junk-prom to name the promoter file, we use just the prom part
-    % and pass the dna and rna strings as a arguments. the thio and junk
-    % are available in the name of the dna object. 
-    
-  Rlist = eval(['txtl_prom_' justProm '(tube, dna, rna)']);
-else
-  % Issue a warning and run the default promoter
-  warning(['TXTL: can''t find txtl_prom_' justProm ...
-      '; using default promoter params']);
-  Rlist = txtl_prom_p70(tube, dna, rna);
-end
-
+%% General purpose reactions
 % DNA degradation
 %! TODO: eventually, we should allow file-based reactions
 %! TODO: allow protection strands by comparing promoter length to ~35
 if strcmp(type, 'linear')
    Rlist = txtl_dna_degradation(tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
-   % get reaction rates accordingly, from user data or extracted from the properties. 
 end
 
-% Translation: setup file should return pointer to RBS bound species
-if exist(['txtl_utr_' justRbs]) == 2
-  % Run the RBS specific setup
-  Ribobound = eval(['txtl_utr_' justRbs '(tube, rna, protein)']);
-else
-  % Issue a warning and run the default RBS
-  warning(['TXTL: can''t find txtl_utr_' justRbs ...
-      '; using default rbs params']);
-  Ribobound = txtl_utr_rbs(tube, rna, protein);
-end
 
-% Now put in the reactions for the utilization of amino acids
-
-
-% Compute the number of amino acids required, in 100 AA blocks
-% !TODO: think about some sequential method for doing this. May have to run
-% comparative simulations to see if the increased computation in the
-% sequential case is offset by a more accurate simulation result. 
+% Now put in the reactions for the utilization of amino acids 
 aacnt = floor(protein.UserData/100);	% get number of K amino acids
 if (aacnt == 0) 
   aastr = '';
@@ -227,8 +221,6 @@ Robj = addreaction(tube, ...
   ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
 Kobj = addkineticlaw(Robj, 'MassAction');
 set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
-
-
 Robj1 = addreaction(tube, ...
   ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
@@ -242,15 +234,9 @@ Robj2 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
 Kobj2 = addkineticlaw(Robj2,'MassAction');
 set(Kobj2, 'ParameterVariableNames', {'TXTL_RNAdeg_F'});
 
-% Protein reactions + degradation (if tagged)
-if exist(['txtl_protein_' justGene]) == 2
-  % Run the protein specific setup
-  Rlist = eval(['txtl_protein_' justGene '(tube, protein)']);
-end
-%! TODO: add protein degradation capability
+% Protein degradation (if tagged)
 if protDEGflag
-  % Run the protein degradation
-  degradationRate = [0.001 0.01 0.1]; % !TODO: Find a reasonable value
+  degradationRate = [0.001 0.01 0.1]; 
   Rlist = txtl_protein_degradation(tube, protein,degradationRate);
 end
 % All done!
@@ -282,7 +268,7 @@ function [names, lengths] = txtl_parsespec(spec)
       % return the parsed name and optional length
       names{i} = namesAndLengths{i}{1};
       if length(namesAndLengths{i}) == 1
-          lengths{i} = 0;
+          lengths{i} = [];
       else if length(namesAndLengths{i})>2
               error('txtl_adddna:tooManyElements',...
                   ['the string %s is not of the format name(length). '...

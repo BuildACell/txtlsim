@@ -36,7 +36,29 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_protein_deGFP(tube, protein)
+function [Rlist, genelen] = txtl_protein_deGFP(tube, protein, geneFull, genelen)
+
+% set up gene default lengths
+geneDefaultUsed = 0;
+for i = 1: length(geneFull)
+    if isempty(genelen{i})
+        geneDefaultUsed = geneDefaultUsed+1;
+        geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
+    end
+end
+
+if geneDefaultUsed ~= 0
+    for i = 1:length(geneDefIdx)
+        switch geneFull{geneDefIdx(i)}
+            case 'deGFP'
+                genelen{geneDefIdx(i)} = 1000;
+            case 'lva'
+                genelen{geneDefIdx(i)} = 40; 
+            case 'terminator'
+                genelen{geneDefIdx(i)} = 100; 
+        end
+    end
+end
 
 % Parameters for maturation rate
 Kmat = log(2)/(15*60);			% protein maturation rate = 15 min

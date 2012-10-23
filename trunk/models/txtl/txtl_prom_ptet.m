@@ -36,8 +36,29 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_prom_ptet(tube, dna, rna)
+function [Rlist, promlen] = txtl_prom_ptet(tube, dna, rna, promFull, promlen)
 
+% set up promoter default lengths
+promDefaultUsed = 0;
+for i = 1: length(promFull)
+    if isempty(promlen{i})
+        promDefaultUsed = promDefaultUsed+1;
+        promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
+    end
+end
+
+if promDefaultUsed ~= 0
+    for i = 1:length(promDefIdx)
+        switch promFull{promDefIdx(i)}
+            case 'ptet'
+                promlen{promDefIdx(i)} = 50;
+            case 'junk'
+                promlen{promDefIdx(i)} = 500; 
+            case 'thio'
+                promlen{promDefIdx(i)} = 0; 
+        end
+    end
+end
 % Parameters that describe this promoter
 %! TODO: replace these values with correct values
 kf_ptet = log(2)/0.1;			% 100 ms bind rate
@@ -71,17 +92,28 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 %! TODO: RMM, 29 Sep 2012
 %! TODO: txtl_protein_tetR defines tetramers, which aren't used
 %! TODO: proper implementation for tetR is via two operator sites (I think)
+% VS: yes, there are 2 operators, see for example, 
+% C Berens and W. Hillen, Gene regulation by tetracyclines, Eur. J. Biochem. 270, 3109–3121 (2003)
 
-kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
+kf1_tetR = 0.2; kr1_tetR = 1;		% reaction rates (from sbio)
 %! TODO: the 'DNA tetR needs to be generalized
 Robj4 = addreaction(tube, ...
   [DNA ' + [protein tetRdimer] <-> [' dna.name ':protein tetRdimer]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
-Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
-Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);
+Pobj4 = addparameter(Kobj4, 'k4', kf1_tetR);
+Pobj4r = addparameter(Kobj4, 'k4r', kr1_tetR);
 set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
-Rlist = [Robj1, Rlist1, Robj4];
+kf2_tetR = 0.2; kr2_tetR = 1;		% reaction rates (from sbio)
+%! TODO: the 'DNA tetR needs to be generalized
+Robj5 = addreaction(tube, ...
+  ['[' dna.name ':protein tetRdimer] <-> [' dna.name ':protein tetRdimer:protein tetRdimer]']);
+Kobj5 = addkineticlaw(Robj5,'MassAction');
+Pobj5 = addparameter(Kobj5, 'k5', kf2_tetR);
+Pobj5r = addparameter(Kobj5, 'k5r', kr2_tetR);
+set(Kobj5, 'ParameterVariableNames', {'k5', 'k5r'});
+
+Rlist = [Robj1, Rlist1, Robj4, Robj5];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

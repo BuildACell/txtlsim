@@ -36,7 +36,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_protein_betaGal(tube, protein)
+function [Rlist, genelen] = txtl_protein_betaGal(tube, protein, geneFull, genelen)
 
 % Parameters that describe this RBS
 % kf_aTc = 1; kr_aTc = 0.1; 
@@ -82,6 +82,28 @@ function Rlist = txtl_protein_betaGal(tube, protein)
 % Pobj4f = addparameter(Kobj4, 'kf', kf_GluGal);
 % set(Kobj4, 'ParameterVariableNames', {'kf_GluGal'});
 
+
+% set up gene default lengths
+geneDefaultUsed = 0;
+for i = 1: length(geneFull)
+    if isempty(genelen{i})
+        geneDefaultUsed = geneDefaultUsed+1;
+        geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
+    end
+end
+
+if geneDefaultUsed ~= 0
+    for i = 1:length(geneDefIdx)
+        switch geneFull{geneDefIdx(i)}
+            case 'betaGal'
+                genelen{geneDefIdx(i)} = 1000;
+            case 'lva'
+                genelen{geneDefIdx(i)} = 40; 
+            case 'terminator'
+                genelen{geneDefIdx(i)} = 100; 
+        end
+    end
+end
 
 % Parameters
 Vl_lac_alloLac = 0.003; %1/min   \alpha_a 

@@ -44,11 +44,11 @@ end
 
 promDefaultUsed = 0;
 rbsDefaultUsed = 0;
-geneDefaultUsed = 0;
+
 
 % set up promoter default lengths
 for i = 1: length(promFull)
-    if promlen{i} == 0
+    if promlen{i} == []
         promDefaultUsed = promDefaultUsed+1;
         promDefIdx(promDefaultUsed) = i;
     end
@@ -90,7 +90,9 @@ if rbsDefaultUsed ~= 0
     end
 end
 
+
 % gene default lengths
+geneDefaultUsed = 0;
 geneDefIdx = 0;
 for i = 1: length(geneFull)
     if genelen{i} == 0

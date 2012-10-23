@@ -36,15 +36,29 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_prom_p70(tube, dna, rna)
-%{
-if action == 'user'
-    a = 1;
-else if action == 'defaults'
-        a = 2;
+function [Rlist, promlen] = txtl_prom_p70(tube, dna, rna, promFull, promlen)
+
+% set up promoter default lengths
+promDefaultUsed = 0;
+for i = 1: length(promFull)
+    if isempty(promlen{i})
+        promDefaultUsed = promDefaultUsed+1;
+        promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
     end
 end
-%}
+
+if promDefaultUsed ~= 0
+    for i = 1:length(promDefIdx)
+        switch promFull{promDefIdx(i)}
+            case 'p70'
+                promlen{promDefIdx(i)} = 50;
+            case 'junk'
+                promlen{promDefIdx(i)} = 500; 
+            case 'thio'
+                promlen{promDefIdx(i)} = 0; 
+        end
+    end
+end
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
