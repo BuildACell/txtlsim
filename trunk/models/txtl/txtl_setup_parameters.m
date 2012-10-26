@@ -28,6 +28,9 @@ kr_ntp = 1 * kf_ntp;			% Km of 100 for NTP usage
 addparameter(modelObj, 'TXTL_NTP_RNAP_F', kf_ntp);
 addparameter(modelObj, 'TXTL_NTP_RNAP_R', kr_ntp);
 
+
+
+
 % Add RNAP+Sigma70 <-> RNAP70 reaction
 Kf = 100; Kr = 0.01;
 addparameter(modelObj, 'TXTL_RNAP_S70_F', Kf);
@@ -41,10 +44,17 @@ matchStr = regexp(listOfSpecies,'(^RNA .*)','tokens','once');
 listOfRNAs = vertcat(matchStr{:});
 speciesIndex = findspecies(modelObj,listOfRNAs');
 for k = 1:size(speciesIndex,2)
+    % TX parameters
     ktx = log(2)/(modelObj.Species(speciesIndex(k)).UserData/30);		% 30 NTP/second transcription
     rN = regexprep(modelObj.Species(speciesIndex(k)).Name, {'( )'}, {''});
     uniqueName = sprintf('TXTL_TX_rate_%s',rN);
     addparameter(modelObj, uniqueName, ktx);
+    % dummy reaction for NTP consumption 
+    ntpcnt = floor(modelObj.Species(speciesIndex(k)).UserData/100);	% get number of NTP blocks
+    ntp_consump_rate = (ntpcnt-1)*ktx;
+    uniqueName = sprintf('TXTL_TX_rate_%s_NTP_consumption',rN);
+    addparameter(modelObj, uniqueName, ntp_consump_rate);
+    
 end
 
 %TL
@@ -59,6 +69,13 @@ for k = 1:size(speciesIndex,2)
         rN = regexprep(modelObj.Species(speciesIndex(k)).Name, {'( )'}, {''});
         uniqueName = sprintf('TXTL_TL_rate_%s',rN);
         addparameter(modelObj, uniqueName, ktl_rbs);
+        
+        % dummy raction for AA consumption
+        aacnt = floor(modelObj.Species(speciesIndex(k)).UserData/100);
+        aa_consump_rate = (aacnt-1)*ktl_rbs;
+        uniqueName = sprintf('TXTL_TL_rate_%s_AA_consumption',rN);
+        addparameter(modelObj, uniqueName, aa_consump_rate);
+        
     end
 end
 

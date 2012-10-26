@@ -59,19 +59,37 @@ RNAPbound = varargin{4};
    
 RNAP = 'RNAP28';			% RNA polymerase name for reactions
 
-% Compute the number of NTPs required, in 100 NTP blocks
-ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
-if (ntpcnt == 0) 
-  ntpstr = '';
-else
-  ntpstr = int2str(ntpcnt);
-end
+NTP_model = 1;
 
-% Set up the transcription reaction
-Robj1 = addreaction(tube, ...
-  ['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']']);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});
+if NTP_model == 1
+    % Compute the number of NTPs required, in 100 NTP blocks
+    ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
+    if (ntpcnt == 0) 
+      ntpstr = '';
+    else
+      ntpstr = int2str(ntpcnt);
+    end
+    Robj1 = addreaction(tube, ...
+      ['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']']);
+    Kobj1 = addkineticlaw(Robj1, 'MassAction');
+    set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});
+else
+    % to deal with stiffness due high reaction-order    
+    Robj1 = addreaction(tube, ...
+      ['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']']);
+    Kobj1 = addkineticlaw(Robj1, 'MassAction');
+    set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});   
+
+    %dummy raction
+    Robj5 = addreaction(tube, ...
+    ['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP]);
+    Kobj5 =  addkineticlaw(Robj5, 'MassAction');
+    %generating unique parameter name for the current RNA with NTP
+    %consumptio
+    rN = regexprep(rna.Name, {'( )'}, {''});
+    uniqueName = sprintf('TXTL_TX_rate_%s_NTP_consumption',rN);
+    set(Kobj5, 'ParameterVariableNames', uniqueName);    
+end
 
 
 

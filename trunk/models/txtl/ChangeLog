@@ -1,3 +1,13 @@
+2012-10-25  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* txtl_rnap_rnap28.m: added an option for modified NTP utilization 
+	model to avoid high reaction order
+	* txtl_rnap_rnap70.m: added an option modified NTP utilization 
+	model to avoid high reaction order
+	* txtl_adddna.m: added an optional model for AA utilization
+	* txtl_setup_parameters.m: new parameters for the reactions in the 
+	new NTP and AA utilization model
+
 2012-10-22  Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* txtl_prom_p28.m: modification in the reaction modeling
 	* txtl_prom_p28_ptet.m: modification in the reaction modeling

@@ -209,18 +209,38 @@ end
 
 
 % Now put in the reactions for the utilization of amino acids 
-aacnt = floor(protein.UserData/100);	% get number of K amino acids
-if (aacnt == 0) 
-  aastr = '';
-else
-  aastr = int2str(aacnt);
-end
 
 % Set up the translation reaction
-Robj = addreaction(tube, ...
-  ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
-Kobj = addkineticlaw(Robj, 'MassAction');
-set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+AA_model = 1;
+
+if AA_model == 1
+    
+    aacnt = floor(protein.UserData/100);	% get number of K amino acids
+    if (aacnt == 0) 
+      aastr = '';
+    else
+      aastr = int2str(aacnt);
+    end
+    Robj = addreaction(tube, ...
+      ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
+    Kobj = addkineticlaw(Robj, 'MassAction');
+    set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+else
+    Robj = addreaction(tube, ...
+      ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']']);
+    Kobj = addkineticlaw(Robj, 'MassAction');
+    set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+    
+    Robj3 = addreaction(tube, ...
+     ['[AA:' Ribobound.Name '] -> ' rna.Name ' +  Ribo']);
+    Kobj3 = addkineticlaw(Robj3, 'MassAction');
+    %generate unique parameter name for the current protein
+    rN = regexprep(protein.Name, {'( )'}, {''});
+    uniqueName = sprintf('TXTL_TL_rate_%s_AA_consumption',rN);
+    set(Kobj3, 'ParameterVariableNames', uniqueName);
+    
+    
+end
 Robj1 = addreaction(tube, ...
   ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
