@@ -86,14 +86,10 @@ protein = sbioselect(tube, 'Type', 'species', 'Name', protstr);
 if isempty(protein)
 protein = addspecies(tube, protstr);
 end
-genelen{:}
 if exist(['txtl_protein_' justGene]) == 2
   % Run the protein specific setup
   [Rlist, genelen] = eval(['txtl_protein_' justGene '(tube, protein, geneFull, genelen)']);
 end
-genelen{:}
-geneFull{:}
-length(geneFull)
 % protein lengths
 if length(geneFull)>=1
     genelenTot = genelen{1};
@@ -103,8 +99,7 @@ if length(geneFull)>=2
         genelenTot = genelenTot+ genelen{i};
     end
 end
-protein.UserData = genelenTot / 3
-genelenTot
+protein.UserData = genelenTot / 3;
 %% Untranslated Region properties, parameters and reactions 
 if length(rbsFull)>=1 % construct rbs string
     rbsstr = rbsFull{1};
@@ -137,8 +132,7 @@ if length(rbsFull)>=2
     end
 end
 
-rna.UserData = rbslenTot + genelenTot
-rna.UserData
+rna.UserData = rbslenTot + genelenTot;
 
 %% Promoter properties, parameters and reactions 
 if length(promFull)>=1 
@@ -256,7 +250,7 @@ set(Kobj2, 'ParameterVariableNames', {'TXTL_RNAdeg_F'});
 
 % Protein degradation (if tagged)
 if protDEGflag
-  degradationRate = [0.001 0.01 0.1]; 
+  degradationRate = [0.005 0.001 0.001]; 
   Rlist = txtl_protein_degradation(tube, protein,degradationRate);
 end
 % All done!

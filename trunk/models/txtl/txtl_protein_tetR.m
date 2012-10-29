@@ -69,16 +69,22 @@ Pobj1f = addparameter(Kobj1, 'kf', kf_aTc);
 Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-Rlist = [Robj1];
-% Set up dimerization 
-%! TODO valid reaction rates are needed!
-kf_dimer = 1e-4;%0.0004637; % 1/(molecule*sec)
-kr_dimer = 0.00000001; % 1/sec
+% degrade the aTc inducer
+kf_aTcdeg = 0.0001;
+Robj2 = addreaction(tube, ['aTc -> null']);
+Kobj2 = addkineticlaw(Robj2, 'MassAction');
+Pobj2 = addparameter(Kobj2, 'kf', kf_aTcdeg);
+set(Kobj2, 'ParameterVariableNames', {'kf'});
+
+
+Rlist = [Robj1, Robj2];
+% Set up dimerization
+kf_dimer = 8e-2;% originally 1e-4 1/(molecule*sec)
+kr_dimer = 0.02; %0.00000001; % 1/sec
 
 Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 
 % % ! TODO: Check if tetR undergoes tertramerization
-% %Set up tetramerization
 % % Hsieh & Brenowitz 1997 JBC
 % %! TODO: these may be strain/excract dependent
 % kf_tetramer = 0.000602; % 1/(molecule*sec)

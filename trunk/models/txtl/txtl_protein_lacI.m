@@ -61,7 +61,7 @@ if geneDefaultUsed ~= 0
     end
 end
 % Parameters that describe this RBS
- kf_IPTG = 1; kr_IPTG = 0.1; 
+ kf_IPTG = 0.1; kr_IPTG = 0.01; 
 
 % Set up the binding reaction
 Robj1 = addreaction(tube, [protein.Name ' + IPTG <-> IPTG:' protein.Name]);
@@ -70,12 +70,19 @@ Pobj1f = addparameter(Kobj1, 'kf', kf_IPTG);
 Pobj1r = addparameter(Kobj1, 'kr', kr_IPTG);
 set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-Rlist = [Robj1];
+% degrade the IPTG inducer
+kf_IPTGdeg = 0.0001;
+Robj2 = addreaction(tube, ['IPTG -> null']);
+Kobj2 = addkineticlaw(Robj2, 'MassAction');
+Pobj2 = addparameter(Kobj2, 'kf', kf_IPTGdeg);
+set(Kobj2, 'ParameterVariableNames', {'kf'});
+
+Rlist = [Robj1, Robj2];
 
 %Set up dimerization
 % Hsieh & Brenowitz 1997 JBC
-kf_dimer = 0.0004637; % 1/(molecule*sec)
-kr_dimer = 0.00000001; % 1/sec
+kf_dimer = 0.08637; % 1/(molecule*sec)
+kr_dimer =0.1; %0.00000001; % 1/sec
 
 Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]); 
 
@@ -83,8 +90,8 @@ Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
 
 %Set up tetramerization
 % Hsieh & Brenowitz 1997 JBC
-kf_tetramer = 0.000602; % 1/(molecule*sec)
-kr_tetramer = 0.000001; % 1/sec
+kf_tetramer = 0.00000602; % 1/(molecule*sec)
+kr_tetramer = 0.000001; %0.000001; % 1/sec
 Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
 
 

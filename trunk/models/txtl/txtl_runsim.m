@@ -61,6 +61,7 @@ if iscell(data)
            modelObj.Species(k).InitialAmount = normalizeSmallAmount(data{k,2}(end));
            % reordering the data cell matrix to make it compatible with order in modelObj 
            prevData(:,SpName(k)) = data{k,2}(:);
+
        else
            % if no data was given, we issue a warning 
            warning('something went wrong on data(%d,2)',k);
@@ -70,21 +71,18 @@ if iscell(data)
 % inital amount to that (here the order of data matters!)
 elseif size(modelObj.Species,1) == size(data,2) && size(data,1) == 1
     for k=1:size(data,2)
-        modelObj.Species(k).InitialAmount = normalizeSmallAmount(data(1,k));
+                modelObj.Species(k).InitialAmount = normalizeSmallAmount(data(1,k));               
     end
-% we have simulation data from a previous run
+        % we have simulation data from a previous run
 elseif size(modelObj.Species,1) == size(data,2) && size(data,1) > 1
     for k=1:size(data,2)
-        modelObj.Species(k).InitialAmount = normalizeSmallAmount(data(end,k));
-        prevData(:,k) = data(:,k);
+                modelObj.Species(k).InitialAmount = normalizeSmallAmount(data(end,k));
+                prevData(:,k) = data(:,k);
     end
-    
 else
-    % no data was provided, no action needed 
-    
+            % no data was provided, no action needed 
 end
 
-% Run a simulation
 simData = sbiosimulate(modelObj, configsetObj);
 if isempty(time_vector) 
     x_ode = simData.Data;
@@ -99,9 +97,9 @@ end
 % InitialAmount cannot be smaller than certain amount, therefore small
 % amounts are converted to zero
 function retValue = normalizeSmallAmount(inValue)
-    if (abs(inValue) < eps) % treats values below eps as zero.
+    if (abs(inValue) < eps) || inValue<0 % treats values below eps as zero.
         retValue = 0;
-    else
+    else      
         retValue = inValue;
     end
 end

@@ -94,9 +94,8 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 %! TODO: proper implementation for tetR is via two operator sites (I think)
 % VS: yes, there are 2 operators, see for example, 
 % C Berens and W. Hillen, Gene regulation by tetracyclines, Eur. J. Biochem. 270, 3109–3121 (2003)
-
+%{
 kf1_tetR = 0.2; kr1_tetR = 1;		% reaction rates (from sbio)
-%! TODO: the 'DNA tetR needs to be generalized
 Robj4 = addreaction(tube, ...
   [DNA ' + [protein tetRdimer] <-> [' dna.name ':protein tetRdimer]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
@@ -104,16 +103,63 @@ Pobj4 = addparameter(Kobj4, 'k4', kf1_tetR);
 Pobj4r = addparameter(Kobj4, 'k4r', kr1_tetR);
 set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
-kf2_tetR = 0.2; kr2_tetR = 1;		% reaction rates (from sbio)
-%! TODO: the 'DNA tetR needs to be generalized
+kf2_tetR = 0.2; kr2_tetR = 1;		
 Robj5 = addreaction(tube, ...
-  ['[' dna.name ':protein tetRdimer] <-> [' dna.name ':protein tetRdimer:protein tetRdimer]']);
+  ['[' dna.name ':protein tetRdimer] + [protein tetRdimer] <-> [' dna.name ':protein tetRdimer:protein tetRdimer]']);
 Kobj5 = addkineticlaw(Robj5,'MassAction');
 Pobj5 = addparameter(Kobj5, 'k5', kf2_tetR);
 Pobj5r = addparameter(Kobj5, 'k5r', kr2_tetR);
 set(Kobj5, 'ParameterVariableNames', {'k5', 'k5r'});
 
-Rlist = [Robj1, Rlist1, Robj4, Robj5];
+kf3_tetR = 0.2; kr3_tetR = 1;		% reaction rates (from sbio)
+Robj7 = addreaction(tube, ...
+  [DNA ' + [protein tetR-lvadimer] <-> [' dna.name ':protein tetR-lvadimer]']);
+Kobj7 = addkineticlaw(Robj7,'MassAction');
+Pobj7 = addparameter(Kobj7, 'k7', kf3_tetR);
+Pobj7r = addparameter(Kobj7, 'k7r', kr3_tetR);
+set(Kobj7, 'ParameterVariableNames', {'k7', 'k7r'});
+
+kf4_tetR = 0.2; kr4_tetR = 1;		
+Robj6 = addreaction(tube, ...
+  ['[' dna.name ':protein tetR-lvadimer] + [protein tetR-lvadimer] <-> [' dna.name ':protein tetR-lvadimer:protein tetR-lvadimer]']);
+Kobj6 = addkineticlaw(Robj6,'MassAction');
+Pobj6 = addparameter(Kobj6, 'k6', kf4_tetR);
+Pobj6r = addparameter(Kobj6, 'k6r', kr4_tetR);
+set(Kobj6, 'ParameterVariableNames', {'k6', 'k6r'});
+%}
+kf5_tetR = 3; kr5_tetR = 0.5;		% reaction rates
+Robj8 = addreaction(tube, ...
+  [DNA ' + [protein tetR-lva-terminatordimer] <-> [' dna.name ':protein tetR-lva-terminatordimer1]']);
+Kobj8 = addkineticlaw(Robj8,'MassAction');
+Pobj8 = addparameter(Kobj8, 'k8', kf5_tetR);
+Pobj8r = addparameter(Kobj8, 'k8r', kr5_tetR);
+set(Kobj8, 'ParameterVariableNames', {'k8', 'k8r'});
+
+kf6_tetR = 0.000005; kr6_tetR = 0.000005;
+Robj10 = addreaction(tube, ...
+  [DNA ' + [protein tetR-lva-terminatordimer] <-> [' dna.name ':protein tetR-lva-terminatordimer2]']);
+Kobj10 = addkineticlaw(Robj10,'MassAction');
+Pobj10 = addparameter(Kobj10, 'k10', kf6_tetR);
+Pobj10r = addparameter(Kobj10, 'k10r', kr6_tetR);
+set(Kobj10, 'ParameterVariableNames', {'k10', 'k10r'});
+
+kf7_tetR = 0.0000006; kr7_tetR = 0.0000005;		% effectively nonexistent
+Robj9 = addreaction(tube, ...
+  ['[' dna.name ':protein tetR-lva-terminatordimer1] + [protein tetR-lva-terminatordimer] <-> [' dna.name ':protein tetR-lva-terminatordimer:protein tetR-lva-terminatordimer]']);
+Kobj9 = addkineticlaw(Robj9,'MassAction');
+Pobj9 = addparameter(Kobj9, 'k9', kf7_tetR);
+Pobj9r = addparameter(Kobj9, 'k9r', kr7_tetR);
+set(Kobj9, 'ParameterVariableNames', {'k9', 'k9r'});
+	
+kf8_tetR = 0.0000006; kr8_tetR = 0.0000005;
+Robj11 = addreaction(tube, ...
+  ['[' dna.name ':protein tetR-lva-terminatordimer2] + [protein tetR-lva-terminatordimer] <-> [' dna.name ':protein tetR-lva-terminatordimer:protein tetR-lva-terminatordimer]']);
+Kobj11 = addkineticlaw(Robj11,'MassAction');
+Pobj11 = addparameter(Kobj11, 'k11', kf8_tetR);
+Pobj11r = addparameter(Kobj11, 'k11r', kr8_tetR);
+set(Kobj11, 'ParameterVariableNames', {'k11', 'k11r'});
+
+Rlist = [Robj1, Rlist1, Robj8, Robj9, Robj10, Robj11];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

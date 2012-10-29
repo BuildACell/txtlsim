@@ -73,6 +73,7 @@ RNA = ['[' rna.Name ']'];		% RNA species name for reactions
 RNAP = 'RNAP70';			% RNA polymerase name for reactions
 RNAPbound = ['RNAP70:' dna.Name];
 
+
 % Set up binding reaction
 Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
 Kobj1 = addkineticlaw(Robj1, 'MassAction');
@@ -94,24 +95,76 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 % See supplementary info in the genetic toggle switch paper, gardener and
 % collins, 2000. 
 
-kf1_lacI = 4; kr1_lacI = 0.1;		% 
+% ** IMPORTANT issue in implementation and modularity **
+% We avoid selecting for a protein species containing lacI (and tetR in 
+% the ptet file), using sbioselect as commented out below because of
+% the order in which the lacI and tetR proteins are declared: in
+% gen_switch.m, ptrc2 is declared AFTER lacI has been created, so lacI
+% exists in the tube, and sbioselect can find it and its dimers. But if
+% this was tried for tetR and ptet, it would fail because ptet is declared
+% BEFORE tetR is created. So for now we avoid the sbioselect based search using 
+% regular expressions, and just list all the 3 possibilities. In the
+% future, when all the species and reactions can be declared in an external
+% file, these problems will be taken care of, since all the species will be
+% declared simultaneously. 
+
+%{
+Obj = sbioselect (tube, 'Where',...
+ 'Name', 'regexp', 'protein ' && 'lacI')
+protein = sbioselect(tube, 'Type', 'species', 'Name', protstr);
+PROTEIN = ['[' protein.Name ']']; %PROTEIN species name for reactions
+%}
+%{
+kf1_lacI = 1; kr1_lacI = 0.1;		% 
 Robj4 = addreaction(tube, ...
-  [DNA ' + [protein lacIdimer] <-> [' dna.Name ':protein lacIdimer]']); 
+  [DNA ' + [protein lacIdimer] <-> [' dna.name ':protein lacIdimer]']);
 Kobj4 = addkineticlaw(Robj4,'MassAction');
 Pobj4 = addparameter(Kobj4, 'k4', kf1_lacI);
 Pobj4r = addparameter(Kobj4, 'k4r', kr1_lacI);
 set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
-kf2_lacI = 4; kr2_lacI = 0.1;		% 
+kf2_lacI = 1; kr2_lacI = 0.1;		% 
 Robj5 = addreaction(tube, ...
-  [DNA ' + [protein lacItetramer] <-> [' dna.Name ':protein lacItetramer]']); 
+  [DNA ' + [protein lacItetramer] <-> [' dna.name ':protein lacItetramer]']); 
 Kobj5 = addkineticlaw(Robj5,'MassAction');
 Pobj5 = addparameter(Kobj5, 'k5', kf2_lacI);
 Pobj5r = addparameter(Kobj5, 'k5r', kr2_lacI);
 set(Kobj5, 'ParameterVariableNames', {'k5', 'k5r'});
 
 
-Rlist = [Robj1, Rlist1, Robj4, Robj5];
+kf3_lacI = 1; kr3_lacI = 0.1;		% 
+Robj6 = addreaction(tube, ...
+  [DNA ' + [protein lacI-lvadimer] <-> [' dna.name ':protein lacI-lvadimer]']);
+Kobj6 = addkineticlaw(Robj6,'MassAction');
+Pobj6 = addparameter(Kobj6, 'k6', kf3_lacI);
+Pobj6r = addparameter(Kobj6, 'k6r', kr3_lacI);
+set(Kobj6, 'ParameterVariableNames', {'k6', 'k6r'});
+
+kf4_lacI = 1; kr4_lacI = 0.1;		% 
+Robj7 = addreaction(tube, ...
+  [DNA ' + [protein lacI-lvatetramer] <-> [' dna.name ':protein lacI-lvatetramer]']); 
+Kobj7 = addkineticlaw(Robj7,'MassAction');
+Pobj7 = addparameter(Kobj7, 'k7', kf4_lacI);
+Pobj7r = addparameter(Kobj7, 'k7r', kr4_lacI);
+set(Kobj7, 'ParameterVariableNames', {'k7', 'k7r'});
+%}
+kf5_lacI = 0.50; kr5_lacI = 0.03;		% 
+Robj8 = addreaction(tube, ...
+  [DNA ' + [protein lacI-lva-terminatordimer] <-> [' dna.name ':protein lacI-lva-terminatordimer]']);
+Kobj8 = addkineticlaw(Robj8,'MassAction');
+Pobj8 = addparameter(Kobj8, 'k8', kf5_lacI);
+Pobj8r = addparameter(Kobj8, 'k8r', kr5_lacI);
+set(Kobj8, 'ParameterVariableNames', {'k8', 'k8r'});
+
+kf6_lacI = 0.00000012; kr6_lacI = 0.000005;		% effectively ignored. 
+Robj9 = addreaction(tube, ...
+  [DNA ' + [protein lacI-lva-terminatortetramer] <-> [' dna.name ':protein lacI-lva-terminatortetramer]']); 
+Kobj9 = addkineticlaw(Robj9,'MassAction');
+Pobj9 = addparameter(Kobj9, 'k9', kf6_lacI);
+Pobj9r = addparameter(Kobj9, 'k9r', kr6_lacI);
+set(Kobj9, 'ParameterVariableNames', {'k9', 'k9r'});
+
+Rlist = [Robj1, Rlist1, Robj8, Robj9];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
