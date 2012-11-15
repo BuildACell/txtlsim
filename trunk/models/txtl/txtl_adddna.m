@@ -148,12 +148,12 @@ dnastr = ['DNA ' promstr '--' rbsstr '--' genestr];
 dna = addspecies(tube, dnastr, amount);
 
 % Transcription
-if exist(['txtl_prom_' justProm]) == 2    
-  [Rlist, promlen] = eval(['txtl_prom_' justProm '(tube, dna, rna, promFull, promlen)']);
+if exist(['txtl_prom_' justProm], 'file') == 2    
+  [~, promlen] = eval(['txtl_prom_' justProm '(tube, dna, rna, promFull, promlen)']);
 else
   warning(['TXTL: can''t find txtl_prom_' justProm ...
       '; using default promoter params']);
-  [Rlist, promlen] = txtl_prom_p70(tube, dna, rna, promFull, promlen);
+  [~, promlen] = txtl_prom_p70(tube, dna, rna, promFull, promlen);
 end
 
 % promoter lengths

@@ -62,7 +62,7 @@ RNAP = 'RNAP70';			% RNA polymerase name for reactions
 
 
 % Set up the transcription reaction
-NTP_model = 1;
+NTP_model = 2;
 
 if NTP_model == 1
     % Compute the number of NTPs required, in 100 NTP blocks

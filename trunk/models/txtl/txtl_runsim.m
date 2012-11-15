@@ -1,9 +1,16 @@
 
 % Written by Zoltan A Tuza, Sep 2012
-%
+% 
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
 %
+% Documentation:
+% there are 4 ways to call this function. 
+% [t_ode_output, x_ode_output, simData_output, t_sen_output, x_sen_output, senOutputs, senInputs] = txtl_runsim('sensitivityAnalysis', modelObj, configsetObj, t_ode_input, x_ode_input, t_sen_input, x_sen_input)
+% [t_ode_output, x_ode_output, simData_output, t_sen_output, x_sen_output, senOutputs, senInputs] = txtl_runsim('sensitivityAnalysis', modelObj, configsetObj, t_ode_input, x_ode_input, t_sen_input, x_sen_input, simData_input)
+% [t_ode_output, x_ode_output, simData_output] = txtl_runsim('basic', modelObj, configsetObj, t_ode_input, x_ode_input)
+% [t_ode_output, x_ode_output, simData_output] = txtl_runsim('basic', modelObj, configsetObj, t_ode_input, x_ode_input, simData_input)
+
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
 % met:
@@ -31,19 +38,58 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-function [x_ode,t_ode] = txtl_runsim(varargin)
+function [t_ode, x_ode, simData, varargout] = txtl_runsim(varargin)
+mode = varargin{1};
+if ~(strcmp(mode, 'basic') || strcmp(mode, 'sensitivityAnalysis'))
+        error('txtl_runsim takes either ''basic'' or ''sensitivityAnalysis'' as its first argument');
+end
 
-modelObj = varargin{1};
-configsetObj = varargin{2};
-if nargin == 4
-    data = varargin{3};
-    time_vector = varargin{4};
-elseif nargin == 3
-    %in that case the 3rd argument is a SimBiology Simulation Data object
-    data = varargin{3}.Data;
-    time_vector = varargin{3}.Time;
-else
-    error('txtl_runsim should be called either with 3 or 4 arguments!');
+        
+if strcmp(mode,'basic')
+    if nargin ~= 5 && nargin~= 6
+        error('txtl_runsim in basic mode should be called either with 5 or 6 arguments!');
+    else
+        modelObj = varargin{2};
+        configsetObj = varargin{3};
+        data = varargin{5};
+        time_vector = varargin{4};
+        if nargin == 6
+            simData = varargin{6};
+        end
+        if configsetObj.SolverOptions.SensitivityAnalysis == 1
+            warning('Sensitivity:Redundancy', ['''configsetObj.SolverOptions.SensitivityAnalysis == 1''' ...
+                'in ''basic'' mode, sensitivity analysis will be run, and results will be returned as they' ...
+                'would be in ''sensitivityAnalysis'' mode. Please change mode to ''sensitivityAnalysis'',' ...
+                'since this redudnancy may be removed in future releases.'])
+            pause(1)
+            % in case runsim is called in basic mode but with the sensitivity
+            % analysis configset. 
+            mode = 'sensitivityAnalysis';
+            t_sen_input = [];
+            x_sen_input = [];
+        end
+    end
+
+elseif strcmp(mode, 'sensitivityAnalysis')
+    
+    if nargin ~= 7 && nargin~= 8
+        error('txtl_runsim in sensitivityAnalysis mode should be called either with 7 or 8 arguments!');
+    else
+        modelObj = varargin{2};
+        configsetObj = varargin{3};
+        data = varargin{5};
+        time_vector = varargin{4};
+        t_sen_input = varargin{6};
+        x_sen_input = varargin{7};
+        if nargin == 8
+            simData = varargin{8};
+        end
+        if configsetObj.SolverOptions.SensitivityAnalysis == 0
+            % in case runsim is called in sensitivityAnalysis mode but without 
+            % the sensitivity analysis configset. 
+            configsetObj.SolverOptions.SensitivityAnalysis = 1;
+        end        
+    end
 end
 
 if ~isempty(time_vector) && size(time_vector,1) > 1
@@ -84,13 +130,46 @@ else
 end
 
 simData = sbiosimulate(modelObj, configsetObj);
+h = get(simData, 'DataInfo');
+speciesCount = 1;
+sensitivityCount = 1;
+for i = 1:length(h)
+    if strcmp(h{i}.Type,'species')
+        speciesIndex(speciesCount) = i;
+        speciesCount = speciesCount+1;
+         
+    elseif strcmp(h{i}.Type,'sensitivity')
+        sensitivityIndex(sensitivityCount) = i;
+        sensitivityCount = sensitivityCount+1;
+    end
+end
+    
+
 if isempty(time_vector) 
     x_ode = simData.Data;
     t_ode = simData.Time;
+    if configsetObj.SolverOptions.SensitivityAnalysis 
+        [t_sen,x_sen, sensOutputs, sensInputs] = getsensmatrix(simData);
+    end
 else
     t_ode = [time_vector; simData.Time+time_vector(end)];
-    x_ode = [prevData;simData.Data];
+    x_ode = [prevData;simData.Data(:,speciesIndex)]; 
+    % put in a check for whether the data from prev runs and the current runs have the same labels. 
+    if configsetObj.SolverOptions.SensitivityAnalysis
+        [t_sen_new,x_sen_new, sensOutputs, sensInputs] = getsensmatrix(simData);
+        %display('The size of the sensitivity data')
+        t_sen = [t_sen_input; t_sen_input(end)+t_sen_new];
+        x_sen = [x_sen_input; x_sen_new];
+    end
 end
+
+if configsetObj.SolverOptions.SensitivityAnalysis
+    varargout{1} = t_sen;
+    varargout{2} = x_sen;
+    varargout{3} = sensOutputs;
+    varargout{4} = sensInputs;
+end
+
 
 end
 

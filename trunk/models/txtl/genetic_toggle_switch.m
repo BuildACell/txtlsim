@@ -42,12 +42,38 @@ configsetObj = getconfigset(Mobj, 'active');
 if ~strcmp(version('-release'),'2012a')
  set(configsetObj, 'SolverType', 'ode23s');
 end
+% sensitivity analysis
+configsetObj.SolverOptions.SensitivityAnalysis = true;
+sensitivityOpt = configsetObj.SensitivityAnalysisOptions;
+lacIprotein = sbioselect(Mobj, 'Name','protein lacI-lva-terminator');
+tetRprotein = sbioselect(Mobj, 'Name','protein tetR-lva-terminator');
+ilacIdimer = findspecies(Mobj, 'protein lacI-lva-terminatordimer');
+itetRdimer = findspecies(Mobj, 'protein tetR-lva-terminatordimer');
+sensitivityOpt.Outputs = [lacIprotein]; %,tetRprotein, ilacIdimer,itetRdimer]
+params = sbioselect(Mobj,'Type','parameter','Name',{'TXTL_NTP_RNAP_F','TXTL_TX_rate_RNArbs--lacI-lva-terminator_NTP_consumption','TXTL_TL_rate_proteinlacI-lva-terminator_AA_consumption'});
+sensitivityOpt.Inputs = params;
+sensitivityOpt.Normalization = 'Full';
+%{
+sdSens = sbiosimulate(Mobj, configsetObj);
+t_ode4 = sdSens.Time;
+x_ode4 = sdSens.Data;
 
+[t,R, sensOutputs, sensInputs] = getsensmatrix(sdSens);
+
+% plot sensitivity data
+figure(5)
+plot(t/60,R);
+title('Normalized Sensitivities of protein and dimer conc wrt resource usage params');
+xlabel('time (min)');
+ylabel('sensitivity');
+legend(sensInputs, 'Location', 'NorthEastOutside');
+grid on;
+%}
 
 % first sim
 set(configsetObj, 'StopTime', inductionTimePoints(1))
-[x_ode,t_ode] = txtl_runsim(Mobj,configsetObj,[],[]);
-
+[t_ode,x_ode, simData, t_sen, x_sen, senOutputs, senInputs] = txtl_runsim('sensitivityAnalysis', Mobj,configsetObj,[],[],[],[]);
+simData.DataNames
 % second sim
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', inductionDuration)
@@ -55,25 +81,28 @@ iaTc = findspecies(Mobj, 'aTc');
 x_ode(end,iaTc) = inducerConc;
 %set(sobj_aTc, 'InitialAmount', inducerConc)
 %set (sobj_aTc, 'ConstantAmount', true);
-[x_ode1,t_ode1] = txtl_runsim(Mobj,configsetObj,x_ode,t_ode);
+[t_ode1,x_ode1, simData, t_sen1 x_sen1, senOutputs, senInputs] = txtl_runsim('sensitivityAnalysis',Mobj,configsetObj, t_ode,x_ode, t_sen, x_sen);
 
 % third sim
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', inductionTimePoints(2)-inductionTimePoints(1)-inductionDuration)
-[x_ode2,t_ode2] = txtl_runsim(Mobj,configsetObj,x_ode1,t_ode1);
+[t_ode2,x_ode2, simData, t_sen2, x_sen2, senOutputs, senInputs] = txtl_runsim('sensitivityAnalysis',Mobj,configsetObj,t_ode1,x_ode1,t_sen1,x_sen1);
 
 % fourth sim
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', inductionDuration)
 iIPTG = findspecies(Mobj, 'IPTG');
 x_ode2(end,iIPTG) = inducerConc;
-[x_ode3,t_ode3] = txtl_runsim(Mobj,configsetObj,x_ode2,t_ode2);
+[t_ode3,x_ode3,simData, t_sen3, x_sen3, senOutputs, senInputs] = txtl_runsim('sensitivityAnalysis',Mobj,configsetObj,t_ode2,x_ode2,t_sen2,x_sen2);
 
 % fifth sim
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', simulationDuration-inductionTimePoints(2)-inductionDuration)
-[x_ode4,t_ode4] = txtl_runsim(Mobj,configsetObj,x_ode3,t_ode3);
+[t_ode4,x_ode4, simData, t_sen4, x_sen4, senOutputs, senInputs] = txtl_runsim('sensitivityAnalysis',Mobj,configsetObj,t_ode3,x_ode3,t_sen3,x_sen3);
 
+
+close all
+%% Plot results
 % Top row: protein and RNA levels
 figure(1); clf(); subplot(2,1,1);
 ilacI = findspecies(Mobj, 'protein lacI-lva-terminator');
@@ -135,7 +164,18 @@ lgh = legend({'DNA tetR','DNA lacI','DNA gamS', 'RNA tetR', 'RNA lacI', 'RNA gam
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-clc
+
+
+%% Plot sensitivity analysis data
+ t_sen4 = squeeze(t_sen4);
+
+ figure(3);
+ plot(t_sen4/60,x_sen4(:,:,1), t_sen4/60,x_sen4(:,:,2),t_sen4/60,x_sen4(:,:,3));
+ title('Normalized sensitivity of lacIprotein with respect to various parameters');
+ xlabel('Time (min)');
+ ylabel('Sensitivity');
+ legend(senInputs, 'Location', 'NorthEastOutside');
+ grid on;
 
 %% diagnostics
 
