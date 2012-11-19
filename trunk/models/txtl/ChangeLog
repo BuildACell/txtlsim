@@ -1,3 +1,9 @@
+2012-11-19  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* txtl_runsim.m: parameter set up moved here
+	* sample circuits: minor adjustment to the new i/o argument order in
+	txtl_runsim.
+
 2012-10-25  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* txtl_rnap_rnap28.m: added an option for modified NTP utilization 

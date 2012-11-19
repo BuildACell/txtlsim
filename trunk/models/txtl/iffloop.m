@@ -21,7 +21,6 @@ dna_gamS = txtl_adddna(tube3, ...
 % Mix the contents of the individual tubes and add some inducer
 well_a1 = txtl_combine([tube1, tube2, tube3], [22, 15, 1]);
 
-txtl_setup_parameters(well_a1);
 
 %% Run a simulation
 configsetObj = getconfigset(well_a1, 'active');
@@ -31,7 +30,7 @@ set(configsetObj, 'StopTime', simulationTime);
 % set(configsetObj, 'SolverType', 'ode23s');
 
 % 1st run
-[x_ode,t_ode] = txtl_runsim(well_a1,configsetObj,[],[]);
+[t_ode,x_ode] = txtl_runsim('basic',well_a1,configsetObj,[],[]);
 
 disp('1')
 pause(1)
@@ -42,7 +41,7 @@ pause(1)
 txtl_addspecies(well_a1, 'DNA p70--rbs--lacI', 1);
 txtl_addspecies(well_a1, 'DNA placI--rbs--deGFP', 1);
 set(configsetObj, 'StopTime', simulationTime/2);
-[x_ode_2,t_ode_2] = txtl_runsim(well_a1,configsetObj,x_ode, t_ode);
+[t_ode_2,x_ode_2] = txtl_runsim('basic',well_a1,configsetObj,t_ode, x_ode);
 disp('2')
 pause(1)
 % t_ode_2 = simData_2.Time;
@@ -59,7 +58,7 @@ txtl_addspecies(well_a1, 'DNA placI--rbs--deGFP', 1);
 %t_ode_3 = simData_3.Time;
 %x_ode_3 = simData_3.Data;
 set(configsetObj, 'StopTime', simulationTime*2);
-[x_ode_3,t_ode_3] = txtl_runsim(well_a1,configsetObj,x_ode_2,t_ode_2);
+[t_ode_3,x_ode_3] = txtl_runsim('basic',well_a1,configsetObj,t_ode_2,x_ode_2);
 disp('3')
 pause(1)
 % concatante data

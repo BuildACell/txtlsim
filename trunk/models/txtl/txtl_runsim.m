@@ -129,6 +129,11 @@ else
             % no data was provided, no action needed 
 end
 
+if (isempty(data))
+    %this is the first run, therefore we have setup the parameters
+    txtl_setup_parameters(modelObj);
+end
+ 
 simData = sbiosimulate(modelObj, configsetObj);
 h = get(simData, 'DataInfo');
 speciesCount = 1;
