@@ -52,20 +52,19 @@ protein_b.UserData = 500 / 3;
 %% Run a simulation
 configsetObj = getconfigset(well_a1, 'active');
  simulationTime = 12*60*60;
-%set(configsetObj, 'SolverType', 'ode23s');
+ set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
- [t_ode,x_ode] = txtl_runsim('basic',well_a1,configsetObj,[],[]);
-
+ [t_ode,x_ode] = txtl_runsim(well_a1,configsetObj,[],[]);
 
 configsetObj_b1 = getconfigset(well_b1, 'active');
 
-%set(configsetObj_b1, 'SolverType', 'ode23s');
+ set(configsetObj_b1, 'SolverType', 'ode23s');
 set(configsetObj_b1, 'StopTime', simulationTime);
 
 
-[t_ode_b1,x_ode_b1] = txtl_runsim('basic',well_b1,configsetObj_b1,[],[]);
+[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,configsetObj_b1,[],[]);
 
 
 %% plot the result

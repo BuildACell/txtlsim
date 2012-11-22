@@ -30,7 +30,7 @@ set(configsetObj, 'StopTime', simulationTime);
 % set(configsetObj, 'SolverType', 'ode23s');
 
 % 1st run
-[t_ode,x_ode] = txtl_runsim('basic',well_a1,configsetObj,[],[]);
+[t_ode,x_ode] = txtl_runsim(well_a1,configsetObj,[],[]);
 
 disp('1')
 pause(1)
@@ -41,7 +41,7 @@ pause(1)
 txtl_addspecies(well_a1, 'DNA p70--rbs--lacI', 1);
 txtl_addspecies(well_a1, 'DNA placI--rbs--deGFP', 1);
 set(configsetObj, 'StopTime', simulationTime/2);
-[t_ode_2,x_ode_2] = txtl_runsim('basic',well_a1,configsetObj,t_ode, x_ode);
+[t_ode_2,x_ode_2] = txtl_runsim(well_a1,configsetObj,t_ode, x_ode);
 disp('2')
 pause(1)
 % t_ode_2 = simData_2.Time;
@@ -58,7 +58,7 @@ txtl_addspecies(well_a1, 'DNA placI--rbs--deGFP', 1);
 %t_ode_3 = simData_3.Time;
 %x_ode_3 = simData_3.Data;
 set(configsetObj, 'StopTime', simulationTime*2);
-[t_ode_3,x_ode_3] = txtl_runsim('basic',well_a1,configsetObj,t_ode_2,x_ode_2);
+[t_ode_3,x_ode_3] = txtl_runsim(well_a1,configsetObj,t_ode_2,x_ode_2);
 disp('3')
 pause(1)
 % concatante data

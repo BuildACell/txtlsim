@@ -15,7 +15,6 @@ tetR_initialConc = 10;
 lacI_initialConc = 1; 
 simulationDuration = 5*60*60;
 inductionTimePoints = [1*60*60 3*60*60];
-inductionDuration = 5*60; % seconds 
 inducerConc = 9; % setting this to 10 gives strange fluctuations in the AA conc
 
 % Set up the standard TXTL tubes
@@ -29,56 +28,30 @@ dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-
 dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 dna_gamS = txtl_adddna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
+% Set initial lacI and tetR concentrations
 lacIprotein = sbioselect(tube3, 'Name','protein lacI-lva-terminator');
 tetRprotein = sbioselect(tube3, 'Name','protein tetR-lva-terminator');
 set(lacIprotein, 'InitialAmount', lacI_initialConc);
 set(tetRprotein, 'InitialAmount', tetR_initialConc);
+
+% Add IPTG and aTc inducers
 txtl_addspecies(tube3, 'aTc',0);
 txtl_addspecies(tube3, 'IPTG',0);
 
-
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
-sobj_aTc = sbioselect(Mobj, 'Type', 'species', 'Name', 'aTc');
-sobj_IPTG = sbioselect(Mobj, 'Type', 'species', 'Name', 'IPTG');
+
+
 configsetObj = getconfigset(Mobj, 'active');
-if ~strcmp(version('-release'),'2012a')
- set(configsetObj, 'SolverType', 'ode23s');
-end
+set(configsetObj, 'StopTime', simulationDuration)
+% set up events triggers and events functions as arrays of cells. which in
+% turn contain strings
+eventTriggers = [{['time >= ' num2str(inductionTimePoints(1))]}, {['time >= ' num2str(inductionTimePoints(2))]}],
+eventFunctions = [{['aTc = ' num2str(inducerConc)]}, {['IPTG= ' num2str(inducerConc)]}];
 
-% sensitivity analysis
-configsetObj.SolverOptions.SensitivityAnalysis = true;
-sensitivityOpt = configsetObj.SensitivityAnalysisOptions;
-txtl_setup_parameters(Mobj);
-lacIprotein = sbioselect(Mobj, 'Name','protein lacI-lva-terminator');
-sensitivityOpt.Outputs = [lacIprotein];
-params = sbioselect(Mobj,'Type','parameter','Name',{'TXTL_NTP_RNAP_F','TXTL_TX_rate_RNArbs--lacI-lva-terminator_NTP_consumption','TXTL_TL_rate_proteinlacI-lva-terminator_AA_consumption'});
-sensitivityOpt.Inputs = params;
-sensitivityOpt.Normalization = 'Full';
+% run the events script
 
-% first sim
-set(configsetObj, 'StopTime', inductionTimePoints(1))
-[t_ode,x_ode, simData, t_sen, x_sen, senOutputs, senInputs] = txtl_runsim_sensitivity(Mobj,configsetObj,[],[],[],[]);
-
-% second sim
-set(configsetObj, 'StopTime', inductionDuration)
-iaTc = findspecies(Mobj, 'aTc');
-x_ode(end,iaTc) = inducerConc;
-[t_ode1,x_ode1, simData, t_sen1 x_sen1, senOutputs, senInputs] = txtl_runsim_sensitivity(Mobj,configsetObj, t_ode,x_ode, t_sen, x_sen);
-
-% third sim
-set(configsetObj, 'StopTime', inductionTimePoints(2)-inductionTimePoints(1)-inductionDuration)
-[t_ode2,x_ode2, simData, t_sen2, x_sen2, senOutputs, senInputs] = txtl_runsim_sensitivity(Mobj,configsetObj,t_ode1,x_ode1,t_sen1,x_sen1);
-
-% fourth sim
-set(configsetObj, 'StopTime', inductionDuration)
-iIPTG = findspecies(Mobj, 'IPTG');
-x_ode2(end,iIPTG) = inducerConc;
-[t_ode3,x_ode3,simData, t_sen3, x_sen3, senOutputs, senInputs] = txtl_runsim_sensitivity(Mobj,configsetObj,t_ode2,x_ode2,t_sen2,x_sen2);
-
-% fifth sim
-set(configsetObj, 'StopTime', simulationDuration-inductionTimePoints(2)-inductionDuration)
-[t_ode4,x_ode4, simData, t_sen4, x_sen4, senOutputs, senInputs] = txtl_runsim_sensitivity(Mobj,configsetObj,t_ode3,x_ode3,t_sen3,x_sen3);
+[t_ode, x_ode, simData] = txtl_runsim_events(Mobj, configsetObj, eventTriggers, eventFunctions);
 
 
 %% Plot results
@@ -90,9 +63,9 @@ iGamS = findspecies(Mobj, 'protein gamS');
 iGFP = findspecies(Mobj, 'protein deGFP');
 iGFPs = findspecies(Mobj, 'protein deGFP*');
 
-p = plot(t_ode4/60, x_ode4(:, itetR),'k-', t_ode4/60, x_ode4(:, ilacI), 'b-', t_ode4/60, x_ode4(:, iGamS), 'r-', ...
-  t_ode4/60, x_ode4(:, iGFP) + x_ode4(:, iGFPs), 'g--', ...
-  t_ode4/60, x_ode4(:, iGFPs), 'g-');
+p = plot(t_ode/60, x_ode(:, itetR),'k-', t_ode/60, x_ode(:, ilacI), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
+  t_ode/60, x_ode(:, iGFP) + x_ode(:, iGFPs), 'g--', ...
+  t_ode/60, x_ode(:, iGFPs), 'g-');
 
 title('Gene Expression');
 lgh = legend({'tetR', 'lacI', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'Northeast');
@@ -109,10 +82,10 @@ iRNAP  = findspecies(Mobj, 'RNAP70');
 iRibo  = findspecies(Mobj, 'Ribo');
 mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
 plot(...
-  t_ode4/60, x_ode4(:, iAA)/x_ode4(1, iAA), 'b-', ...
-  t_ode4/60, x_ode4(:, iNTP)/x_ode4(1, iNTP), 'r-', ...
-  t_ode4/60, x_ode4(:, iRNAP)/x_ode4(1, iRNAP), 'b--', ...
-  t_ode4/60, x_ode4(:, iRibo)/x_ode4(1, iRibo), 'r--');
+  t_ode/60, x_ode(:, iAA)/x_ode(1, iAA), 'b-', ...
+  t_ode/60, x_ode(:, iNTP)/x_ode(1, iNTP), 'r-', ...
+  t_ode/60, x_ode(:, iRNAP)/x_ode(1, iRNAP), 'b--', ...
+  t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'r--');
 
 title('Resource usage');
 lgh = legend(...
@@ -130,12 +103,12 @@ iDNA_gamS = findspecies(Mobj, 'DNA p70--rbs--gamS');
 iRNA_tetR = findspecies(Mobj, 'RNA rbs--tetR-lva-terminator');
 iRNA_lacI = findspecies(Mobj, 'RNA rbs--lacI-lva-terminator');
 iRNA_gamS = findspecies(Mobj, 'RNA rbs--gamS');
-plot(t_ode4/60, x_ode4(:, iDNA_tetR), 'k-', ...
-    t_ode4/60, x_ode4(:, iDNA_lacI), 'b-', ...
-  t_ode4/60, x_ode4(:, iDNA_gamS), 'r-', ...
-  t_ode4/60, x_ode4(:, iRNA_tetR), 'k--', ...
-    t_ode4/60, x_ode4(:, iRNA_tetR), 'b--', ...
-  t_ode4/60, x_ode4(:, iRNA_gamS), 'r--');
+plot(t_ode/60, x_ode(:, iDNA_tetR), 'k-', ...
+    t_ode/60, x_ode(:, iDNA_lacI), 'b-', ...
+  t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
+  t_ode/60, x_ode(:, iRNA_tetR), 'k--', ...
+    t_ode/60, x_ode(:, iRNA_tetR), 'b--', ...
+  t_ode/60, x_ode(:, iRNA_gamS), 'r--');
 
 title('DNA and mRNA');
 lgh = legend({'DNA tetR','DNA lacI','DNA gamS', 'RNA tetR', 'RNA lacI', 'RNA gamS'}, ...
@@ -144,17 +117,6 @@ legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
-
-%% Plot sensitivity analysis data
- t_sen4 = squeeze(t_sen4);
-
- figure(3);
- plot(t_sen4/60,x_sen4(:,:,1), t_sen4/60,x_sen4(:,:,2),t_sen4/60,x_sen4(:,:,3));
- title('Normalized sensitivity of lacIprotein with respect to various parameters');
- xlabel('Time (min)');
- ylabel('Sensitivity');
- legend(senInputs, 'Location', 'NorthEastOutside');
- grid on;
 
 %% diagnostics
 
@@ -176,10 +138,10 @@ iDNA_tetR_2lacIbound = findspecies(Mobj, 'DNA thio-junk-ptrc2--rbs--tetR-lva-ter
 
 figure(4)
 subplot(2,1,1)
-plot(t_ode4/60, x_ode4(:, itetR), 'k-', ...
-     t_ode4/60, x_ode4(:, ilacI), 'b-', ...
-     t_ode4/60, x_ode4(:, itetRdimer), 'k--', ...
-     t_ode4/60, x_ode4(:, ilacIdimer), 'b--');
+plot(t_ode/60, x_ode(:, itetR), 'k-', ...
+     t_ode/60, x_ode(:, ilacI), 'b-', ...
+     t_ode/60, x_ode(:, itetRdimer), 'k--', ...
+     t_ode/60, x_ode(:, ilacIdimer), 'b--');
 
 title('Protein Conc');
 lgh = legend(...
@@ -190,10 +152,10 @@ ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
 subplot(2,1,2)
-plot(t_ode4/60, x_ode4(:, iDNA_tetR), 'k-', ...
-     t_ode4/60, x_ode4(:, iDNA_lacI), 'b-', ...
-     t_ode4/60, x_ode4(:, iDNA_tetR_lacIbounddimer), 'k--', ...     
-     t_ode4/60, x_ode4(:, iDNA_lacI_tetRbounddimer1), 'b--')
+plot(t_ode/60, x_ode(:, iDNA_tetR), 'k-', ...
+     t_ode/60, x_ode(:, iDNA_lacI), 'b-', ...
+     t_ode/60, x_ode(:, iDNA_tetR_lacIbounddimer), 'k--', ...     
+     t_ode/60, x_ode(:, iDNA_lacI_tetRbounddimer1), 'b--')
 
 title('DNA bound to repressors');
 lgh = legend({'DNA tetR', 'DNA lacI', 'DNA tetR:lacIdimer','DNA lacI:tetRdimer'},...
@@ -205,8 +167,8 @@ xlabel('Time [min]');
 figure(2)
 iaTc = findspecies(Mobj, 'aTc');
 iIPTG = findspecies(Mobj, 'IPTG');
-plot(t_ode4/60, x_ode4(:, iaTc), 'k-', ...
-    t_ode4/60, x_ode4(:, iIPTG), 'b-')
+plot(t_ode/60, x_ode(:, iaTc), 'k-', ...
+    t_ode/60, x_ode(:, iIPTG), 'b-')
 
 title('inducers');
 lgh = legend({'aTc', 'IPTG'},...
