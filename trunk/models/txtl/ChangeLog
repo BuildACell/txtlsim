@@ -1,3 +1,9 @@
+2012-11-23  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* txtl_transcription.m: sigma factor independent transcription (merging the old 
+	rnap files). The corresponding promoters are adjusted. 
+	Old rnap70 and rnap28 files are deleted from this revision. 
+
 2012-11-19  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* txtl_runsim.m: parameter set up moved here

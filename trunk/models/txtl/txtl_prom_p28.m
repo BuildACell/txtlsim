@@ -82,22 +82,9 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
 %
 % Now put in the reactions for the utilization of NTPs
-% Use an enzymatic reaction to proper rate limiting
 %
+txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
 
-Rlist1 = txtl_rnap_rnap28(tube, dna, rna, RNAPbound);
-
-% %
-% % Add reactions for sequestration of promoter by TetRdimer 
-% %
-% 
-% kf_tetR = 0.2; kr_tetR = 1;		% reaction rates (from sbio)
-% Robj4 = addreaction(tube, ...
-%   [DNA ' + [protein tetRdimer] <-> [DNA tetR:protein tetRdimer]']);
-% Kobj4 = addkineticlaw(Robj4,'MassAction');
-% Pobj4 = addparameter(Kobj4, 'k4', kf_tetR);
-% Pobj4r = addparameter(Kobj4, 'k4r', kr_tetR);
-% set(Kobj4, 'ParameterVariableNames', {'k4', 'k4r'});
 
 Rlist = [Robj1];
 

@@ -86,7 +86,7 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 % Use an enzymatic reaction to proper rate limiting
 %
 
-Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
+txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
 
 %
 % Add reactions for sequestration of promoter by lacIdimer and lacItetramer
@@ -164,7 +164,7 @@ Pobj9 = addparameter(Kobj9, 'k9', kf6_lacI);
 Pobj9r = addparameter(Kobj9, 'k9r', kr6_lacI);
 set(Kobj9, 'ParameterVariableNames', {'k9', 'k9r'});
 
-Rlist = [Robj1, Rlist1, Robj8, Robj9];
+Rlist = [Robj1, Robj8, Robj9];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

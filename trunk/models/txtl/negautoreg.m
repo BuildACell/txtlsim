@@ -40,7 +40,7 @@ dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 %
 
 % Mix the contents of the individual tubes
-Mobj = txtl_combine([tube1, tube2, tube3], [6, 0.6, 1.5]);
+Mobj = txtl_combine([tube1, tube2, tube3], [6, 1, 1.5]);
 
 
 txtl_setup_parameters(Mobj);
@@ -71,14 +71,13 @@ iGFPs = findspecies(Mobj, 'protein deGFP*');
 p = plot(t_ode/60, x_ode(:, iTetR), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
   t_ode/60, x_ode(:, iGFP) + x_ode(:, iGFPs), 'g--', ...
   t_ode/60, x_ode(:, iGFPs), 'g-');
-set(p, 'LineWidth',2);
-set(gca, 'FontSize', 14);
+
 title('Negative Autoregulation Example - Gene Expression');
 lgh = legend({'TetR', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'NortheastOutside');
-%legend(lgh, 'boxoff');
+legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-axis([0 100 0 10]);
+
 % Second row, left: resource limits
 subplot(2,2,3);
 iNTP = findspecies(Mobj, 'NTP');
@@ -91,16 +90,14 @@ p = plot(...
   t_ode/60, x_ode(:, iNTP)/x_ode(1, iNTP), 'r-', ...
   t_ode/60, x_ode(:, iRNAP)/max(x_ode(:, iRNAP)), 'r--', ...
   t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'b--');
-set(p, 'LineWidth',2);
-set(gca, 'FontSize', 14);
+
 title('Resource usage');
 lgh = legend(...
   {'AA [mM]', 'NTP [mM]', 'RNAP70 [nM]', 'Ribo [nM]'}, ...
   'Location', 'Northeast');
-%legend(lgh, 'boxoff');
+legend(lgh, 'boxoff');
 ylabel('Species amounts [normalized]');
 xlabel('Time [min]');
-axis([0 100 0 1]);
 % Second row, right: DNA and mRNA
 subplot(2,2,4);
 iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--tetR-lva-terminator');%
@@ -111,16 +108,15 @@ p = plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
   t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
   t_ode/60, x_ode(:, iRNA_tetR), 'b--', ...
   t_ode/60, x_ode(:, iRNA_gamS), 'r--');
-set(p, 'LineWidth',2);
-set(gca, 'FontSize', 14);
+
 title('DNA and mRNA');
 lgh = legend(...
   names([iDNA_tetR, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
   'Location', 'NortheastOutside');
-%legend(lgh, 'boxoff');
+legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-axis([0 100 0 1]);
+
 
 %
 % Run a set of experiments to explore the effect of inducers

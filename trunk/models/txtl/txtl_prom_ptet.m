@@ -83,7 +83,7 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 % Use an enzymatic reaction to proper rate limiting
 %
 
-Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
+txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
 
 %
 % Add reactions for sequestration of promoter by tetRdimer 
@@ -93,7 +93,7 @@ Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
 %! TODO: txtl_protein_tetR defines tetramers, which aren't used
 %! TODO: proper implementation for tetR is via two operator sites (I think)
 % VS: yes, there are 2 operators, see for example, 
-% C Berens and W. Hillen, Gene regulation by tetracyclines, Eur. J. Biochem. 270, 3109–3121 (2003)
+% C Berens and W. Hillen, Gene regulation by tetracyclines, Eur. J. Biochem. 270, 3109ï¿½3121 (2003)
 %{
 kf1_tetR = 0.2; kr1_tetR = 1;		% reaction rates (from sbio)
 Robj4 = addreaction(tube, ...
@@ -159,7 +159,7 @@ Pobj11 = addparameter(Kobj11, 'k11', kf8_tetR);
 Pobj11r = addparameter(Kobj11, 'k11r', kr8_tetR);
 set(Kobj11, 'ParameterVariableNames', {'k11', 'k11r'});
 
-Rlist = [Robj1, Rlist1, Robj8, Robj9, Robj10, Robj11];
+Rlist = [Robj1, Robj8, Robj9, Robj10, Robj11];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

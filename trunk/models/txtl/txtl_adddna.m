@@ -205,7 +205,7 @@ end
 % Now put in the reactions for the utilization of amino acids 
 
 % Set up the translation reaction
-AA_model = 1;
+AA_model = 2;
 
 if AA_model == 1
     

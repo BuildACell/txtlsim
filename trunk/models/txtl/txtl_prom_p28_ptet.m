@@ -105,7 +105,7 @@ set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 %
 
 % TX
-Rlist1 = txtl_rnap_rnap28(tube, dna, rna, RNAPbound);
+txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
 
 
 % 
@@ -140,10 +140,9 @@ set(Kobj2, 'ParameterVariableNames', {'kf', 'kr'});
 % decrease the kcat rate
 kcat = log(2)/(rna.UserData/30);
 kcat = kcat*0.001;
-Rlist2 = txtl_rnap_rnap28(tube, dna, rna, [RNAPbound ':' P2 ],{P2},kcat);
+txtl_transcription(tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2},kcat);
 
- 
-Rlist = [Robj1, Rlist1];
+Rlist = [Robj1];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

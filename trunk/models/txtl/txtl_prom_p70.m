@@ -77,11 +77,10 @@ set(Kobj1, 'ParameterVariableNames', {'TXTL_DNA_RNAP70_F', 'TXTL_DNA_RNAP70_R'})
 % Now put in the reactions for the utilization of NTPs
 % Use an enzymatic reaction to proper rate limiting
 % 
-
-Rlist1 = txtl_rnap_rnap70(tube, dna, rna, RNAPbound);
+txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
 
 % All done; return the list of reactions that we set up
-Rlist = [Robj1, Rlist1];
+Rlist = [Robj1];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

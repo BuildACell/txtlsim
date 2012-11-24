@@ -1,8 +1,8 @@
-% txtl_rnap_rnap70.m - reactions for RNAP with sigma70 bound
+% txtl_transcription.m - sigma factor independent implementation for gene 
+% transcription in the TXTL system 
 % RMM, 9 Sep 2012
 %
-% This file sets up the transcription reactions for RNAP bound to
-% sigma70 ("RNAP70").  It can be called by promoter files that need to
+% It can be called by promoter files that need to
 % set up the approriate transcription reactions.
 
 % Written by Richard Murray, 9 Sep 2012
@@ -36,30 +36,31 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Rlist = txtl_rnap_rnap28(varargin)
-if nargin < 4
-    error('the number of argument should at least 4, not %d',nargin);
-elseif nargin > 4
-    extraSpecies = varargin{5};
+function [] = txtl_transcription(varargin)
+if nargin < 5
+    error('the number of argument should be at least 4, not %d',nargin);
+elseif nargin > 5
+    extraSpecies = varargin{6};
     % processing the extraSpecies
     extraStr = extraSpecies{1};
     for k=2:size(extraSpecies,1)
         extraStr = [extraStr '+' extraSpecies{k}];
     end
     %! TODO come up with a better parameter handling - zoltuz
-    if nargin == 6
-        ktx = varargin{6};
+    if nargin == 7
+        ktx = varargin{7};
     end
 end
 
 tube = varargin{1};
 dna = varargin{2};
 rna = varargin{3};
-RNAPbound = varargin{4};    
+RNAP = varargin{4}; % RNA polymerase name for reactions
+RNAPbound = varargin{5};    
    
-RNAP = 'RNAP28';			% RNA polymerase name for reactions
-
-NTP_model = 1;
+		
+% Set up the transcription reaction
+NTP_model = 2;
 
 if NTP_model == 1
     % Compute the number of NTPs required, in 100 NTP blocks
@@ -92,19 +93,19 @@ else
 end
 
 
-
-if nargin == 4
-Robj2 = addreaction(tube, ...
-  ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
+if nargin == 5
+    Robj2 = addreaction(tube, ...
+      ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
 else
-Robj2 = addreaction(tube, ...
-  ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr]);    
+    Robj2 = addreaction(tube, ...
+      ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr]);    
 end
+
 Kobj2 = addkineticlaw(Robj2, 'MassAction');
+
 if nargin == 6 && ~isempty(ktx)
     addparameter(Kobj2, 'TX_rate', ktx);
     set(Kobj2, 'ParameterVariableNames', 'TX_rate');
-    
 else
     %generating unique parameter name for the current RNA
     rN = regexprep(rna.Name, {'( )'}, {''});
@@ -113,7 +114,6 @@ else
 end
 
 
-Rlist = [Robj1, Robj2];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
