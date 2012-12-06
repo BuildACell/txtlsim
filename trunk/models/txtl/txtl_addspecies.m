@@ -1,4 +1,4 @@
-function Sobj = txtl_addspecies(tube, name, amount)
+function txtl_addspecies(tube, name, amount)
 %TXTL_ADDSPECIES   Add a molecular species to a tube
 %
 % Sobj = TXTL_ADDSPECIES(tube, name, amount) adds a molecule to a
@@ -37,15 +37,35 @@ function Sobj = txtl_addspecies(tube, name, amount)
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
+% check 
+assert(size(name,2) == size(amount,2));
+
 index = findspecies(tube, name);
-if (index == 0)
-  Sobj = addspecies(tube, name, amount);
+
+if size(index,2) > 1 
+    for k =1:size(index,2)
+        addOneSpecie(tube,name{k},amount{k},index(k));
+    end
 else
-  tube.Species(index).InitialAmount = ...
-    tube.Species(index).InitialAmount + amount;
-  Sobj = tube.Species(index);
+    addOneSpecie(tube,name,amount,index);    
 end
 
+end
+
+function addOneSpecie(tube,name,amount,index)
+    % if amount wasn't specified then make it zero
+    if isempty(amount)
+            amount = 0;
+    end
+        
+    if (index == 0)
+        addspecies(tube, name, amount);
+    else
+      tube.Species(index).InitialAmount = ...
+        tube.Species(index).InitialAmount + amount;
+        tube.Species(index);
+    end
+end
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
 % mode: matlab

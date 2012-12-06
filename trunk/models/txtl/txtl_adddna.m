@@ -199,48 +199,12 @@ if strcmp(mode, 'Setup Species')
     % Now put in the reactions for the utilization of amino acids 
 
     % Set up the translation reaction
-    AA_model = 2;
-
-    if AA_model == 1
-        
-        foo = sbioselect(tube, 'Name', 'AA');
-        if isempty(foo)
-            addspecies(tube, 'AA');
-        end
-        foo = [];
-
-        foo = sbioselect(tube, 'Name', ['AA:' Ribobound.Name]);
-        if isempty(foo)
-            addspecies(tube, ['AA:' Ribobound.Name]);
-        end
-        foo = [];
-        
-    else
-        foo = sbioselect(tube, 'Name', 'AA');
-        if isempty(foo)
-            addspecies(tube, 'AA');
-        end
-        foo = [];
-
-        foo = sbioselect(tube, 'Name', ['AA:' Ribobound.Name]);
-        if isempty(foo)
-            addspecies(tube, ['AA:' Ribobound.Name]);
-        end
-        foo = [];
-        
-    end
+    % 
+    % set up standard species 
+    coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo','RNase'};
+    % empty cellarry for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
-    foo = sbioselect(tube, 'Name', 'Ribo');
-    if isempty(foo)
-        addspecies(tube, 'Ribo');
-    end
-    foo = [];
-    foo = sbioselect(tube, 'Name', 'RNase');
-    if isempty(foo)
-        addspecies(tube, 'RNase');
-    end
-    foo = [];
-
 
     % Protein degradation (if tagged)
     if protDEGflag
@@ -411,10 +375,10 @@ elseif strcmp(mode, 'Setup Reactions')
     % Now put in the reactions for the utilization of amino acids 
 
     % Set up the translation reaction
-    AA_model = 2;
+    %AA_model = 2;
     Ribobound = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
     
-    if AA_model == 1
+    if tube.UserData.AAmodel == 1
 
         aacnt = floor(protein.UserData/100);	% get number of K amino acids
         if (aacnt == 0) 
