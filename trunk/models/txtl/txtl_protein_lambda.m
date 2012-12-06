@@ -65,19 +65,6 @@ if strcmp(mode, 'Setup Species')
         end
     end
 
-    % setup the species
-%     foo = sbioselect(tube, 'Name', 'aTc');
-%     if isempty(foo)
-%         addspecies(tube, 'aTc');
-%     end
-%     foo = [];
-%     foo = sbioselect(tube, 'Name', ['aTc:' protein.Name]);
-%     if isempty(foo)
-%         addspecies(tube, ['aTc:' protein.Name]);
-%     end
-%     foo = [];
-    
-
     % call other functions in 'Setup Species' mode
     txtl_protein_dimerization('Setup Species', tube,protein);
 
@@ -85,32 +72,9 @@ if strcmp(mode, 'Setup Species')
     varargout{1} = genelen;
 
 elseif strcmp(mode, 'Setup Reactions')
-    
-    %!TODO: set up user defined parameters. 
-%     kf_aTc = 1; kr_aTc = 0.1; 
-%     % Set up the binding reaction
-%     Robj1 = addreaction(tube, ['[' protein.Name '] + aTc <-> [aTc:' protein.Name ']']);
-%     Kobj1 = addkineticlaw(Robj1, 'MassAction');
-%     Pobj1f = addparameter(Kobj1, 'TXTL_INDUCER_TETR_ATC_F', kf_aTc);
-%     Pobj1r = addparameter(Kobj1, 'TXTL_INDUCER_TETR_ATC_R', kr_aTc);
-%     set(Kobj1, 'ParameterVariableNames', {'TXTL_INDUCER_TETR_ATC_R', 'TXTL_INDUCER_TETR_ATC_R'});
+  
+  txtl_protein_dimerization('Setup Reactions', tube,protein, [0.001, 0.0001]);
 
-    % degrade the aTc inducer
-%     kf_aTcdeg = 0.0001;
-%     Robj2 = addreaction(tube, ['aTc -> null']);
-%     Kobj2 = addkineticlaw(Robj2, 'MassAction');
-%     Pobj2 = addparameter(Kobj2, 'TXTL_INDUCER_DEGRADATION_ATC', kf_aTcdeg);
-%     set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_ATC'});
-
-
-    txtl_protein_dimerization('Setup Reactions', tube,protein, [0.001, 0.0001]);
-
-    % % ! TODO: Check if tetR undergoes tertramerization
-    % % Hsieh & Brenowitz 1997 JBC
-    % %! TODO: these may be strain/excract dependent
-    % kf_tetramer = 0.000602; % 1/(molecule*sec)
-    % kr_tetramer = 0.000001; % 1/sec
-    % Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
 else
     error('txtltoolbox:txtl_protein_lambda:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
 end
