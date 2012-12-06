@@ -10,6 +10,10 @@
 % [t_ode_output, x_ode_output, simData_output] = txtl_runsim(modelObj, configsetObj, t_ode_input, x_ode_input, simData_input)
 % simData_output is optional
 
+% when using this, it is Necessary to use the model object returned by this 
+% function in subsequent calls / plotting. This is because the first call to 
+% this function sets the reactions in the modelObject. 
+
 
 % Redistribution and use in source and binary forms, with or without
 % modification, are permitted provided that the following conditions are
@@ -38,7 +42,7 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-function [t_ode, x_ode, varargout] = txtl_runsim(varargin)
+function [t_ode, x_ode, modelObj, varargout] = txtl_runsim(varargin)
 
     if nargin ~= 4 && nargin~= 5
         error('txtl_runsim should be called either with 4 or 5 arguments.');
@@ -52,7 +56,31 @@ function [t_ode, x_ode, varargout] = txtl_runsim(varargin)
         end
         
     end
+    
+m = get(modelObj, 'UserData');
+datalen = length(m);
+if ~strcmp(m{datalen},'notFirstRun')
+    % if it is first run, userdata only has dna spec data 
+    % if it is second run, the last element in the userdata is a string
+    % 'notFirstRun'
+    for i = 1:length(m)
+        for j= 1:length(m{i})
+            foo = txtl_adddna(modelObj, m{i}{j}{1}, m{i}{j}{2}, m{i}{j}{3}, m{i}{j}{4}, m{i}{j}{5}, 'Setup Reactions');
+        end
+    end
+    txtl_setup_parameters(modelObj); 
+    newUserData = cat(1, m, 'notFirstRun');
+    set(modelObj, 'UserData', newUserData)
+end
 
+% 
+%     
+% dna_tetR = txtl_adddna(modelObj, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear', 'Setup Reactions');%
+% dna_deGFP = txtl_adddna(modelObj, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear', 'Setup Reactions');
+% dna_gamS = txtl_adddna(modelObj, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid', 'Setup Reactions');
+%
+    
+    
 if ~isempty(time_vector) && size(time_vector,1) > 1
     prevData = zeros(size(time_vector,1),size(modelObj.Species,1));
 end
@@ -89,12 +117,13 @@ elseif size(modelObj.Species,1) == size(data,2) && size(data,1) > 1
 else
             % no data was provided, no action needed 
 end
+% 
+% if (isempty(data))
+%     %this is the first run, therefore we have setup the parameters
+%     txtl_setup_parameters(modelObj);
+% end
 
-if (isempty(data))
-    %this is the first run, therefore we have setup the parameters
-    txtl_setup_parameters(modelObj);
-end
- 
+
 simData = sbiosimulate(modelObj, configsetObj);
    
 if isempty(time_vector) 
@@ -106,7 +135,6 @@ else
 end
 
 varargout{1} = simData;
-
 
 end
 

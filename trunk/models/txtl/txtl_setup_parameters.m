@@ -81,6 +81,12 @@ end
         addparameter(modelObj, 'TXTL_PTET_RNAPbound_F', kf_ptet);
         addparameter(modelObj, 'TXTL_PTET_RNAPbound_R', kr_ptet);
         
+        % plambda
+        kf_plambda = log(2)/0.1;			% 100 ms bind rate
+        kr_plambda = 10 * kf_plambda;			% Km of 10 (same as p70, from VN)
+        addparameter(modelObj, 'TXTL_PLAMBDA_RNAPbound_F', kf_plambda);
+        addparameter(modelObj, 'TXTL_PLAMBDA_RNAPbound_R', kr_plambda);
+        
         % p70       
         kf_p70 = log(2)/0.1;			% 100 ms bind rate
         kr_p70 = 10 * kf_p70;			% Km of 10 nM (from VN model)
@@ -123,7 +129,25 @@ end
             end
         end
         
-        % p70
+        % plambda
+        plambdaRepression = false;
+        kf_plambda_repression_singledimer = 0.0001; % do sweeps over these models to see
+        kr_plambda_repression_singledimer = 0.0001;
+        matchStr = regexp(listOfSpecies,'(^protein lambda.*dimer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
+        listOflambdadimer = vertcat(matchStr{:});
+        if ~isempty(listOflambdadimer)
+            plambdaRepression = true;
+        end
+        
+        if plambdaRepression
+            for i = 1:size(listOflambdadimer,1)
+                rN = regexprep(listOflambdadimer{i}, {'( )'}, {''});
+                uniqueNameF = sprintf('TXTL_PLAMBDA_REPRESSION_%s_F',rN);
+                uniqueNameR = sprintf('TXTL_PLAMBDA_REPRESSION_%s_R',rN);
+                addparameter(modelObj, uniqueNameF, kf_plambda_repression_singledimer);
+                addparameter(modelObj, uniqueNameR, kr_plambda_repression_singledimer);
+            end
+        end
         
         % placI
         placIRepression = false;
@@ -225,14 +249,20 @@ for i = 1:length(listOftetRSpecies)
     if length(listOftetRSpecies{i}) > 7
         str2 = listOftetRSpecies{i}(end-7:end);
     end
-    if ~strcmp(str1, 'dimer') &&  ~strcmp(str2, 'tetramer')
+    if length(listOftetRSpecies{i}) > 5
+        str3 = listOftetRSpecies{i}(end-5:end);
+    end    
+    if ~strcmp(str1, 'dimer') &&  ~strcmp(str2, 'tetramer') && ~strcmp(str3, ':ClpXP')
         listOftetRMonomers{countOftetRMonomers} = listOftetRSpecies{i};
         countOftetRMonomers = countOftetRMonomers +1;
     end
 end
-listOftetRMonomers = listOftetRMonomers';
-if ~isempty(listOftetRMonomers)
-    tetRDimerization = true;
+tetRDimerization = false;
+if exist('listOftetRMonomers', 'var')
+    listOftetRMonomers = listOftetRMonomers';
+    if ~isempty(listOftetRMonomers)
+        tetRDimerization = true;
+    end
 end
 if tetRDimerization
     for i = 1:size(listOftetRMonomers,1)
@@ -269,9 +299,12 @@ for i = 1:length(listOflacISpecies)
         countOflacIMonomers = countOflacIMonomers +1;
     end
 end
-listOflacIMonomers = listOflacIMonomers';
-if ~isempty(listOflacIMonomers)
-    lacIDimerization = true;
+lacIDimerization = false;
+if exist('listOflacIMonomers', 'var')
+    listOflacIMonomers = listOflacIMonomers';
+    if ~isempty(listOflacIMonomers)
+        lacIDimerization = true;
+    end
 end
 if lacIDimerization
     for i = 1:size(listOflacIMonomers,1)
@@ -283,6 +316,45 @@ if lacIDimerization
     end
 end
         
+
+% lambda protein dimerization
+kf_lambda_dimer = 8e-2;% originally 1e-4 1/(molecule*sec)
+kr_lambda_dimer = 0.02; %0.00000001; % 1/sec
+matchStrings = regexp(listOfSpecies,'(^protein lambda.*)', 'match');
+listOflambdaSpecies = vertcat(matchStrings{:});
+countOflambdaMonomers = 1;
+for i = 1:length(listOflambdaSpecies)
+    if length(listOflambdaSpecies{i}) > 4
+        str1 = listOflambdaSpecies{i}(end-4:end);
+    end
+    if length(listOflambdaSpecies{i}) > 7
+        str2 = listOflambdaSpecies{i}(end-7:end);
+    end
+    if length(listOflambdaSpecies{i}) > 5
+        str3 = listOflambdaSpecies{i}(end-5:end);
+    end    
+    if ~strcmp(str1, 'dimer') &&  ~strcmp(str2, 'tetramer') && ~strcmp(str3, ':ClpXP')
+        listOflambdaMonomers{countOflambdaMonomers} = listOflambdaSpecies{i};
+        countOflambdaMonomers = countOflambdaMonomers +1;
+    end
+end
+lambdaDimerization = false;
+if exist('listOflambdaMonomers', 'var')
+    listOflambdaMonomers = listOflambdaMonomers';
+    if ~isempty(listOflambdaMonomers)
+        lambdaDimerization = true;
+    end
+end
+if lambdaDimerization
+    for i = 1:size(listOflambdaMonomers,1)
+        rN = regexprep(listOflambdaMonomers{i}, {'( )'}, {''});
+        uniqueNameF = sprintf('TXTL_PROT_DIMER_%s_F',rN);
+        uniqueNameR = sprintf('TXTL_PROT_DIMER_%s_R',rN);
+        addparameter(modelObj, uniqueNameF, kf_lambda_dimer);
+        addparameter(modelObj, uniqueNameR, kr_lambda_dimer);
+    end
+end
+
 % lacI tetramerization
 
 kf_lacI_tetramer = 0.00000602; % 1/(molecule*sec)

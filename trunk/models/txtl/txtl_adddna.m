@@ -1,4 +1,4 @@
-function dna = txtl_adddna(mode, tube, promspec, rbsspec, genespec, dnaamount, type)
+function dna = txtl_adddna(tube, promspec, rbsspec, genespec, dnaamount, type, varargin)
 %TXTL_ADDDNA   Set up species and reactions for a DNA segment
 %
 %   dna = TXTL_ADDDNA(tube, promspec, rbsspec, genespec, amount, type)
@@ -47,11 +47,18 @@ function dna = txtl_adddna(mode, tube, promspec, rbsspec, genespec, dnaamount, t
 % STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
-% run code portions depending on driver mode: 'Setup Species' or 'Setup
-% Reactions'
-if strcmp(mode, 'Setup Species')
 
-
+if isempty(varargin)
+    mode = 'Setup Species';
+    dnaInfo = get(tube, 'UserData');
+    i = length(dnaInfo);
+    foo = cell(i+1, 1);
+    for j = 1:i
+        foo{j} = dnaInfo{j};
+    end
+    foo{i+1,1} = {promspec, rbsspec, genespec, dnaamount, type};
+    set(tube, 'UserData', foo)
+    clear dnaInfo
     % Extract out the names and lengths
     [promFull, promlen] = txtl_parsespec(promspec);
     [rbsFull, rbslen] = txtl_parsespec(rbsspec);
@@ -213,8 +220,8 @@ if strcmp(mode, 'Setup Species')
     % All done!
     return
     
-elseif strcmp(mode, 'Setup Reactions')
-
+elseif strcmp(varargin{1}, 'Setup Reactions')
+    mode = varargin{1};
     % get a list of the species to search through before setting up
     % certain reactions
     [~,listOfSpecies] = getstoichmatrix(tube);
@@ -377,8 +384,9 @@ elseif strcmp(mode, 'Setup Reactions')
     % Set up the translation reaction
     %AA_model = 2;
     Ribobound = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
-    
-    if tube.UserData.AAmodel == 1
+    AA_model = 1;
+    if AA_model == 1
+        %tube.UserData.AAmodel == 1
 
         aacnt = floor(protein.UserData/100);	% get number of K amino acids
         if (aacnt == 0) 

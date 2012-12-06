@@ -72,6 +72,20 @@ for m = 1:length(tubelist)
   copyobjlist(tube.Parameters, Mobj);
   copyobjlist(tube.Events, Mobj);
   copyobjlist(tube.Rules, Mobj);
+  
+  mobjUser = get(Mobj, 'UserData');
+  tubeUser = get(tube, 'UserData');
+  if ~isempty(tubeUser)
+      i = length(mobjUser);
+      foo = cell(i+1, 1);
+      for j = 1:i
+          foo{j} = mobjUser{j};
+      end
+      
+      foo{i+1,1} = tubeUser;
+      set(Mobj, 'UserData', foo)
+  end
+  
 end
 
 Mobj.Name = Mobj.Name(1:end-1); % deleting the last '_' character

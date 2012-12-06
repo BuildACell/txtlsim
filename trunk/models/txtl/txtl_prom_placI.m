@@ -36,7 +36,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_prom_placI(tube, dna, rna,varargin)
+function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
 
 if strcmp(mode, 'Setup Species')
 
@@ -85,7 +85,7 @@ if strcmp(mode, 'Setup Species')
     %since looping occurs here, need to do that add that 
     varargout{1} = promlen;
 
-elseif strcmp(mode,'Setup Reractions')
+elseif strcmp(mode,'Setup Reactions')
     
     listOfSpecies = varargin{1};
 
@@ -104,8 +104,8 @@ elseif strcmp(mode,'Setup Reractions')
     % Set up binding reaction
     Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
     Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(modelObj, 'TXTL_PLACI_RNAPbound_F', kf_placI);
-    Pobj1r = addparameter(modelObj, 'TXTL_PLACI_RNAPbound_R', kr_placI);
+    Pobj1f = addparameter(Kobj1, 'TXTL_PLACI_RNAPbound_F', kf_placI);
+    Pobj1r = addparameter(Kobj1, 'TXTL_PLACI_RNAPbound_R', kr_placI);
     set(Kobj1, 'ParameterVariableNames', {'TXTL_PLACI_RNAPbound_F', 'TXTL_PLACI_RNAPbound_R'});
     %
     % Now put in the reactions for the utilization of NTPs
@@ -128,7 +128,7 @@ elseif strcmp(mode,'Setup Reractions')
     placIRepression = false;
     matchStr = regexp(listOfSpecies,'(^protein lacI.*tetramer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
     listOflacItetramers = vertcat(matchStr{:});
-    if ~isempty(listOftetR)
+    if ~isempty(listOflacItetramers)
         placIRepression = true;
     end
     

@@ -16,10 +16,11 @@ tube2 = txtl_buffer('e1');
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
 
+
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_adddna('Setup Species', tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
-dna_deGFP = txtl_adddna('Setup Species', tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_adddna('Setup Species', tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
+dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 
 %
@@ -42,15 +43,8 @@ dna_gamS = txtl_adddna('Setup Species', tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 1, 1.5]);
-
-
-dna_tetR = txtl_adddna('Setup Reactions', Mobj, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
-dna_deGFP = txtl_adddna('Setup Reactions', Mobj, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_adddna('Setup Reactions', Mobj, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
-
-txtl_setup_parameters(Mobj); % parameters will be needed by the reactions, so should be setup befroe the reactions
-
-
+m = get(Mobj, 'UserData')
+m{1}{1}'
 
 %
 % Run a simulaton
@@ -66,8 +60,9 @@ set(configsetObj, 'StopTime', 5*60*60)
 if ~strcmp(version('-release'),'2012a')
  set(configsetObj, 'SolverType', 'ode23s');
 end
-[t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
 
+[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj,[], []);
+names = simData.DataNames
 % Top row: protein and RNA levels
 figure(1); clf(); subplot(2,1,1);
 iTetR = findspecies(Mobj, 'protein tetR-lva-terminator');
