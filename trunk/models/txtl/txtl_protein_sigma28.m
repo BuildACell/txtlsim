@@ -35,44 +35,68 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [Rlist, genelen] = txtl_protein_sigma28(tube, protein, geneFull, genelen)
+function varargout = txtl_protein_sigma28(mode, tube, protein, varargin)
 
-% set up gene default lengths
-geneDefaultUsed = 0;
-for i = 1: length(geneFull)
-    if isempty(genelen{i})
-        geneDefaultUsed = geneDefaultUsed+1;
-        geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-    end
-end
+if strcmp(mode, 'Setup Species')
+    
+    geneFull = varargin{1};
+    genelen = varargin{2};
 
-if geneDefaultUsed ~= 0
-    for i = 1:length(geneDefIdx)
-        switch geneFull{geneDefIdx(i)}
-            case 'sigma28'
-                genelen{geneDefIdx(i)} = 1000;
-            case 'lva'
-                genelen{geneDefIdx(i)} = 40; 
-            case 'terminator'
-                genelen{geneDefIdx(i)} = 100; 
+    % set up gene default lengths
+    geneDefaultUsed = 0;
+    for i = 1: length(geneFull)
+        if isempty(genelen{i})
+            geneDefaultUsed = geneDefaultUsed+1;
+            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
         end
     end
-end
-%sequestration of RNAP by sigma28 factor
-Kf = 100; % nM^-1s^-1
-Kr = 0.01; % s^-1
 
-%RNAP + Sigma70 <-> RNAP70
-% Set up the reaction
-Robj1 = addreaction(tube, ['RNAP + ' protein.Name ' <-> RNAP28']);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', Kf);
-Pobj1r = addparameter(Kobj1, 'kr', Kr);
-set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
+    if geneDefaultUsed ~= 0
+        for i = 1:length(geneDefIdx)
+            switch geneFull{geneDefIdx(i)}
+                case 'sigma28'
+                    genelen{geneDefIdx(i)} = 1000;
+                case 'lva'
+                    genelen{geneDefIdx(i)} = 40; 
+                case 'terminator'
+                    genelen{geneDefIdx(i)} = 100; 
+            end
+        end
+    end
+
+    foo = sbioselect(tube, 'Name', 'RNAP');
+    if isempty(foo)
+        addspecies(tube, 'RNAP');
+    end
+    foo = [];
+    foo = sbioselect(tube, 'Name', 'RNAP28');
+    if isempty(foo)
+        addspecies(tube, 'RNAP28');
+    end
+    foo = [];
+    
+    
+    varargout{1} = genelen;
+
+elseif strcmp(mode, 'Setup Reactions')
+    
+    %sequestration of RNAP by sigma28 factor
+    Kf = 100; % nM^-1s^-1
+    Kr = 0.01; % s^-1
+
+    %RNAP + Sigma70 <-> RNAP70
+    % Set up the reaction
+    Robj1 = addreaction(tube, ['RNAP + [' protein.Name '] <-> RNAP28']);
+    Kobj1 = addkineticlaw(Robj1, 'MassAction');
+    Pobj1f = addparameter(Kobj1, 'kf', Kf);
+    Pobj1r = addparameter(Kobj1, 'kr', Kr);
+    set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
+
+else
+    error('txtltoolbox:txtl_protein_lacI:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+end     
 
 
-% Return the list of reactions that we set up
-Rlist = [Robj1];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

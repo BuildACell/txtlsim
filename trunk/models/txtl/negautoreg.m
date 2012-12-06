@@ -17,9 +17,10 @@ tube2 = txtl_buffer('e1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
-dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_tetR = txtl_adddna('Setup Species', tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
+dna_deGFP = txtl_adddna('Setup Species', tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_adddna('Setup Species', tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -43,7 +44,12 @@ dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 1, 1.5]);
 
 
-txtl_setup_parameters(Mobj);
+dna_tetR = txtl_adddna('Setup Reactions', Mobj, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
+dna_deGFP = txtl_adddna('Setup Reactions', Mobj, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_adddna('Setup Reactions', Mobj, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+
+txtl_setup_parameters(Mobj); % parameters will be needed by the reactions, so should be setup befroe the reactions
+
 
 
 %

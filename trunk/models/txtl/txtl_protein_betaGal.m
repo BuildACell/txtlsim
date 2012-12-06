@@ -36,7 +36,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [Rlist, genelen] = txtl_protein_betaGal(tube, protein, geneFull, genelen)
+function varargout = txtl_protein_betaGal(mode, tube, protein, varargin)
 
 % Parameters that describe this RBS
 % kf_aTc = 1; kr_aTc = 0.1; 
@@ -82,76 +82,117 @@ function [Rlist, genelen] = txtl_protein_betaGal(tube, protein, geneFull, genele
 % Pobj4f = addparameter(Kobj4, 'kf', kf_GluGal);
 % set(Kobj4, 'ParameterVariableNames', {'kf_GluGal'});
 
-
-% set up gene default lengths
-geneDefaultUsed = 0;
-for i = 1: length(geneFull)
-    if isempty(genelen{i})
-        geneDefaultUsed = geneDefaultUsed+1;
-        geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-    end
-end
-
-if geneDefaultUsed ~= 0
-    for i = 1:length(geneDefIdx)
-        switch geneFull{geneDefIdx(i)}
-            case 'betaGal'
-                genelen{geneDefIdx(i)} = 1000;
-            case 'lva'
-                genelen{geneDefIdx(i)} = 40; 
-            case 'terminator'
-                genelen{geneDefIdx(i)} = 100; 
+if strcmp(mode, 'Setup Species')
+    geneFull = varargin{1};
+    genelen = varargin{2};    
+    % set up gene default lengths
+    geneDefaultUsed = 0;
+    for i = 1: length(geneFull)
+        if isempty(genelen{i})
+            geneDefaultUsed = geneDefaultUsed+1;
+            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
         end
     end
-end
 
-% Parameters
-Vl_lac_alloLac = 0.003; %1/min   \alpha_a 
-Kl_lac_alloLac = 1.25;% 
-%! TODO include enzyme concentraction
-Vl_allolac_GluGal = 0.001 %1/min
-Kl_allolac_GluGal =  1.25 %
+    if geneDefaultUsed ~= 0
+        for i = 1:length(geneDefIdx)
+            switch geneFull{geneDefIdx(i)}
+                case 'betaGal'
+                    genelen{geneDefIdx(i)} = 1000;
+                case 'lva'
+                    genelen{geneDefIdx(i)} = 40; 
+                case 'terminator'
+                    genelen{geneDefIdx(i)} = 100; 
+            end
+        end
+    end
 
- kf_seqlacI = 0.5;
- kr_seqlacI = 0.5;
+    % add relevant species
+    foo = sbioselect(tube, 'Name', 'Lactose');
+    if isempty(foo)
+        addspecies(tube, 'Lactose');
+    end
+    foo = [];
+    
+    foo = sbioselect(tube, 'Name', 'alloLactose');
+    if isempty(foo)
+        addspecies(tube, 'alloLactose');
+    end
+    foo = [];
+    foo = sbioselect(tube, 'Name', 'Glu+Gal');
+    if isempty(foo)
+        addspecies(tube, 'Glu+Gal');
+    end
+    foo = [];
+    
+    foo = sbioselect(tube, 'Name', 'protein lacItetramer');
+    if isempty(foo)
+        addspecies(tube, 'protein lacItetramer');
+    end
+    foo = [];
+    foo = sbioselect(tube, 'Name', 'alloLactose:protien lacItetramer');
+    if isempty(foo)
+        addspecies(tube, 'alloLactose:protien lacItetramer');
+    end
+    foo = [];
+    
+    foo = sbioselect(tube, 'Name', 'Lactose_ext');
+    if isempty(foo)
+        addspecies(tube, 'Lactose_ext');
+    end
+    foo = [];
+   
+    varargout{1} = genelen;
+    
+elseif strcmp(mode, 'Setup Reactions')
+    
+    % Parameters
+    Vl_lac_alloLac = 0.003; %1/min   \alpha_a 
+    Kl_lac_alloLac = 1.25;% 
+    %! TODO include enzyme concentraction
+    Vl_allolac_GluGal = 0.001; %1/min
+    Kl_allolac_GluGal =  1.25; %
 
-% conversion of Lactose
-Rlist = addreaction(tube, 'Lactose -> alloLactose');
-Kobj1 = addkineticlaw(Rlist, 'Henri-Michaelis-Menten');
-Pobj1f = addparameter(Kobj1, 'Vl_alloLac',Vl_lac_alloLac);
-Pobj1r = addparameter(Kobj1, 'Kl_alloLac',Kl_lac_alloLac);
-set(Kobj1, 'ParameterVariableNames', {'Vl_alloLac', 'Kl_alloLac'});
-set(Kobj1,'SpeciesVariableNames', {'Lactose'});
+     kf_seqlacI = 0.5;
+     kr_seqlacI = 0.5;
 
-% conversion of AlloLactose to Glucose and Galactose
-Rlist(end+1) = addreaction(tube, 'alloLactose -> Glu+Gal');
-Kobj2 = addkineticlaw(Rlist(end), 'Henri-Michaelis-Menten');
-Pobj2f = addparameter(Kobj2, 'Vl_GluGal',Vl_allolac_GluGal);
-Pobj2r = addparameter(Kobj2, 'Kl_GluGal',Kl_allolac_GluGal);
-set(Kobj2, 'ParameterVariableNames', {'Vl_GluGal', 'Kl_GluGal'});
-set(Kobj2,'SpeciesVariableNames', {'alloLactose'});
+    % conversion of Lactose
+    Rlist = addreaction(tube, 'Lactose -> alloLactose');
+    Kobj1 = addkineticlaw(Rlist, 'Henri-Michaelis-Menten');
+    Pobj1f = addparameter(Kobj1, 'Vl_alloLac',Vl_lac_alloLac);
+    Pobj1r = addparameter(Kobj1, 'Kl_alloLac',Kl_lac_alloLac);
+    set(Kobj1, 'ParameterVariableNames', {'Vl_alloLac', 'Kl_alloLac'});
+    set(Kobj1,'SpeciesVariableNames', {'Lactose'});
 
-% sequestration of lacI
-% I'm not sure of that it goes here...
-Rlist(end+1) = addreaction(tube,'alloLactose + protein lacItetramer <-> alloLactose:protien lacItetramer');
-Kobj4 = addkineticlaw(Rlist(end), 'MassAction');
-Pobj4f = addparameter(Kobj4, 'kf', kf_seqlacI);
-Pobj4r = addparameter(Kobj4, 'kr', kr_seqlacI);
-set(Kobj4, 'ParameterVariableNames', {'kf','kr'});
+    % conversion of AlloLactose to Glucose and Galactose
+    Rlist(end+1) = addreaction(tube, 'alloLactose -> Glu+Gal');
+    Kobj2 = addkineticlaw(Rlist(end), 'Henri-Michaelis-Menten');
+    Pobj2f = addparameter(Kobj2, 'Vl_GluGal',Vl_allolac_GluGal);
+    Pobj2r = addparameter(Kobj2, 'Kl_GluGal',Kl_allolac_GluGal);
+    set(Kobj2, 'ParameterVariableNames', {'Vl_GluGal', 'Kl_GluGal'});
+    set(Kobj2,'SpeciesVariableNames', {'alloLactose'});
 
-Vl = 0.006;
-Kl = 1.25;
-% transporting Lactose_ext into the cell
-Rlist(end+1)= addreaction(tube, 'Lactose_ext -> Lactose');
-Kobj1 = addkineticlaw(Rlist(end), 'Henri-Michaelis-Menten');
-Pobj1f = addparameter(Kobj1, 'Vl_Lactose_ext',Vl);
-Pobj1r = addparameter(Kobj1, 'Kl_Lactose_ext',Kl);
-set(Kobj1, 'ParameterVariableNames', {'Vl_Lactose_ext', 'Kl_Lactose_ext'});
-set(Kobj1,'SpeciesVariableNames', {'Lactose_ext'});
+    % sequestration of lacI
+    % I'm not sure of that it goes here...
+    Rlist(end+1) = addreaction(tube,'alloLactose + protein lacItetramer <-> alloLactose:protien lacItetramer');
+    Kobj4 = addkineticlaw(Rlist(end), 'MassAction');
+    Pobj4f = addparameter(Kobj4, 'kf', kf_seqlacI);
+    Pobj4r = addparameter(Kobj4, 'kr', kr_seqlacI);
+    set(Kobj4, 'ParameterVariableNames', {'kf','kr'});
 
-% get (Robj1, 'ReactionRate')
-% 
+    Vl = 0.006;
+    Kl = 1.25;
+    % transporting Lactose_ext into the cell
+    Rlist(end+1)= addreaction(tube, 'Lactose_ext -> Lactose');
+    Kobj1 = addkineticlaw(Rlist(end), 'Henri-Michaelis-Menten');
+    Pobj1f = addparameter(Kobj1, 'Vl_Lactose_ext',Vl);
+    Pobj1r = addparameter(Kobj1, 'Kl_Lactose_ext',Kl);
+    set(Kobj1, 'ParameterVariableNames', {'Vl_Lactose_ext', 'Kl_Lactose_ext'});
+    set(Kobj1,'SpeciesVariableNames', {'Lactose_ext'});
 
+else
+    error('txtltoolbox:txtl_protein_betaGal:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+end    
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

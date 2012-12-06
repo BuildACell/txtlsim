@@ -37,7 +37,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Robj = txtl_protein_dimerization(tube,protein,reactionRates)
+function txtl_protein_dimerization(mode, tube,protein,varargin)
 % function for protein dimerization.
 % tube: sbiomodel object, where the reaction occurs
 % protein: SimBiology Species Array
@@ -46,19 +46,53 @@ function Robj = txtl_protein_dimerization(tube,protein,reactionRates)
 %
 % Return: SimBiology Reaction Array
 
-if reactionRates(2) == 0
-   Robj = addreaction(tube, ['2 ' protein.Name ' ->' protein.Name 'dimer']);
-   Kobj = addkineticlaw(Robj,'MassAction');
-   Pobj = addparameter(Kobj,  'kf', reactionRates(1));
-   set(Kobj, 'ParameterVariableNames','kf');
+if strcmp(mode, 'Setup Species')
+    
+    foo = sbioselect(tube, 'Name', [protein.Name 'dimer']);
+    if isempty(foo)
+        addspecies(tube, [protein.Name 'dimer']);
+    end
+    foo = [];
+    
+       
+elseif strcmp(mode, 'Setup Reactions')
+    
+    reactionRate = varargin{1};
+    Robj = addreaction(tube, ['2 [' protein.Name '] <-> [' protein.Name 'dimer]']); 
+    Kobj = addkineticlaw(Robj,'MassAction');
+    rN = regexprep(protein.Name, {'( )'}, {''});
+    uniqueNameF = sprintf('TXTL_PROT_DIMER_%s_F',rN);
+    uniqueNameR = sprintf('TXTL_PROT_DIMER_%s_R',rN);
+    Pobjf = addparameter(Kobj, uniqueNameF, reactionRate(1));
+    Pobjr = addparameter(Kobj, uniqueNameR, reactionRate(2));
+    set(Kobj, 'ParameterVariableNames', {uniqueNameF, uniqueNameR});
+    
+    % !TODO: change the userdata structure to a larger structure so that
+    % a reaction rate vector can be specified. til then, we use the setup
+    % parameters method, with a reversible dimerization reaction. -Vipul
+    %{ 
+    
+    if isempty(reactionRate)
+        error('txtltoolbox:txtl_protein_dimerization:unspecifiedRR', 'Please specify dimerization reaction rates as an input vector')
+    elseif reactionRate(2) == 0 || length(reactionRate) == 1
+       Robj = addreaction(tube, ['2 [' protein.Name '] -> [' protein.Name 'dimer]']);
+       Kobj = addkineticlaw(Robj,'MassAction');
+       Pobj = addparameter(Kobj,  'kf', reactionRate(1));
+       set(Kobj, 'ParameterVariableNames','kf');
+    else
+       Robj = addreaction(tube, ['2 [' protein.Name '] <-> [' protein.Name 'dimer]']); 
+       Kobj = addkineticlaw(Robj,'MassAction');
+       Pobjf = addparameter(Kobj, 'kf', reactionRate(1));
+       Pobjr = addparameter(Kobj, 'kr', reactionRate(2));
+       set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+    end
+    %}
+
 else
-   Robj = addreaction(tube, ['2 ' protein.Name ' <->' protein.Name 'dimer']); 
-   Kobj = addkineticlaw(Robj,'MassAction');
-   Pobjf = addparameter(Kobj, 'kf', reactionRates(1));
-   Pobjr = addparameter(Kobj, 'kr', reactionRates(2));
-   set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+    error('txtltoolbox:txtl_protein_dimerization:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''');
 end
-   
+
+
 end
 
 

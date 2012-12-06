@@ -36,57 +36,118 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [Rlist, promlen] = txtl_prom_p28(tube, dna, rna, promFull, promlen)
+function varargout = txtl_prom_p28(mode, tube, dna, rna, varargin)
 
-% set up promoter default lengths
-promDefaultUsed = 0;
-for i = 1: length(promFull)
-    if isempty(promlen{i})
-        promDefaultUsed = promDefaultUsed+1;
-        promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
-    end
-end
-
-if promDefaultUsed ~= 0
-    for i = 1:length(promDefIdx)
-        switch promFull{promDefIdx(i)}
-            case 'p28'
-                promlen{promDefIdx(i)} = 50;
-            case 'junk'
-                promlen{promDefIdx(i)} = 500; 
-            case 'thio'
-                promlen{promDefIdx(i)} = 0; 
+if strcmp(mode, 'Setup Species')
+    
+    promFull = varargin{1};
+    promlen = varargin{2};
+    
+    
+    % set up promoter default lengths
+    promDefaultUsed = 0;
+    for i = 1: length(promFull)
+        if isempty(promlen{i})
+            promDefaultUsed = promDefaultUsed+1;
+            promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
         end
     end
-end
+
+    if promDefaultUsed ~= 0
+        for i = 1:length(promDefIdx)
+            switch promFull{promDefIdx(i)}
+                case 'p28'
+                    promlen{promDefIdx(i)} = 50;
+                case 'junk'
+                    promlen{promDefIdx(i)} = 500; 
+                case 'thio'
+                    promlen{promDefIdx(i)} = 0; 
+            end
+        end
+    end
+
+   
+
+    % Create strings for reactants and products
+    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
+    RNA = ['[' rna.Name ']'];		% RNA species name for reactions
+    RNAP = 'RNAP28';			% RNA polymerase name for reactions
+    RNAPbound = ['RNAP28:' dna.Name];
+    
+    foo = sbioselect(tube, 'Name', 'RNAP28');
+    if isempty(foo)
+        addspecies(tube, 'RNAP28');
+    end
+    foo = [];
+    
+    foo = sbioselect(tube, 'Name', RNAPbound);
+    if isempty(foo)
+        addspecies(tube, RNAPbound);
+    end
+    foo = [];
+   
+    %
+    % Now put in the reactions for the utilization of NTPs
+    %
+    txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
+
+    
+   
+elseif strcmp(mode,'Setup Reactions')
+    
+    
+    % set up promoter default lengths
+    promDefaultUsed = 0;
+    for i = 1: length(promFull)
+        if isempty(promlen{i})
+            promDefaultUsed = promDefaultUsed+1;
+            promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
+        end
+    end
+
+    if promDefaultUsed ~= 0
+        for i = 1:length(promDefIdx)
+            switch promFull{promDefIdx(i)}
+                case 'p28'
+                    promlen{promDefIdx(i)} = 50;
+                case 'junk'
+                    promlen{promDefIdx(i)} = 500; 
+                case 'thio'
+                    promlen{promDefIdx(i)} = 0; 
+            end
+        end
+    end
 
 
-% Parameters that describe this promoter
-%! TODO: replace these values with correct values
-kf_p28 = log(2)/0.1;			% 100 ms bind rate
-kr_p28 = 10 * kf_p28;			% Km of 10 (same as p70, from VN)
-ktx_p28 = log(2)/(rna.UserData/30);	% 30 base/second transcription
+    % Parameters that describe this promoter
+    %! TODO: replace these values with correct values
+    kf_p28 = log(2)/0.1;			% 100 ms bind rate
+    kr_p28 = 10 * kf_p28;			% Km of 10 (same as p70, from VN)
+    ktx_p28 = log(2)/(rna.UserData/30);	% 30 base/second transcription
 
-% Create strings for reactants and products
-DNA = ['[' dna.Name ']'];		% DNA species name for reactions
-RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-RNAP = 'RNAP28';			% RNA polymerase name for reactions
-RNAPbound = ['RNAP28:' dna.Name];
+    % Create strings for reactants and products
+    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
+    RNA = ['[' rna.Name ']'];		% RNA species name for reactions
+    RNAP = 'RNAP28';			% RNA polymerase name for reactions
+    RNAPbound = ['RNAP28:' dna.Name];
 
-% Set up binding reaction
-Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_p28);
-Pobj1r = addparameter(Kobj1, 'kr', kr_p28);
-set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+    % Set up binding reaction
+    Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
+    Kobj1 = addkineticlaw(Robj1, 'MassAction');
+    Pobj1f = addparameter(Kobj1, 'kf', kf_p28);
+    Pobj1r = addparameter(Kobj1, 'kr', kr_p28);
+    set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
 
-%
-% Now put in the reactions for the utilization of NTPs
-%
-txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
+    %
+    % Now put in the reactions for the utilization of NTPs
+    %
+    txtl_transcription(tube, dna, rna, RNAP, RNAPbound);
 
+    
+else
+    error('txtltoolbox:txtl_prom_p28:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+end 
 
-Rlist = [Robj1];
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

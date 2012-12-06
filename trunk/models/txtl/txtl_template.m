@@ -1,10 +1,10 @@
-% txtl_template.m - template file for MATLAB functions
-% RMM, 9 Sep 2012
+% txtl_runsim_events.m - template file for MATLAB functions
+% Vipul Singhal Nov 2012
 %
 % This file is a template that includes the boilerplate for creating a 
 % MATLAB function with all of the BSD licensing information at the top.
 
-% Written by Richard Murray, 9 Sep 2012
+
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -34,6 +34,8 @@
 % STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
+
+
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

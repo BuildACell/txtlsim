@@ -38,46 +38,59 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-function Rlist = txtl_dna_degradation(tube,dna,reactionRates)
+function txtl_dna_degradation(mode, tube,dna,varargin)
 % function for dna degradation.
 % tube: sbiomodel object, where the reaction occurs
 % dna: simBiology species object
 % reacctionRate: degradation rate
 %
-% Return: SimBiology Reaction Array
+if strcmp(mode, 'Setup Species')
+    
+    foo = sbioselect(tube, 'Name', 'RecBCD');
+    if isempty(foo)
+        addspecies(tube, 'RecBCD');
+    end
+    foo = [];
+    
+    foo = sbioselect(tube, 'Name', [dna.Name ':RecBCD']);
+    if isempty(foo)
+        addspecies(tube, [dna.Name ':RecBCD']);
+    end
 
-switch length(reactionRates)
-    case 3
-       Robj1 = addreaction(tube, [ dna.Name ' + RecBCD <-> [' dna.Name ':RecBCD]']);
-       Kobj1 = addkineticlaw(Robj1,'MassAction');
-       Pobj1 = addparameter(Kobj1,  'kf_complex', reactionRates(1));
-       Pobj1r = addparameter(Kobj1, 'kr_complex', reactionRates(2));
-       set(Kobj1, 'ParameterVariableNames', {'kf_complex', 'kr_complex'});
-       
-       Robj2 = addreaction(tube, ['[' dna.Name ':RecBCD] -> RecBCD']);
-       Kobj2 = addkineticlaw(Robj2,'MassAction');
-       Pobj2 = addparameter(Kobj2,  'kf_deg', reactionRates(3));
-       set(Kobj2, 'ParameterVariableNames', 'kf_deg');   
-       Rlist = [Robj1, Robj2];
-    case 2
-       Robj1 = addreaction(tube, [ dna.Name ' + RecBCD -> [' dna.Name ':RecBCD]']);
-       Kobj1 = addkineticlaw(Robj1,'MassAction');
-       Pobj1 = addparameter(Kobj1,  'kf_complex', reactionRates(1));
-       set(Kobj1, 'ParameterVariableNames', {'kf_complex', 'kr_complex'});
-       
-       Robj2 = addreaction(tube, ['[' dna.Name ':RecBCD] -> RecBCD']);
-       Kobj2 = addkineticlaw(Robj2,'MassAction');
-       Pobj2 = addparameter(Kobj2,  'kf_deg', reactionRates(2));
-       set(Kobj2, 'ParameterVariableNames', 'kf_deg');         
-       Rlist = [Robj1, Robj2];
-    case 1
-       Robj1 = addreaction(tube, [ dna.Name ' + RecBCD -> RecBCD']);
-       Kobj1 = addkineticlaw(Robj1,'MassAction');
-       Pobj1 = addparameter(Kobj1,  'kf_deg', reactionRates(1));
-       set(Kobj1, 'ParameterVariableNames', 'kr_deg');
-       Rlist = Robj1;
-end
+elseif strcmp(mode,'Setup Reactions')
+    
+    reactionRates = varargin{1};    
+    
+    switch length(reactionRates)
+        case 3
+           Robj1 = addreaction(tube, [ dna.Name ' + RecBCD <-> [' dna.Name ':RecBCD]']);
+           Kobj1 = addkineticlaw(Robj1,'MassAction');
+           Pobj1 = addparameter(Kobj1,  'kf_complex', reactionRates(1));
+           Pobj1r = addparameter(Kobj1, 'kr_complex', reactionRates(2));
+           set(Kobj1, 'ParameterVariableNames', {'kf_complex', 'kr_complex'});
 
-       
-   
+           Robj2 = addreaction(tube, ['[' dna.Name ':RecBCD] -> RecBCD']);
+           Kobj2 = addkineticlaw(Robj2,'MassAction');
+           Pobj2 = addparameter(Kobj2,  'kf_deg', reactionRates(3));
+           set(Kobj2, 'ParameterVariableNames', 'kf_deg'); 
+        case 2
+           Robj1 = addreaction(tube, [ dna.Name ' + RecBCD -> [' dna.Name ':RecBCD]']);
+           Kobj1 = addkineticlaw(Robj1,'MassAction');
+           Pobj1 = addparameter(Kobj1,  'kf_complex', reactionRates(1));
+           set(Kobj1, 'ParameterVariableNames', {'kf_complex', 'kr_complex'});
+
+           Robj2 = addreaction(tube, ['[' dna.Name ':RecBCD] -> RecBCD']);
+           Kobj2 = addkineticlaw(Robj2,'MassAction');
+           Pobj2 = addparameter(Kobj2,  'kf_deg', reactionRates(2));
+           set(Kobj2, 'ParameterVariableNames', 'kf_deg');    
+        case 1
+           Robj1 = addreaction(tube, [ dna.Name ' + RecBCD -> RecBCD']);
+           Kobj1 = addkineticlaw(Robj1,'MassAction');
+           Pobj1 = addparameter(Kobj1,  'kf_deg', reactionRates(1));
+           set(Kobj1, 'ParameterVariableNames', 'kr_deg');
+    end
+else
+    error('txtltoolbox:txtl_dna_degradation:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+end 
+
 end

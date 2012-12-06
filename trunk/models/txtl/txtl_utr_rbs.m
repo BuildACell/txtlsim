@@ -36,51 +36,65 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [Sobj, rbslen] = txtl_utr_rbs(tube, rna, protein, rbsFull, rbslen)
+function varargout = txtl_utr_rbs(mode, tube, rna, protein, varargin)
 
-
-% set up promoter default lengths
-rbsDefaultUsed = 0;
-for i = 1: length(rbsFull)
-    if isempty(rbslen{i})
-        rbsDefaultUsed = rbsDefaultUsed+1;
-        rbsDefIdx(rbsDefaultUsed) = i; %idx of segments to set defaults for
-    end
-end
-
-if rbsDefaultUsed ~= 0
-    for i = 1:length(rbsDefIdx)
-        switch rbsFull{rbsDefIdx(i)}
-            case 'rbs'
-                rbslen{rbsDefIdx(i)} = 20;
-            case 'spacer'
-                rbslen{rbsDefIdx(i)} = 200; 
+if strcmp(mode, 'Setup Species')
+    rbsFull = varargin{1};
+    rbslen = varargin{2};
+    
+    % set up promoter default lengths
+    rbsDefaultUsed = 0;
+    for i = 1: length(rbsFull)
+        if isempty(rbslen{i})
+            rbsDefaultUsed = rbsDefaultUsed+1;
+            rbsDefIdx(rbsDefaultUsed) = i; %idx of segments to set defaults for
         end
     end
-end
 
-% Parameters that describe this RBS
-%! TODO: replace these values with correct values
-kf_rbs = log(2)/0.1;			% 100 ms bind rate
-kr_rbs = 0.05 * kf_rbs;			% Km of ~0.05 (from VN model)
+    if rbsDefaultUsed ~= 0
+        for i = 1:length(rbsDefIdx)
+            switch rbsFull{rbsDefIdx(i)}
+                case 'rbs'
+                    rbslen{rbsDefIdx(i)} = 20;
+                case 'spacer'
+                    rbslen{rbsDefIdx(i)} = 200; 
+            end
+        end
+    end
+    foo = sbioselect(tube, 'Name', 'Ribo');
+    if isempty(foo)
+        addspecies(tube, 'Ribo');
+    end
+    foo = [];
+    foo = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
+    if isempty(foo)
+        Ribobound = addspecies(tube, ['Ribo:' rna.Name]);
+    end
+    foo = [];
+    
+    
+    varargout{1} = Ribobound;
+    varargout{2} = rbslen;
+    
+elseif strcmp(mode,'Setup Reactions')
 
-% Create strings for the reactants and products
-RNA = ['[' rna.Name ']'];
-Protname = protein.Name;
+    % Parameters that describe this RBS
+    %! TODO: replace these values with correct values
+    kf_rbs = log(2)/0.1;			% 100 ms bind rate
+    kr_rbs = 0.05 * kf_rbs;			% Km of ~0.05 (from VN model)
 
-% Set up species for bound reaction
-Sobj = addspecies(tube, ['Ribo:' rna.Name]);
+    % Set up the binding reaction
+    
+    Robj = addreaction(tube, ['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']']);
+    Kobj = addkineticlaw(Robj, 'MassAction');
+    Pobjf = addparameter(Kobj, 'TXTL_UTR_RBS_F', kf_rbs);
+    Pobjr = addparameter(Kobj, 'TXTL_UTR_RBS_R', kr_rbs);
+    set(Kobj, 'ParameterVariableNames', {'TXTL_UTR_RBS_F', 'TXTL_UTR_RBS_R'});
 
-% Set up the binding reaction
-Robj = addreaction(tube, [RNA ' + Ribo <-> [' Sobj.Name ']']);
-Kobj = addkineticlaw(Robj, 'MassAction');
-Pobjf = addparameter(Kobj, 'kf', kf_rbs);
-Pobjr = addparameter(Kobj, 'kr', kr_rbs);
-set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
+else
+    error('txtltoolbox:txtl_utr_rbs:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+end    
 
-% Return the list of reactions that we set up
-%! TODO: optional return list of all reactions
-% Rlist = Robj;
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

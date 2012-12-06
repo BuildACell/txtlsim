@@ -36,60 +36,86 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [Rlist, genelen] = txtl_protein_tetR(tube, protein, geneFull, genelen)
+function varargout = txtl_protein_tetR(mode, tube, protein, varargin)
+% in 'setup Species' mode, it returns an array of gene lengths, having
+% added defaults in places where the lengths are missing. 
 
-% set up gene default lengths
-geneDefaultUsed = 0;
-for i = 1: length(geneFull)
-    if isempty(genelen{i})        
-        geneDefaultUsed = geneDefaultUsed+1;
-        geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-    end
-end
-if geneDefaultUsed ~= 0
-    for i = 1:length(geneDefIdx)
-        switch geneFull{geneDefIdx(i)}
-            case 'tetR'
-                genelen{geneDefIdx(i)} = 647;
-            case 'lva'
-                genelen{geneDefIdx(i)} = 40; 
-            case 'terminator'
-                genelen{geneDefIdx(i)} = 100; 
+if strcmp(mode, 'Setup Species')
+
+    geneFull = varargin{1};
+    genelen = varargin{2};
+    % set up gene default lengths of genes
+    geneDefaultUsed = 0;
+    for i = 1: length(geneFull)
+        if isempty(genelen{i})        
+            geneDefaultUsed = geneDefaultUsed+1;
+            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
         end
     end
+    if geneDefaultUsed ~= 0
+        for i = 1:length(geneDefIdx)
+            switch geneFull{geneDefIdx(i)}
+                case 'tetR'
+                    genelen{geneDefIdx(i)} = 647;
+                case 'lva'
+                    genelen{geneDefIdx(i)} = 40; 
+                case 'terminator'
+                    genelen{geneDefIdx(i)} = 100; 
+            end
+        end
+    end
+
+    % setup the species
+    foo = sbioselect(tube, 'Name', 'aTc');
+    if isempty(foo)
+        addspecies(tube, 'aTc');
+    end
+    foo = [];
+    foo = sbioselect(tube, 'Name', ['aTc:' protein.Name]);
+    if isempty(foo)
+        addspecies(tube, ['aTc:' protein.Name]);
+    end
+    foo = [];
+    
+
+    % call other functions in 'Setup Species' mode
+    txtl_protein_dimerization('Setup Species', tube,protein);
+
+    %return the gene lengths if not specified by the user
+    varargout{1} = genelen;
+
+elseif strcmp(mode, 'Setup Reactions')
+    
+    %!TODO: set up user defined parameters. 
+    kf_aTc = 1; kr_aTc = 0.1; 
+    % Set up the binding reaction
+    Robj1 = addreaction(tube, ['[' protein.Name '] + aTc <-> [aTc:' protein.Name ']']);
+    Kobj1 = addkineticlaw(Robj1, 'MassAction');
+    Pobj1f = addparameter(Kobj1, 'TXTL_INDUCER_TETR_ATC_F', kf_aTc);
+    Pobj1r = addparameter(Kobj1, 'TXTL_INDUCER_TETR_ATC_R', kr_aTc);
+    set(Kobj1, 'ParameterVariableNames', {'TXTL_INDUCER_TETR_ATC_R', 'TXTL_INDUCER_TETR_ATC_R'});
+
+    % degrade the aTc inducer
+    kf_aTcdeg = 0.0001;
+    Robj2 = addreaction(tube, ['aTc -> null']);
+    Kobj2 = addkineticlaw(Robj2, 'MassAction');
+    Pobj2 = addparameter(Kobj2, 'TXTL_INDUCER_DEGRADATION_ATC', kf_aTcdeg);
+    set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_ATC'});
+
+
+    txtl_protein_dimerization('Setup Reactions', tube,protein, [0.001, 0.0001]);
+
+    % % ! TODO: Check if tetR undergoes tertramerization
+    % % Hsieh & Brenowitz 1997 JBC
+    % %! TODO: these may be strain/excract dependent
+    % kf_tetramer = 0.000602; % 1/(molecule*sec)
+    % kr_tetramer = 0.000001; % 1/sec
+    % Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
+else
+    error('txtltoolbox:txtl_protein_tetR:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
 end
-% Parameters that describe this RBS
-kf_aTc = 1; kr_aTc = 0.1; 
 
 
-% Set up the binding reaction
-Robj1 = addreaction(tube, [protein.Name ' + aTc <-> aTc:' protein.Name]);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_aTc);
-Pobj1r = addparameter(Kobj1, 'kr', kr_aTc);
-set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
-
-% degrade the aTc inducer
-kf_aTcdeg = 0.0001;
-Robj2 = addreaction(tube, ['aTc -> null']);
-Kobj2 = addkineticlaw(Robj2, 'MassAction');
-Pobj2 = addparameter(Kobj2, 'kf', kf_aTcdeg);
-set(Kobj2, 'ParameterVariableNames', {'kf'});
-
-
-Rlist = [Robj1, Robj2];
-% Set up dimerization
-kf_dimer = 8e-2;% originally 1e-4 1/(molecule*sec)
-kr_dimer = 0.02; %0.00000001; % 1/sec
-
-Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]);
-
-% % ! TODO: Check if tetR undergoes tertramerization
-% % Hsieh & Brenowitz 1997 JBC
-% %! TODO: these may be strain/excract dependent
-% kf_tetramer = 0.000602; % 1/(molecule*sec)
-% kr_tetramer = 0.000001; % 1/sec
-% Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

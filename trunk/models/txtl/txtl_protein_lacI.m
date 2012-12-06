@@ -38,64 +38,91 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [Rlist, genelen] = txtl_protein_lacI(tube, protein, geneFull, genelen)
-% set up gene default lengths
-geneDefaultUsed = 0;
-for i = 1: length(geneFull)
-    if isempty(genelen{i})
-        geneDefaultUsed = geneDefaultUsed+1;
-        geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-    end
-end
+function varargout = txtl_protein_lacI(mode, tube, protein, varargin)
 
-if geneDefaultUsed ~= 0
-    for i = 1:length(geneDefIdx)
-        switch geneFull{geneDefIdx(i)}
-            case 'lacI'
-                genelen{geneDefIdx(i)} = 647;
-            case 'lva'
-                genelen{geneDefIdx(i)} = 40; 
-            case 'terminator'
-                genelen{geneDefIdx(i)} = 100; 
+if strcmp(mode, 'Setup Species')
+
+    geneFull = varargin{1};
+    genelen = varargin{2};
+    % set up gene default lengths
+    geneDefaultUsed = 0;
+    for i = 1: length(geneFull)
+        if isempty(genelen{i})
+            geneDefaultUsed = geneDefaultUsed+1;
+            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
         end
     end
-end
-% Parameters that describe this RBS
- kf_IPTG = 0.1; kr_IPTG = 0.01; 
 
-% Set up the binding reaction
-Robj1 = addreaction(tube, [protein.Name ' + IPTG <-> IPTG:' protein.Name]);
-Kobj1 = addkineticlaw(Robj1, 'MassAction');
-Pobj1f = addparameter(Kobj1, 'kf', kf_IPTG);
-Pobj1r = addparameter(Kobj1, 'kr', kr_IPTG);
-set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
+    if geneDefaultUsed ~= 0
+        for i = 1:length(geneDefIdx)
+            switch geneFull{geneDefIdx(i)}
+                case 'lacI'
+                    genelen{geneDefIdx(i)} = 647;
+                case 'lva'
+                    genelen{geneDefIdx(i)} = 40; 
+                case 'terminator'
+                    genelen{geneDefIdx(i)} = 100; 
+            end
+        end
+    end
 
-% degrade the IPTG inducer
-kf_IPTGdeg = 0.0001;
-Robj2 = addreaction(tube, ['IPTG -> null']);
-Kobj2 = addkineticlaw(Robj2, 'MassAction');
-Pobj2 = addparameter(Kobj2, 'kf', kf_IPTGdeg);
-set(Kobj2, 'ParameterVariableNames', {'kf'});
+    % add relevant species
+    foo = sbioselect(tube, 'Name', 'IPTG');
+    if isempty(foo)
+        addspecies(tube, 'IPTG');
+    end
+    foo = [];
+    
+    foo = sbioselect(tube, 'Name', ['IPTG:' protein.Name]);
+    if isempty(foo)
+        addspecies(tube, ['IPTG:' protein.Name]);
+    end
+    foo = [];
+    
 
-Rlist = [Robj1, Robj2];
+    
+    % call additional functions to setup any other relevant species (like
+    % multimers)
+    txtl_protein_dimerization(mode, tube, protein); 
+    txtl_protein_tetramerization(mode, tube, protein);
 
-%Set up dimerization
-% Hsieh & Brenowitz 1997 JBC
-kf_dimer = 0.08637; % 1/(molecule*sec)
-kr_dimer =0.1; %0.00000001; % 1/sec
+    varargout{1} = genelen;
+    
+elseif strcmp(mode, 'Setup Reactions')
+    
+    % Parameters that describe this reaction
+     kf_IPTG = 0.1; kr_IPTG = 0.01; 
 
-Rlist(end+1) = txtl_protein_dimerization(tube,protein,[kf_dimer,kr_dimer]); 
+    % Set up the binding reaction
+    Robj1 = addreaction(tube, [protein.Name ' + IPTG <-> IPTG:' protein.Name]);
+    Kobj1 = addkineticlaw(Robj1, 'MassAction');
+    Pobj1f = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_F', kf_IPTG);
+    Pobj1r = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_R', kr_IPTG);
+    set(Kobj1, 'ParameterVariableNames', {'TXTL_INDUCER_LACI_IPTG_F', 'TXTL_INDUCER_LACI_IPTG_R'});
 
+    % degrade the IPTG inducer
+    kf_IPTGdeg = 0.0001;
+    Robj2 = addreaction(tube, 'IPTG -> null');
+    Kobj2 = addkineticlaw(Robj2, 'MassAction');
+    Pobj2 = addparameter(Kobj2, 'TXTL_INDUCER_DEGRADATION_IPTG', kf_IPTGdeg);
+    set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_IPTG'});
 
+    %Set up dimerization
+    % Hsieh & Brenowitz 1997 JBC
+    kf_dimer = 0.08637; % 1/(molecule*sec)
+    kr_dimer =0.1; %0.00000001; % 1/sec
 
-%Set up tetramerization
-% Hsieh & Brenowitz 1997 JBC
-kf_tetramer = 0.00000602; % 1/(molecule*sec)
-kr_tetramer = 0.000001; %0.000001; % 1/sec
-Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
+    txtl_protein_dimerization(mode, tube,protein, [kf_dimer, kr_dimer]); 
 
+    %Set up tetramerization
+    % Hsieh & Brenowitz 1997 JBC
+    kf_tetramer = 0.00000602; % 1/(molecule*sec)
+    kr_tetramer = 0.000001; %0.000001; % 1/sec
+    txtl_protein_tetramerization(mode, tube,protein,[kf_tetramer,kr_tetramer]);
 
-
+else
+    error('txtltoolbox:txtl_protein_lacI:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+end    
 
 
 

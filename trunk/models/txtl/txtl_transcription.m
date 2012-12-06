@@ -36,82 +36,171 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [] = txtl_transcription(varargin)
-if nargin < 5
-    error('the number of argument should be at least 4, not %d',nargin);
-elseif nargin > 5
-    extraSpecies = varargin{6};
-    % processing the extraSpecies
-    extraStr = extraSpecies{1};
-    for k=2:size(extraSpecies,1)
-        extraStr = [extraStr '+' extraSpecies{k}];
-    end
-    %! TODO come up with a better parameter handling - zoltuz
-    if nargin == 7
-        ktx = varargin{7};
-    end
-end
+function [] = txtl_transcription(mode, varargin)
 
-tube = varargin{1};
-dna = varargin{2};
-rna = varargin{3};
-RNAP = varargin{4}; % RNA polymerase name for reactions
-RNAPbound = varargin{5};    
-   
-		
-% Set up the transcription reaction
+% Choose the NTP model
 NTP_model = 2;
+    
+if strcmp(mode, 'Setup Species')
 
-if NTP_model == 1
-    % Compute the number of NTPs required, in 100 NTP blocks
-    ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
-    if (ntpcnt == 0) 
-      ntpstr = '';
-    else
-      ntpstr = int2str(ntpcnt);
+    
+    if nargin < 6
+        error('the number of argument should be at least 6, not %d',nargin);
+    elseif nargin > 6
+        extraSpecies = varargin{6};
     end
-    Robj1 = addreaction(tube, ...
-      ['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});
+
+    tube = varargin{1};
+    dna = varargin{2};
+    rna = varargin{3};
+    RNAP = varargin{4}; % RNA polymerase name for reactions
+    RNAPbound = varargin{5};    
+
+
+    if NTP_model == 1
+        
+        foo = sbioselect(tube, 'Name', 'NTP');
+        if isempty(foo)
+            addspecies(tube, 'NTP');
+        end
+        foo = [];
+
+        foo = sbioselect(tube, 'Name', RNAPbound);
+        if isempty(foo)
+            addspecies(tube, RNAPbound);
+        end
+        foo = [];
+
+        foo = sbioselect(tube, 'Name', ['NTP:' RNAPbound]);
+        if isempty(foo)
+            addspecies(tube, ['NTP:' RNAPbound]);
+        end
+        foo = [];
+
+        foo = sbioselect(tube, 'Name', RNAPbound);
+        if isempty(foo)
+            addspecies(tube, RNAPbound);
+        end
+        foo = [];
+
+    else
+            
+        foo = sbioselect(tube, 'Name', 'NTP');
+        if isempty(foo)
+            addspecies(tube, 'NTP');
+        end
+        foo = [];
+
+        foo = sbioselect(tube, 'Name', RNAPbound);
+        if isempty(foo)
+            addspecies(tube, RNAPbound);
+        end
+        foo = [];
+        foo = sbioselect(tube, 'Name', 'RNAP');
+        if isempty(foo)
+            addspecies(tube, 'RNAP');
+        end
+        foo = [];
+
+        foo = sbioselect(tube, 'Name',  ['NTP:' RNAPbound]);
+        if isempty(foo)
+            addspecies(tube,  ['NTP:' RNAPbound]);
+        end
+        foo = [];        
+       
+    end
+
+    if nargin == 6
+        % do nothing
+    else        
+        for k=1:size(extraSpecies,1)
+            foo = sbioselect(tube, 'Name',  extraSpecies{k});
+            if isempty(foo)
+                addspecies(tube,  extraSpecies{k});
+            end
+            foo = []; 
+        end
+    end
+
+elseif strcmp(mode,'Setup Reactions')
+    
+    if nargin < 6
+        error('the number of argument should be at least 6, not %d',nargin);
+    elseif nargin > 6
+        extraSpecies = varargin{6};
+        % processing the extraSpecies
+        extraStr = extraSpecies{1};
+        for k=2:size(extraSpecies,1)
+            extraStr = [extraStr '+' extraSpecies{k}];
+        end
+        %! TODO come up with a better parameter handling - zoltuz
+        if nargin == 8
+            ktx = varargin{7};
+        end
+    end
+
+    tube = varargin{1};
+    dna = varargin{2};
+    rna = varargin{3};
+    RNAP = varargin{4}; % RNA polymerase name for reactions
+    RNAPbound = varargin{5};    
+
+    if NTP_model == 1
+        % Compute the number of NTPs required, in 100 NTP blocks
+        ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
+        if (ntpcnt == 0) 
+          ntpstr = '';
+        else
+          ntpstr = int2str(ntpcnt);
+        end
+        Robj1 = addreaction(tube, ...
+          ['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']']);
+        Kobj1 = addkineticlaw(Robj1, 'MassAction');
+        set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});
+    else
+        % to deal with stiffness due high reaction-order    
+        Robj1 = addreaction(tube, ...
+          ['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']']);
+        Kobj1 = addkineticlaw(Robj1, 'MassAction');
+        set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});   
+
+        %dummy raction
+        Robj5 = addreaction(tube, ...
+        ['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP]);
+        Kobj5 =  addkineticlaw(Robj5, 'MassAction');
+        %generating unique parameter name for the current RNA with NTP
+        %consumptio
+        rN = regexprep(rna.Name, {'( )'}, {''});
+        uniqueName = sprintf('TXTL_TX_rate_%s_NTP_consumption',rN);
+        set(Kobj5, 'ParameterVariableNames', uniqueName);    
+    end
+
+
+    if nargin == 6
+        Robj2 = addreaction(tube, ...
+          ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
+    else
+        Robj2 = addreaction(tube, ...
+          ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr]);    
+    end
+
+    Kobj2 = addkineticlaw(Robj2, 'MassAction');
+
+    if nargin == 8 && ~isempty(ktx)
+        addparameter(Kobj2, 'TX_rate', ktx);
+        set(Kobj2, 'ParameterVariableNames', 'TX_rate');
+    else
+        %generating unique parameter name for the current RNA
+        rN = regexprep(rna.Name, {'( )'}, {''});
+        uniqueName = sprintf('TXTL_TX_rate_%s',rN);
+        set(Kobj2, 'ParameterVariableNames', uniqueName);
+    end
+
+    
 else
-    % to deal with stiffness due high reaction-order    
-    Robj1 = addreaction(tube, ...
-      ['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});   
+    error('txtltoolbox:txtl_transcription:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+end     
 
-    %dummy raction
-    Robj5 = addreaction(tube, ...
-    ['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP]);
-    Kobj5 =  addkineticlaw(Robj5, 'MassAction');
-    %generating unique parameter name for the current RNA with NTP
-    %consumptio
-    rN = regexprep(rna.Name, {'( )'}, {''});
-    uniqueName = sprintf('TXTL_TX_rate_%s_NTP_consumption',rN);
-    set(Kobj5, 'ParameterVariableNames', uniqueName);    
-end
-
-
-if nargin == 5
-    Robj2 = addreaction(tube, ...
-      ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
-else
-    Robj2 = addreaction(tube, ...
-      ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr]);    
-end
-
-Kobj2 = addkineticlaw(Robj2, 'MassAction');
-
-if nargin == 6 && ~isempty(ktx)
-    addparameter(Kobj2, 'TX_rate', ktx);
-    set(Kobj2, 'ParameterVariableNames', 'TX_rate');
-else
-    %generating unique parameter name for the current RNA
-    rN = regexprep(rna.Name, {'( )'}, {''});
-    uniqueName = sprintf('TXTL_TX_rate_%s',rN);
-    set(Kobj2, 'ParameterVariableNames', uniqueName);
-end
 
 
 

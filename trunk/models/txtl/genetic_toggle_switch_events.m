@@ -23,10 +23,11 @@ tube2 = txtl_buffer('e1');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-dna_lacI = txtl_adddna(tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_adddna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+
+dna_lacI = txtl_adddna('Setup Species', tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_tetR = txtl_adddna('Setup Species', tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_deGFP = txtl_adddna('Setup Species', tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_adddna('Setup Species', tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 % Set initial lacI and tetR concentrations
 lacIprotein = sbioselect(tube3, 'Name','protein lacI-lva-terminator');
@@ -34,19 +35,18 @@ tetRprotein = sbioselect(tube3, 'Name','protein tetR-lva-terminator');
 set(lacIprotein, 'InitialAmount', lacI_initialConc);
 set(tetRprotein, 'InitialAmount', tetR_initialConc);
 
-% Add IPTG and aTc inducers
-txtl_addspecies(tube3, 'aTc',0);
-txtl_addspecies(tube3, 'IPTG',0);
-
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
-
-
+dna_lacI = txtl_adddna('Setup Reactions', Mobj,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_tetR = txtl_adddna('Setup Reactions', Mobj, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_deGFP = txtl_adddna('Setup Reactions', Mobj, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_adddna('Setup Reactions', Mobj,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 configsetObj = getconfigset(Mobj, 'active');
+
 set(configsetObj, 'StopTime', simulationDuration)
 % set up events triggers and events functions as arrays of cells. which in
 % turn contain strings
-eventTriggers = [{['time >= ' num2str(inductionTimePoints(1))]}, {['time >= ' num2str(inductionTimePoints(2))]}],
+eventTriggers = [{['time >= ' num2str(inductionTimePoints(1))]}, {['time >= ' num2str(inductionTimePoints(2))]}];
 eventFunctions = [{['aTc = ' num2str(inducerConc)]}, {['IPTG= ' num2str(inducerConc)]}];
 
 % run the events script
@@ -128,7 +128,7 @@ itetRdimer = findspecies(Mobj, 'protein tetR-lva-terminatordimer');
 iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptrc2--rbs--tetR-lva-terminator');
 iDNA_lacI = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--lacI-lva-terminator');
 iDNA_lacI_tetRbounddimer1 = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--lacI-lva-terminator:protein tetR-lva-terminatordimer1');
-iDNA_tetR_lacIbounddimer = findspecies(Mobj, 'DNA thio-junk-ptrc2--rbs--tetR-lva-terminator:protein lacI-lva-terminatordimer');
+iDNA_tetR_lacIbounddimer = findspecies(Mobj, 'DNA thio-junk-ptrc2--rbs--tetR-lva-terminator:protein lacI-lva-terminatordimer1');
 
 % not interested in these for now:
 iLacItetramer = findspecies(Mobj, 'protein lacI-lva-terminatortetramer');
