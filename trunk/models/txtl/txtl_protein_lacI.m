@@ -40,54 +40,27 @@
 
 function varargout = txtl_protein_lacI(mode, tube, protein, varargin)
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
-    geneFull = varargin{1};
-    genelen = varargin{2};
-    % set up gene default lengths
-    geneDefaultUsed = 0;
-    for i = 1: length(geneFull)
-        if isempty(genelen{i})
-            geneDefaultUsed = geneDefaultUsed+1;
-            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-        end
-    end
-
-    if geneDefaultUsed ~= 0
-        for i = 1:length(geneDefIdx)
-            switch geneFull{geneDefIdx(i)}
-                case 'lacI'
-                    genelen{geneDefIdx(i)} = 647;
-                case 'lva'
-                    genelen{geneDefIdx(i)} = 40; 
-                case 'terminator'
-                    genelen{geneDefIdx(i)} = 100; 
-            end
-        end
-    end
-
-    % add relevant species
-    foo = sbioselect(tube, 'Name', 'IPTG');
-    if isempty(foo)
-        addspecies(tube, 'IPTG');
-    end
-    foo = [];
+    geneData = [varargin{1};varargin{2}];
+    defaultBasePairs = {'lacI','lva','terminator';647,40,100};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
     
-    foo = sbioselect(tube, 'Name', ['IPTG:' protein.Name]);
-    if isempty(foo)
-        addspecies(tube, ['IPTG:' protein.Name]);
-    end
-    foo = [];
+    varargout{1} = geneData(2,:);
     
-
+    coreSpecies = {'IPTG',['IPTG:' protein.Name]};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    
     
     % call additional functions to setup any other relevant species (like
     % multimers)
     txtl_protein_dimerization(mode, tube, protein); 
     txtl_protein_tetramerization(mode, tube, protein);
-
-    varargout{1} = genelen;
     
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
     % Parameters that describe this reaction
@@ -120,8 +93,10 @@ elseif strcmp(mode, 'Setup Reactions')
     kr_tetramer = 0.000001; %0.000001; % 1/sec
     txtl_protein_tetramerization(mode, tube,protein,[kf_tetramer,kr_tetramer]);
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else
-    error('txtltoolbox:txtl_protein_lacI:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_protein_lacI:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end    
 
 

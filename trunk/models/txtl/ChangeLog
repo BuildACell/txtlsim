@@ -1,3 +1,13 @@
+2012-12-08  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* txtl_setup_default_basepair_lengths.m: multipurpose default length basepair set up
+	for promoters,utr_rbs,genes
+	* txtl_prom_*: the default length handler and add txtl_addspecies are in place
+	* txtl_protein_*: the default length handler and add txtl_addspecies are in place
+	* txtl_addspecies.m: multi species array handling capability
+	* txtl_continue_simulation: deleted, since the functionality is moved
+	to txtl_runsim
+
 2012-11-23  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* txtl_transcription.m: sigma factor independent transcription (merging the old 

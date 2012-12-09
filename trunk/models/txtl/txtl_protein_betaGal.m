@@ -38,7 +38,29 @@
 
 function varargout = txtl_protein_betaGal(mode, tube, protein, varargin)
 
-% Parameters that describe this RBS
+
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(mode, 'Setup Species')
+    
+    geneData = [varargin{1};varargin{2}];
+    defaultBasePairs = {'betaGal','lva','terminator';1000,40,100};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
+    
+    varargout{1} = geneData(2,:);
+    
+    coreSpecies = {'Lactose','alloLactose','Glu+Gal',...
+        'protein lacItetramer','alloLactose:protien lacItetramer',...
+        'Lactose_ext'};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
+elseif strcmp(mode, 'Setup Reactions')
+    
+    % Parameters that describe this RBS
 % kf_aTc = 1; kr_aTc = 0.1; 
 
 % Set up the binding reaction
@@ -82,69 +104,6 @@ function varargout = txtl_protein_betaGal(mode, tube, protein, varargin)
 % Pobj4f = addparameter(Kobj4, 'kf', kf_GluGal);
 % set(Kobj4, 'ParameterVariableNames', {'kf_GluGal'});
 
-if strcmp(mode, 'Setup Species')
-    geneFull = varargin{1};
-    genelen = varargin{2};    
-    % set up gene default lengths
-    geneDefaultUsed = 0;
-    for i = 1: length(geneFull)
-        if isempty(genelen{i})
-            geneDefaultUsed = geneDefaultUsed+1;
-            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-        end
-    end
-
-    if geneDefaultUsed ~= 0
-        for i = 1:length(geneDefIdx)
-            switch geneFull{geneDefIdx(i)}
-                case 'betaGal'
-                    genelen{geneDefIdx(i)} = 1000;
-                case 'lva'
-                    genelen{geneDefIdx(i)} = 40; 
-                case 'terminator'
-                    genelen{geneDefIdx(i)} = 100; 
-            end
-        end
-    end
-
-    % add relevant species
-    foo = sbioselect(tube, 'Name', 'Lactose');
-    if isempty(foo)
-        addspecies(tube, 'Lactose');
-    end
-    foo = [];
-    
-    foo = sbioselect(tube, 'Name', 'alloLactose');
-    if isempty(foo)
-        addspecies(tube, 'alloLactose');
-    end
-    foo = [];
-    foo = sbioselect(tube, 'Name', 'Glu+Gal');
-    if isempty(foo)
-        addspecies(tube, 'Glu+Gal');
-    end
-    foo = [];
-    
-    foo = sbioselect(tube, 'Name', 'protein lacItetramer');
-    if isempty(foo)
-        addspecies(tube, 'protein lacItetramer');
-    end
-    foo = [];
-    foo = sbioselect(tube, 'Name', 'alloLactose:protien lacItetramer');
-    if isempty(foo)
-        addspecies(tube, 'alloLactose:protien lacItetramer');
-    end
-    foo = [];
-    
-    foo = sbioselect(tube, 'Name', 'Lactose_ext');
-    if isempty(foo)
-        addspecies(tube, 'Lactose_ext');
-    end
-    foo = [];
-   
-    varargout{1} = genelen;
-    
-elseif strcmp(mode, 'Setup Reactions')
     
     % Parameters
     Vl_lac_alloLac = 0.003; %1/min   \alpha_a 
@@ -190,8 +149,10 @@ elseif strcmp(mode, 'Setup Reactions')
     set(Kobj1, 'ParameterVariableNames', {'Vl_Lactose_ext', 'Kl_Lactose_ext'});
     set(Kobj1,'SpeciesVariableNames', {'Lactose_ext'});
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_betaGal:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_protein_betaGal:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end    
 
 

@@ -43,20 +43,15 @@ function txtl_protein_tetramerization(mode, tube,protein, varargin)
 % reaction rates. (For forward reaction only, set the reverse reaction rete to zero!)
 %
 % Return: SimBiology Reaction Array
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
-    foo = sbioselect(tube, 'Name', [protein.Name 'dimer']);
-    if isempty(foo)
-        addspecies(tube, [protein.Name 'dimer']);
-    end
-    foo = [];
-    foo = sbioselect(tube, 'Name', [protein.Name 'tetramer']);
-    if isempty(foo)
-        addspecies(tube, [protein.Name 'tetramer']);
-    end
-    foo = [];
+    coreSpecies = {[protein.Name 'dimer'],[protein.Name 'tetramer']};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
-
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
 %     DONT NEED ALL THIS, The reason is, the parent function is called
@@ -82,14 +77,11 @@ elseif strcmp(mode, 'Setup Reactions')
 %         end
 %     end
 
-
-
-
-
  reactionRate = varargin{1};
     
     if isempty(reactionRate)
-        error('txtltoolbox:txtl_protein_tetramerization:unspecifiedRR', 'Please specify default tetramerization reaction rates as an input vector')
+        error('txtltoolbox:txtl_protein_tetramerization:unspecifiedRR', ...
+        'Please specify default tetramerization reaction rates as an input vector');
     else
        Robj = addreaction(tube, ['2 [' protein.Name 'dimer] <-> [' protein.Name 'tetramer]']); 
        Kobj = addkineticlaw(Robj,'MassAction');
@@ -100,8 +92,11 @@ elseif strcmp(mode, 'Setup Reactions')
        Pobjr = addparameter(Kobj, uniqueNameR, reactionRate(2));
        set(Kobj, 'ParameterVariableNames', {uniqueNameF, uniqueNameR});
     end
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else
-    error('txtltoolbox:txtl_protein_tetramerization:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_protein_tetramerization:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end   
 
 end

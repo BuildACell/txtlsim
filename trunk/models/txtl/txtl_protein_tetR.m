@@ -40,50 +40,24 @@ function varargout = txtl_protein_tetR(mode, tube, protein, varargin)
 % in 'setup Species' mode, it returns an array of gene lengths, having
 % added defaults in places where the lengths are missing. 
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
-    geneFull = varargin{1};
-    genelen = varargin{2};
-    % set up gene default lengths of genes
-    geneDefaultUsed = 0;
-    for i = 1: length(geneFull)
-        if isempty(genelen{i})        
-            geneDefaultUsed = geneDefaultUsed+1;
-            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-        end
-    end
-    if geneDefaultUsed ~= 0
-        for i = 1:length(geneDefIdx)
-            switch geneFull{geneDefIdx(i)}
-                case 'tetR'
-                    genelen{geneDefIdx(i)} = 647;
-                case 'lva'
-                    genelen{geneDefIdx(i)} = 40; 
-                case 'terminator'
-                    genelen{geneDefIdx(i)} = 100; 
-            end
-        end
-    end
-
-    % setup the species
-    foo = sbioselect(tube, 'Name', 'aTc');
-    if isempty(foo)
-        addspecies(tube, 'aTc');
-    end
-    foo = [];
-    foo = sbioselect(tube, 'Name', ['aTc:' protein.Name]);
-    if isempty(foo)
-        addspecies(tube, ['aTc:' protein.Name]);
-    end
-    foo = [];
+    geneData = [varargin{1};varargin{2}];
+    defaultBasePairs = {'tetR','lva','terminator';647,40,100};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
     
-
+    varargout{1} = geneData(2,:);
+    
+    coreSpecies = {'aTc',['aTc:' protein.Name]};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+ 
     % call other functions in 'Setup Species' mode
     txtl_protein_dimerization('Setup Species', tube,protein);
-
-    %return the gene lengths if not specified by the user
-    varargout{1} = genelen;
-
+   
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
     
     %!TODO: set up user defined parameters. 
@@ -104,15 +78,11 @@ elseif strcmp(mode, 'Setup Reactions')
 
 
     txtl_protein_dimerization('Setup Reactions', tube,protein, [0.001, 0.0001]);
-
-    % % ! TODO: Check if tetR undergoes tertramerization
-    % % Hsieh & Brenowitz 1997 JBC
-    % %! TODO: these may be strain/excract dependent
-    % kf_tetramer = 0.000602; % 1/(molecule*sec)
-    % kr_tetramer = 0.000001; % 1/sec
-    % Rlist(end+1) = txtl_protein_tetramerization(tube,protein,[kf_tetramer,kr_tetramer]);
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_tetR:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_protein_tetR:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end
 
 

@@ -37,47 +37,21 @@
 
 function varargout = txtl_protein_sigma28(mode, tube, protein, varargin)
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
-    geneFull = varargin{1};
-    genelen = varargin{2};
-
-    % set up gene default lengths
-    geneDefaultUsed = 0;
-    for i = 1: length(geneFull)
-        if isempty(genelen{i})
-            geneDefaultUsed = geneDefaultUsed+1;
-            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-        end
-    end
-
-    if geneDefaultUsed ~= 0
-        for i = 1:length(geneDefIdx)
-            switch geneFull{geneDefIdx(i)}
-                case 'sigma28'
-                    genelen{geneDefIdx(i)} = 1000;
-                case 'lva'
-                    genelen{geneDefIdx(i)} = 40; 
-                case 'terminator'
-                    genelen{geneDefIdx(i)} = 100; 
-            end
-        end
-    end
-
-    foo = sbioselect(tube, 'Name', 'RNAP');
-    if isempty(foo)
-        addspecies(tube, 'RNAP');
-    end
-    foo = [];
-    foo = sbioselect(tube, 'Name', 'RNAP28');
-    if isempty(foo)
-        addspecies(tube, 'RNAP28');
-    end
-    foo = [];
+    geneData = [varargin{1};varargin{2}];
+    defaultBasePairs = {'lambda','lva','terminator';1000,40,100};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
     
-    
-    varargout{1} = genelen;
+    varargout{1} = geneData(2,:);
 
+    coreSpecies = {'RNAP','RNAP28'};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
     %sequestration of RNAP by sigma28 factor
@@ -91,9 +65,11 @@ elseif strcmp(mode, 'Setup Reactions')
     Pobj1f = addparameter(Kobj1, 'kf', Kf);
     Pobj1r = addparameter(Kobj1, 'kr', Kr);
     set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
-
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_lacI:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_protein_lacI:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end     
 
 

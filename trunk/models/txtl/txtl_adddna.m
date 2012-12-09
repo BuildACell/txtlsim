@@ -209,7 +209,7 @@ if isempty(varargin)
     % 
     % set up standard species 
     coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo','RNase'};
-    % empty cellarry for amount => zero amount
+    % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
 

@@ -16,12 +16,12 @@ tube3 = txtl_newtube('circuit');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_adddna(tube3, ...
   'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
-  100, ...					% concentration (nM)
+  1, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
-Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
-txtl_setup_parameters(Mobj);
+Mobj = txtl_combine([tube1, tube2, tube3], [6, 8, 2]);
+
 %
 % Run a simulaton
 %
@@ -32,34 +32,29 @@ txtl_setup_parameters(Mobj);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 6*60*60)
-[t_ode, x_ode, names] = sbiosimulate(Mobj, configsetObj);
+simulationTime = 23*60*60;
+set(configsetObj, 'SolverType', 'ode23s');
+set(configsetObj, 'StopTime', simulationTime);
 
-% Get the name of the species we want to plot
-iGFP = findspecies(Mobj, 'protein deGFP*');
-iRNA = findspecies(Mobj, 'RNA rbs--deGFP');
-iNTP = findspecies(Mobj, 'NTP');
-iAA  = findspecies(Mobj, 'AA');
+% 1st run
+[t_ode,x_ode] = txtl_runsim(Mobj,configsetObj,[],[]);
 
-% Top row: protein and RNA levels
-figure(1); clf(); subplot(2,1,1);
-plot(t_ode/60, x_ode(:, iGFP), 'b-', t_ode/60, x_ode(:, iRNA), 'r-')
+%% plot the result
 
-title('Gene Expression');
-lgh = legend(names([iGFP, iRNA]), 'Location', 'Northwest');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
-xlabel('Time [min]');
+% DNA and mRNA plot
+dataGroups{1,1} = 'DNA and mRNA';
+dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'};
+dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
 
-% Second row: resource limits + internal variables
-subplot(2,2,3);
-plot(t_ode/60, x_ode(:, iAA), 'b-', t_ode/60, x_ode(:, iNTP), 'r-')
+% Gene Expression Plot
+dataGroups{2,1} = 'Gene Expression';
+%dataGroups{2,2} = {'protein deGFP-lva-terminator*'};
+%dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'};
 
-title('Resource usage');
-lgh = legend(names([iAA, iNTP]), 'Location', 'West');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
-xlabel('Time [min]');
+% Resource Plot
+dataGroups{3,1} = 'Resource usage';
+
+txtl_plot(t_ode,x_ode,Mobj,dataGroups);
 
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:

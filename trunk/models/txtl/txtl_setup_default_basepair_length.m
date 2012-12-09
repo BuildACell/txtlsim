@@ -1,9 +1,10 @@
-function modelObj = txtl_continue_simulation(simObj,modelObj)
-% This function resets the initialValues to result of the latest run for each
-% species. In that way the simulation will continue instead of starting
-% over again.
-
-% Written by Zoltan A Tuza, Sep 2012
+% txtl_setup_default_basepair_length
+% ZT, Dec 2012
+%
+% In case the user won't provide any promoter size this function sets it up
+% based on the defaultbasepair array.
+% Every promoter and utr_rbs files should call this file
+%
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -35,15 +36,20 @@ function modelObj = txtl_continue_simulation(simObj,modelObj)
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-finaldata = simObj.Data(end,:);
-names = simObj.DataNames;
+function ObjectData = txtl_setup_default_basepair_length(tube,ObjectData,defaultBasePairs)
 
-% Loop through the states (species) and set their initial Amounts
-numSpecies = length(names);
-for c = 1:numSpecies
-speciesObj = sbioselect(modelObj,'type','species','Name',names{c});
-if (abs(finaldata(c)) < eps) % treats values below eps as zero.
-    finaldata(c) = 0;
-end
-speciesObj.InitialAmount = finaldata(c);
+
+    %TODO! 12/08/12 zoltuz - later on deafaultBasePairs should come from
+    %TODO the config files - that's way tube is provided 
+    noLength = cellfun('isempty', ObjectData(2,:));
+    elementInd = find(noLength>0);
+    [~,Aind,Bind] = intersect(defaultBasePairs(1,:),ObjectData(1,elementInd));
+    
+    % multiple lhs - multiple rhs -> no way to avoid for cycle
+    for k = 1:size(Aind,2)
+        ObjectData{2,Bind(k)} = defaultBasePairs{2,Aind(k)};
+    end
+
+
+
 end

@@ -39,42 +39,21 @@
 function varargout = txtl_utr_rbs(mode, tube, rna, protein, varargin)
 
 if strcmp(mode, 'Setup Species')
-    rbsFull = varargin{1};
-    rbslen = varargin{2};
-    
-    % set up promoter default lengths
-    rbsDefaultUsed = 0;
-    for i = 1: length(rbsFull)
-        if isempty(rbslen{i})
-            rbsDefaultUsed = rbsDefaultUsed+1;
-            rbsDefIdx(rbsDefaultUsed) = i; %idx of segments to set defaults for
-        end
-    end
 
-    if rbsDefaultUsed ~= 0
-        for i = 1:length(rbsDefIdx)
-            switch rbsFull{rbsDefIdx(i)}
-                case 'rbs'
-                    rbslen{rbsDefIdx(i)} = 20;
-                case 'spacer'
-                    rbslen{rbsDefIdx(i)} = 200; 
-            end
-        end
-    end
-    foo = sbioselect(tube, 'Name', 'Ribo');
-    if isempty(foo)
-        addspecies(tube, 'Ribo');
-    end
-    foo = [];
-    foo = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
-    if isempty(foo)
-        Ribobound = addspecies(tube, ['Ribo:' rna.Name]);
-    end
-    foo = [];
+    utrRbsData = [varargin{1};varargin{2}];
+    defaultBasePairs = {'rbs','spacer';20,200};
+    utrRbsData = txtl_setup_default_basepair_length(tube,utrRbsData,defaultBasePairs);
     
+
+    RiboBound = ['Ribo:' rna.Name];
+    coreSpecies = {'Ribo',RiboBound};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
-    varargout{1} = Ribobound;
-    varargout{2} = rbslen;
+   
+    %TODO! 12/8/12 zoltuz - find out why we need the RiboBound here!
+    varargout{1} = sbioselect(tube, 'Name', RiboBound);
+    varargout{2} = utrRbsData(2,:);
     
 elseif strcmp(mode,'Setup Reactions')
 

@@ -46,15 +46,12 @@ function txtl_protein_dimerization(mode, tube,protein,varargin)
 %
 % Return: SimBiology Reaction Array
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
-    foo = sbioselect(tube, 'Name', [protein.Name 'dimer']);
-    if isempty(foo)
-        addspecies(tube, [protein.Name 'dimer']);
-    end
-    foo = [];
-    
-       
+    txtl_addspecies(tube, [protein.Name 'dimer'], 0);
+      
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%       
 elseif strcmp(mode, 'Setup Reactions')
     
     reactionRate = varargin{1};
@@ -87,9 +84,10 @@ elseif strcmp(mode, 'Setup Reactions')
        set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
     end
     %}
-
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_dimerization:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''');
+    error('txtltoolbox:txtl_protein_dimerization:undefinedmode', ...
+       'The possible modes are ''Setup Species'' and ''Setup Reactions''');
 end
 
 

@@ -40,58 +40,36 @@
 
 function varargout = txtl_prom_ptrc2(mode, tube, dna, rna, varargin)
 
-if strcmp(mode, 'Setup Species')
-
-    
-    promFull = varargin{1};
-    promlen = varargin{2};
-
-    
-    % set up promoter default lengths
-    promDefaultUsed = 0;
-    for i = 1: length(promFull)
-        if isempty(promlen{i})
-            promDefaultUsed = promDefaultUsed+1;
-            promDefIdx(promDefaultUsed) = i; %idx of segments to set defaults for
-        end
-    end
-
-    if promDefaultUsed ~= 0
-        for i = 1:length(promDefIdx)
-            switch promFull{promDefIdx(i)}
-                case 'ptrc2'
-                    promlen{promDefIdx(i)} = 50;
-                case 'junk'
-                    promlen{promDefIdx(i)} = 500; 
-                case 'thio'
-                    promlen{promDefIdx(i)} = 0; 
-            end
-        end
-    end
-
+    % Create strings for reactants and products
+    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
+    RNA = ['[' rna.Name ']'];		% RNA species name for reactions
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
 
-    foo = sbioselect(tube, 'Name', RNAP);
-    if isempty(foo)
-        addspecies(tube, RNAP);
-    end
-    foo = [];
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(mode, 'Setup Species')
+
     
-    foo = sbioselect(tube, 'Name', RNAPbound);
-    if isempty(foo)
-        addspecies(tube, RNAPbound);
-    end
+    promoterData = [varargin{1};varargin{2}];
+    defaultBasePairs = {'ptrc2','junk','thio';50,500,0};
+    promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
+        defaultBasePairs);
+    
+    varargout{1} = promoterData(2,:);
+    
+    coreSpecies = {RNAP,RNAPbound};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
 
     %
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
     %
-
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
 
-    varargout{1} = promlen;
 
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode,'Setup Reactions')
     
     listOfSpecies = varargin{1};
@@ -102,11 +80,7 @@ elseif strcmp(mode,'Setup Reactions')
     kr_ptrc2 = 10 * kf_ptrc2;			% Km of 10 (same as p70, from VN)
     ktx_ptrc2 = log(2)/(rna.UserData/30);	% 30 base/second transcription
 
-    % Create strings for reactants and products
-    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
-    RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'RNAP70';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP70:' dna.Name];
+    
 
 
     % Set up binding reaction
@@ -220,8 +194,10 @@ elseif strcmp(mode,'Setup Reactions')
 %     Pobj9r = addparameter(Kobj9, 'k9r', kr6_lacI);
 %     set(Kobj9, 'ParameterVariableNames', {'k9', 'k9r'});
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_prom_ptrc2:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_prom_ptrc2:undefinedmode', ...
+        'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

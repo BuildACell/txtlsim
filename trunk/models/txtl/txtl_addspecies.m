@@ -1,5 +1,5 @@
 function txtl_addspecies(tube, name, amount)
-%TXTL_ADDSPECIES   Add a molecular species to a tube
+%TXTL_ADDSPECIES   Add one or more molecular species to a tube
 %
 % Sobj = TXTL_ADDSPECIES(tube, name, amount) adds a molecule to a
 % tube, in the gen amount (in nM).  The species can be a new species or
@@ -37,8 +37,12 @@ function txtl_addspecies(tube, name, amount)
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
+% TODO! zoltuz 12/8/12 handle string or cellarrry input for one specie
+
 % check 
-assert(size(name,2) == size(amount,2));
+if (size(amount,2) > 1)
+    assert(size(name,2) == size(amount,2));
+end
 
 index = findspecies(tube, name);
 

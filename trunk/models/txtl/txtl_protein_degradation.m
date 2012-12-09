@@ -43,29 +43,25 @@ function txtl_protein_degradation(mode, tube,protein,varargin)
 % protein: simBiology object
 % reacctionRate: degration rate
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     %{
     a so-called LVA tag seemed to be the most efficient tag to make GFP unstable. 
     This tag consists of a short peptide sequence (AANDENYALVA) and is attached 
     to the C-terminal end of GFP.
     Source: http://2008.igem.org/Team:KULeuven/Data/GFP which cites:
-    J.B. Andersen et al., “New Unstable Variants of Green Fluorescent Protein for 
-    Studies of Transient Gene Expression in Bacteria,” Applied and Environmental 
-    Microbiology, vol. 64, Jun. 1998, pp. 2240–2246.
+    J.B. Andersen et al., ï¿½New Unstable Variants of Green Fluorescent Protein for 
+    Studies of Transient Gene Expression in Bacteria,ï¿½ Applied and Environmental 
+    Microbiology, vol. 64, Jun. 1998, pp. 2240ï¿½2246.
     %}
 
-    protease = sbioselect(tube, 'Name', 'ClpXP');
-    if isempty(protease)
-    addspecies(tube, 'ClpXP', 1); %amount?
-    end
     
-    foo = sbioselect(tube, 'Name', [protein.Name ':ClpXP']);
-    if isempty(foo)
-        addspecies(tube, [protein.Name ':ClpXP']);
-    end
-    foo = [];
+    coreSpecies = {'ClpXP',[protein.Name ':ClpXP']};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
-
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
 
     % Protein monomer binds with ClpXP protease
@@ -89,9 +85,10 @@ elseif strcmp(mode, 'Setup Reactions')
        Pobj2 = addparameter(Kobj2, uniqueName, reactionRate(3));
        set(Kobj2, 'ParameterVariableNames', {uniqueName});
 
-
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_lacI:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_protein_lacI:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
 
 end
