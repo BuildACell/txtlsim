@@ -1,4 +1,3 @@
-function dna = txtl_adddna(tube, promspec, rbsspec, genespec, dnaamount, type, varargin)
 %TXTL_ADDDNA   Set up species and reactions for a DNA segment
 %
 %   dna = TXTL_ADDDNA(tube, promspec, rbsspec, genespec, amount, type)
@@ -47,7 +46,30 @@ function dna = txtl_adddna(tube, promspec, rbsspec, genespec, dnaamount, type, v
 % STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
+%%
+function dna = txtl_adddna(tube, promspec, rbsspec, genespec, dnaamount, type, varargin)
 
+    % Extract out the names and lengths
+    [promData, promStr] = txtl_parsespec(promspec);
+    [rbsData, rbsStr] = txtl_parsespec(rbsspec);
+    [geneData, geneStr] = txtl_parsespec(genespec);
+
+    % check for degradation tag and terminator
+    protDEGflag = checkForStringInACellList(geneData(1,:),'lva');
+    protTERMflag = checkForStringInACellList(geneData(1,:),'terminator');
+
+    % species name string building
+    geneName = geneData{1,1}; %assuming the format is gene-lva-...-terminator
+    protstr = ['protein ' geneStr]; % protstr looks something like 'protein tetR-lva-terminator'
+    
+    rbsName = rbsData{1,1};
+    rnastr = ['RNA ' rbsStr '--' geneStr];
+    
+    promoterName = promData{1,end}; % assuming {'thio','junk','prom'}
+    
+    dnastr = ['DNA ' promStr '--' rbsStr '--' geneStr];
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if isempty(varargin)
     mode = 'Setup Species';
     dnaInfo = get(tube, 'UserData');
@@ -59,368 +81,161 @@ if isempty(varargin)
     foo{i+1,1} = {promspec, rbsspec, genespec, dnaamount, type};
     set(tube, 'UserData', foo)
     clear dnaInfo
-    % Extract out the names and lengths
-    [promFull, promlen] = txtl_parsespec(promspec);
-    [rbsFull, rbslen] = txtl_parsespec(rbsspec);
-    [geneFull, genelen] = txtl_parsespec(genespec);
+
 
     % set up protein reactions and data, followed by utr followed by promoter
     % (promoter reactions require the lengths of the rna, therefore need to be
     % set up after the protein and utr files are called.
 
-    %% Protein properties, parameters and reactions 
+    %% Protein properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%%
     
-    protDEGflag = false; % check for degradation tag and terminator
-    protTERMflag = false;
-    for i = 1:length(geneFull)
-        if strcmp(geneFull{i}, 'lva')
-            protDEGflag = true;
-        end
-        if strcmp(geneFull{i},'terminator') % does not do anything yet
-            protTERMflag = true;
-        end
-    end
+    protein = txtl_addspecies(tube, protstr, 0);
     
-    if length(geneFull)>=1 % construct gene string
-        genestr = geneFull{1}; 
-        justGene = geneFull{1}; %assuming the format is gene-lva-...-terminator
-    end
-    if length(geneFull)>=2
-        for i = 2:length(geneFull)
-            genestr = [genestr '-' geneFull{i}]; %expect: gene-lva-terminator
-        end
-    end
-    
-    protstr = ['protein ' genestr]; % protstr looks something like 'protein tetR-lva-terminator'
-    foo = sbioselect(tube, 'Name', protstr);
-    if isempty(foo)
-        protein = addspecies(tube, protstr);
-    end
-    
-    if exist(['txtl_protein_' justGene], 'file') == 2
+    if exist(['txtl_protein_' geneName], 'file') == 2
       % Run the protein specific setup
       % set up protein and related species
-      genelen = eval(['txtl_protein_' justGene '(''Setup Species'', tube, protein, geneFull, genelen)']);
+      geneData = eval(['txtl_protein_' geneName '(''Setup Species'', tube, protein, geneData)']);
     end
     
-    % protein lengths
-    if length(geneFull)>=1
-        genelenTot = genelen{1};
-    end
-    if length(geneFull)>=2 
-        for i = 2:length(geneFull)
-            genelenTot = genelenTot+ genelen{i};
-        end
-    end
+    %protein lengths
+    genelenTot = sum(cell2mat(geneData(2,:)));
+    
     protein.UserData = genelenTot / 3;
+    
 
-    %% Untranslated Region properties, parameters and reactions 
+    %% Untranslated Region properties, parameters and reactions %%%%%%%%%%%
     
-    if length(rbsFull)>=1 % construct rbs string
-        rbsstr = rbsFull{1};
-        justRbs = rbsFull{1};
-    end
-    if length(rbsFull)>=2
-        for i = 2:length(rbsFull)
-            rbsstr = [rbsstr '-' rbsFull{i}]; %expect: rbs-spacer
-        end
-    end
-    
-    rnastr = ['RNA ' rbsstr '--' genestr];
-    
-    rna = sbioselect(tube, 'Name', rnastr);
-    if isempty(foo)
-       rna = addspecies(tube, rnastr);
-    end
+    rna = txtl_addspecies(tube, rnastr, 0);
+   
     
     % Translation: setup file should return pointer to RBS bound species
-    if exist(['txtl_utr_' justRbs], 'file') == 2
+    if exist(['txtl_utr_' rbsName], 'file') == 2
       % Run the RBS specific setup
-      [Ribobound, rbslen] = eval(['txtl_utr_' justRbs '(''Setup Species'', tube, rna, protein, rbsFull, rbslen)']);
+      [Ribobound, rbslen] = eval(['txtl_utr_' rbsName '(''Setup Species'', tube, rna, protein, rbsData)']);
     else
       % Issue a warning and run the default RBS
-      warning('txtltoolbox:txtl_adddna:fileNotFound', ['TXTL: can''t find txtl_utr_' justRbs ...
+      warning('txtltoolbox:txtl_adddna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
           '; using default rbs params']);
-      [Ribobound, rbslen] = txtl_utr_rbs('Setup Species', tube, rna, protein, rbsFull, rbslen);
+      [Ribobound, rbslen] = txtl_utr_rbs('Setup Species', tube, rna, protein, rbsData);
     end
     
     % utr lengths
-    if length(rbsFull)>=1
-        rbslenTot = rbslen{1};
-    end
-    if length(rbsFull)>=2 
-        for i = 2:length(rbsFull)
-            rbslenTot = rbslenTot+ rbslen{i};
-        end
-    end
-
+    rbslenTot = sum(cell2mat(rbslen(2,:)));
+    
     rna.UserData = rbslenTot + genelenTot;
 
-    %% Promoter properties, parameters and reactions 
-    if length(promFull)>=1 
-        promstr = promFull{1};
-        justProm = promFull{end}; % assuming {'thio','junk','prom'}
-    end
-    if length(promFull)>=2
-        for i = 2:length(promFull)
-            promstr = [promstr '-' promFull{i}]; % expect: 'thio-junk-prom'
-        end
-    end
-    dnastr = ['DNA ' promstr '--' rbsstr '--' genestr];
-    dna = sbioselect(tube, 'Name', dnastr);
-    if isempty(dna)
-        dna = addspecies(tube, dnastr, dnaamount);
-    end
-
-    % Transcription
-    if exist(['txtl_prom_' justProm], 'file') == 2    
-      promlen = eval(['txtl_prom_' justProm '(''Setup Species'', tube, dna, rna, promFull, promlen)']);
+    %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
+    
+    dna = txtl_addspecies(tube, dnastr, dnaamount);
+    
+    % Transcription %% 
+    if exist(['txtl_prom_' promoterName], 'file') == 2    
+      promData = eval(['txtl_prom_' promoterName '(''Setup Species'', tube, dna, rna, promData)']);
     else
-      warning(['TXTL: can''t find txtl_prom_' justProm ...
+      warning(['TXTL: can''t find txtl_prom_' promoterName ...
           '; using default promoter params']);
-      promlen = txtl_prom_p70('Setup Species', tube, dna, rna, promFull, promlen);
+      promData = txtl_prom_p70('Setup Species', tube, dna, rna, promData);
     end
-
+    
+    
     % promoter lengths
-    if length(promFull)>=1
-        promlenTot = promlen{1};
-    end
-    if length(promFull)>=2 
-        for i = 2:length(promFull)
-            promlenTot = promlenTot+ promlen{i};
-        end
-    end
+    promlenTot = sum(cell2mat(promData(2,:)));
 
     % total dna length
     dna.UserData = promlenTot + rbslenTot + genelenTot;
-
-    %% General purpose reactions
+    
+    % Translation %%
+    txtl_translation(mode, tube, dna, rna, protein, Ribobound);
+    
+    %% DNA, protein degradation
+    
     % DNA degradation
-    %! TODO: eventually, we should allow file-based reactions
-    %! TODO: allow protection strands by comparing promoter length to ~35
     if strcmp(type, 'linear')
        txtl_dna_degradation('Setup Species', tube, dna); 
     end
-
-
-    % Now put in the reactions for the utilization of amino acids 
-
-    % Set up the translation reaction
-    % 
-    % set up standard species 
-    coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo','RNase'};
-    % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
-    
 
     % Protein degradation (if tagged)
     if protDEGflag
       txtl_protein_degradation(mode, tube, protein);
     end
+    
     % All done!
     return
-    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(varargin{1}, 'Setup Reactions')
     mode = varargin{1};
     % get a list of the species to search through before setting up
     % certain reactions
     [~,listOfSpecies] = getstoichmatrix(tube);
     
-    % Extract out the names and lengths
-    [promFull, promlen] = txtl_parsespec(promspec);
-    [rbsFull, rbslen] = txtl_parsespec(rbsspec);
-    [geneFull, genelen] = txtl_parsespec(genespec);
 
     % set up protein reactions and data, followed by utr followed by promoter
     % (promoter reactions require the lengths of the rna, therefore need to be
     % set up after the protein and utr files are called.
 
-    %% Protein properties, parameters and reactions 
-    protDEGflag = false; % check for degradation tag and terminator
-    protTERMflag = false;
-    for i = 1:length(geneFull)
-        if strcmp(geneFull{i}, 'lva')
-            protDEGflag = true;
-        end
-        if strcmp(geneFull{i},'terminator') % does not do anything yet
-            protTERMflag = true;
-        end
-    end
-    if length(geneFull)>=1 % construct gene string
-        genestr = geneFull{1}; 
-        justGene = geneFull{1}; %assuming the format is gene-lva-...-terminator
-    end
-    if length(geneFull)>=2
-        for i = 2:length(geneFull)
-            genestr = [genestr '-' geneFull{i}]; %expect: gene-lva-terminator
-        end
-    end
-    protstr = ['protein ' genestr]; % protstr looks something like 'protein tetR-lva-terminator'
+    %% Protein properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%%
+
     protein = sbioselect(tube, 'Name', protstr);
 
-    if exist(['txtl_protein_' justGene], 'file') == 2
+    if exist(['txtl_protein_' geneName], 'file') == 2
       % Run the protein specific setup
-      eval(['txtl_protein_' justGene '(mode, tube, protein, listOfSpecies)']);
+      eval(['txtl_protein_' geneName '(mode, tube, protein, listOfSpecies)']);
     end
-    
-        % protein lengths
-    if length(geneFull)>=1
-        genelenTot = genelen{1};
-    end
-    if length(geneFull)>=2 
-        for i = 2:length(geneFull)
-            genelenTot = genelenTot+ genelen{i};
-        end
-    end
-    protein.UserData = genelenTot / 3;
 
-    %% Untranslated Region properties, parameters and reactions 
-    if length(rbsFull)>=1 % construct rbs string
-        rbsstr = rbsFull{1};
-        justRbs = rbsFull{1};
-    end
-    if length(rbsFull)>=2
-        for i = 2:length(rbsFull)
-            rbsstr = [rbsstr '-' rbsFull{i}]; %expect: rbs-spacer
-        end
-    end
-    rnastr = ['RNA ' rbsstr '--' genestr];
+    %% Untranslated Region properties, parameters and reactions %%%%%%%%%%%
+
     rna = sbioselect(tube, 'Name', rnastr);
     % Translation: setup file should return pointer to RBS bound species
-    if exist(['txtl_utr_' justRbs], 'file') == 2
+    if exist(['txtl_utr_' rbsName], 'file') == 2
       % Run the RBS specific setup
-      eval(['txtl_utr_' justRbs '(mode, tube, rna, protein)']);
+      eval(['txtl_utr_' rbsName '(mode, tube, rna, protein)']);
     else
       % Issue a warning and run the default RBS
-      warning(['TXTL: can''t find txtl_utr_' justRbs ...
+      warning(['TXTL: can''t find txtl_utr_' rbsName ...
           '; using default rbs params']);
       txtl_utr_rbs(mode, tube, rna, protein);
     end
-    % utr lengths
-    if length(rbsFull)>=1
-        rbslenTot = rbslen{1};
-    end
-    if length(rbsFull)>=2 
-        for i = 2:length(rbsFull)
-            rbslenTot = rbslenTot+ rbslen{i};
-        end
-    end
 
-    rna.UserData = rbslenTot + genelenTot;
+    %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
 
-    %% Promoter properties, parameters and reactions 
-    if length(promFull)>=1 
-        promstr = promFull{1};
-        justProm = promFull{end}; % assuming {'thio','junk','prom'}
-    end
-    if length(promFull)>=2
-        for i = 2:length(promFull)
-            promstr = [promstr '-' promFull{i}]; % expect: 'thio-junk-prom'
-        end
-    end
-    dnastr = ['DNA ' promstr '--' rbsstr '--' genestr];
     dna = sbioselect(tube, 'Name', dnastr);
-    % Transcription
-    if exist(['txtl_prom_' justProm], 'file') == 2    
-      eval(['txtl_prom_' justProm '(mode, tube, dna, rna, listOfSpecies)']);
+    % Transcription %%
+    if exist(['txtl_prom_' promoterName], 'file') == 2    
+      eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies)']);
     else
-      warning(['TXTL: can''t find txtl_prom_' justProm ...
+      warning(['TXTL: can''t find txtl_prom_' promoterName ...
           '; using default promoter params']);
       txtl_prom_p70(mode, tube, dna, rna, listOfSpecies);
     end
 
-    % promoter lengths
-    if length(promFull)>=1
-        promlenTot = promlen{1};
-    end
-    if length(promFull)>=2 
-        for i = 2:length(promFull)
-            promlenTot = promlenTot+ promlen{i};
-        end
-    end
-
-    %junk and thio dna
-    junklength = 0;
-    thiolength = 0;
-    junkDNAflag = false;
-    thioDNAflag = false;
-    for i = 1:length(promFull)
-        if strcmp(promFull{i}, 'junk')
-            junkDNAflag = true;
-            junklength = promlen{i};
-        end
-        if strcmp(promFull{i},'thio')
-            thioDNAflag = true;
-            thiolength = promlen{i};
-        end
-    end
-    if junkDNAflag
-        kDNA_complex_deg = log(2)/(1+junklength/100);	
-    else
-        kDNA_complex_deg = 0.5;
-    end
-    if thioDNAflag
-        kDNA_complex_deg = 0.5*kDNA_complex_deg;
-    end
-
-    % total dna length
-    dna.UserData = promlenTot + rbslenTot + genelenTot;
-
-    %% General purpose reactions
-    % DNA degradation
-    
-    % Parameters used in this file
-    kDNA_recbcd_f = 0.4;% forward rr for DNA + RecBCD <-> DNA:RecBCD
-    kDNA_recbcd_r = 0.1;% backward rr for DNA + RecBCD <-> DNA:RecBCD
-    %! TODO: eventually, we should allow file-based reactions
-    %! TODO: allow protection strands by comparing promoter length to ~35
-    if strcmp(type, 'linear')
-       txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
-    end
-
-
-    % Now put in the reactions for the utilization of amino acids 
-
-    % Set up the translation reaction
-    %AA_model = 2;
+    % Translation %%
     Ribobound = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
-    AA_model = 1;
-    if AA_model == 1
-        %tube.UserData.AAmodel == 1
+    txtl_translation(mode, tube, dna, rna, protein, Ribobound);
 
-        aacnt = floor(protein.UserData/100);	% get number of K amino acids
-        if (aacnt == 0) 
-          aastr = '';
+    %% DNA, mRNA, protein degradation
+    
+    % DNA degradation
+    if strcmp(type, 'linear')
+         %junk and thio dna  
+        [junkDNAFlag,junkIndex ] = checkForStringInACellList(promData(1,:),'junk');
+        thioDNAFlag = checkForStringInACellList(promData(1,:),'thio');
+
+        if junkDNAFlag
+            junkLength = promData{2,junkIndex};
+            kDNA_complex_deg = log(2)/(1+junkLength/100);	
         else
-          aastr = int2str(aacnt);
+            kDNA_complex_deg = 0.5;
         end
-        Robj = addreaction(tube, ...
-          ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
-        Kobj = addkineticlaw(Robj, 'MassAction');
-        set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
-    else
-        Robj = addreaction(tube, ...
-          ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']']);
-        Kobj = addkineticlaw(Robj, 'MassAction');
-        set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+        if thioDNAFlag
+            kDNA_complex_deg = 0.5*kDNA_complex_deg;
+        end
 
-        Robj3 = addreaction(tube, ...
-         ['[AA:' Ribobound.Name '] -> ' rna.Name ' +  Ribo']);
-        Kobj3 = addkineticlaw(Robj3, 'MassAction');
-        %generate unique parameter name for the current protein
-        rN = regexprep(protein.Name, {'( )'}, {''});
-        uniqueName = sprintf('TXTL_TL_rate_%s_AA_consumption',rN);
-        set(Kobj3, 'ParameterVariableNames', uniqueName);
+        % Parameters used in this file
+        kDNA_recbcd_f = 0.4;% forward rr for DNA + RecBCD <-> DNA:RecBCD
+        kDNA_recbcd_r = 0.1;% backward rr for DNA + RecBCD <-> DNA:RecBCD
 
-
+        txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
     end
-    Robj1 = addreaction(tube, ...
-      ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    %generate unique parameter name for the current protein
-    rN = regexprep(protein.Name, {'( )'}, {''});
-    uniqueName = sprintf('TXTL_TL_rate_%s',rN);
-    set(Kobj1, 'ParameterVariableNames', uniqueName);
 
     % Add in mRNA degradation reactions
     Robj2 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
@@ -434,54 +249,73 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     end
 
 
-    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%        
 else
-    error('txtltoolbox:txtl_adddna:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_adddna:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end    
 
 
+end % end of function
 
-
-% Utility function for parsing out a specification string
-function [names, lengths] = txtl_parsespec(spec)
+%% Utility function for parsing out a specification string
+function [parsedData, combinedStr] = txtl_parsespec(spec)
   
   indivRegions = regexp(spec, '-','split'); %cell array of individual xyz(123) strings
   namesAndLengths = regexp(indivRegions, '\w+','match'); %cell array of cells containing the names and lengths of dna regions
   names = cell(1,length(namesAndLengths));
   lengths = cell(1,length(namesAndLengths));
-    
+  combinedStr = '';  
+  
   %error checking followed by returning parsed strings
-  for i = 1:length(namesAndLengths)
-      if isempty(namesAndLengths{i}) 
+  for k = 1:length(namesAndLengths)
+      if isempty(namesAndLengths{k}) 
           error('txtl_adddna:wrongStringFormat',...
               ['the string %s should be: name(length)-name2(length2)-' ...
               '...-nameN(lengthN), where the lengths are optional. eg: thio-junk(500)-ptet(50)'...
               'the name must start with an alphabet'], spec)
       else
-          A = isstrprop(namesAndLengths{i}{1},'alpha'); 
+          A = isstrprop(namesAndLengths{k}{1},'alpha'); 
           if ~A(1) % this happens when the name of the dna fragment does not start with an alphabet
               error('txtl_adddna:wrongSpeciesName',...
                   ['species named %s should start with an alphabet. Format is' ...
-                  ' name(length). Where the lengths are optional. eg: thio or junk(500)'],indivRegions{i})
+                  ' name(length). Where the lengths are optional. eg: thio or junk(500)'],indivRegions{k})
           end
       end
       % return the parsed name and optional length
-      names{i} = namesAndLengths{i}{1};
-      if length(namesAndLengths{i}) == 1
-          lengths{i} = [];
-      else if length(namesAndLengths{i})>2
+      names{k} = namesAndLengths{k}{1};
+      if length(namesAndLengths{k}) == 1
+          lengths{k} = [];
+      else if length(namesAndLengths{k})>2
               error('txtl_adddna:tooManyElements',...
                   ['the string %s is not of the format name(length). '...
                   'It has unwanted elements after '')'''],...
-                  indivRegions{i});
-          else if length(namesAndLengths{i})==2
-                  lengths{i} = str2double(namesAndLengths{i}{2});
+                  indivRegions{k});
+          else if length(namesAndLengths{k})==2
+                  lengths{k} = str2double(namesAndLengths{k}{2});
               end
           end
       end
+      if k==1  
+        combinedStr = names{k};
+      else 
+        combinedStr = [combinedStr '-' names{k}];  
+      end
+      parsedData = [names;lengths];
   end
   % !TODO add error checking for numerical values for the lengths. 
-  return
+  
+end
+  
+function [binVariable,indexes] = checkForStringInACellList(cellList,matchStr)
+    FlagVector = cellfun(@(x) strcmp(x,matchStr),cellList,'UniformOutput',false);
+    indexes = find(cell2mat(FlagVector) > 0);
+    if sum(cell2mat(FlagVector)) == 1
+        binVariable = true;
+    else
+        binVariable = false;
+    end
+end
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

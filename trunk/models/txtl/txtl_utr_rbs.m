@@ -38,9 +38,10 @@
 
 function varargout = txtl_utr_rbs(mode, tube, rna, protein, varargin)
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
-    utrRbsData = [varargin{1};varargin{2}];
+    utrRbsData = varargin{1};
     defaultBasePairs = {'rbs','spacer';20,200};
     utrRbsData = txtl_setup_default_basepair_length(tube,utrRbsData,defaultBasePairs);
     
@@ -53,8 +54,9 @@ if strcmp(mode, 'Setup Species')
    
     %TODO! 12/8/12 zoltuz - find out why we need the RiboBound here!
     varargout{1} = sbioselect(tube, 'Name', RiboBound);
-    varargout{2} = utrRbsData(2,:);
-    
+    varargout{2} = utrRbsData;
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode,'Setup Reactions')
 
     % Parameters that describe this RBS
@@ -70,8 +72,10 @@ elseif strcmp(mode,'Setup Reactions')
     Pobjr = addparameter(Kobj, 'TXTL_UTR_RBS_R', kr_rbs);
     set(Kobj, 'ParameterVariableNames', {'TXTL_UTR_RBS_F', 'TXTL_UTR_RBS_R'});
 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_utr_rbs:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_utr_rbs:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end    
 
 

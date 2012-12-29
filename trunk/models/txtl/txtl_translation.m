@@ -1,12 +1,3 @@
-% txtl_prom_p70.m - promoter information for p70 promoter
-% RMM, 8 Sep 2012
-%
-% This file contains a description of the standard p70 promoter.
-% Calling the function txtl_prom_p70() will set up the reactions for
-% transcription with the measured binding rates and transription rates.
-
-% Written by Richard Murray, Sep 2012
-%
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
 %
@@ -36,56 +27,66 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_prom_p70(mode, tube, dna, rna, varargin)
 
-    % Create strings for reactants and products
-    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
-    RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'RNAP70';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP70:' dna.Name];	% Name of bound complex
+function [] = txtl_translation(mode, tube, dna, rna, protein, Ribobound)
+
+
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
-    
-    promoterData = varargin{1};
-    defaultBasePairs = {'p70','junk','thio';50,500,0};
-    promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
-        defaultBasePairs);
-    
-    varargout{1} = promoterData;
-    
-    coreSpecies = {RNAP,RNAPbound};
+
+     % Set up the species for translation 
+    coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo','RNase'};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
-    %
-    % Now put in the reactions for the utilization of NTPs
-    % Use an enzymatic reaction to proper rate limiting
-    % 
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
-    %
-    % Set up binding reaction
-    %
-    Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> ' RNAPbound]);
+    AA_model = 1;
+    if AA_model == 1
+        %tube.UserData.AAmodel == 1
+
+        aacnt = floor(protein.UserData/100);	% get number of K amino acids
+        if (aacnt == 0) 
+          aastr = '';
+        else
+          aastr = int2str(aacnt);
+        end
+        Robj = addreaction(tube, ...
+          ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
+        Kobj = addkineticlaw(Robj, 'MassAction');
+        set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+    else
+        Robj = addreaction(tube, ...
+          ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']']);
+        Kobj = addkineticlaw(Robj, 'MassAction');
+        set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+
+        Robj3 = addreaction(tube, ...
+         ['[AA:' Ribobound.Name '] -> ' rna.Name ' +  Ribo']);
+        Kobj3 = addkineticlaw(Robj3, 'MassAction');
+        %generate unique parameter name for the current protein
+        rN = regexprep(protein.Name, {'( )'}, {''});
+        uniqueName = sprintf('TXTL_TL_rate_%s_AA_consumption',rN);
+        set(Kobj3, 'ParameterVariableNames', uniqueName);
+
+
+    end
+    Robj1 = addreaction(tube, ...
+      ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo']);
     Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_P70_RNAPbound_F', 'TXTL_P70_RNAPbound_R'});
-    %
-    % Now put in the reactions for the utilization of NTPs
-    % Use an enzymatic reaction to proper rate limiting
-    % 
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
+    %generate unique parameter name for the current protein
+    rN = regexprep(protein.Name, {'( )'}, {''});
+    uniqueName = sprintf('TXTL_TL_rate_%s',rN);
+    set(Kobj1, 'ParameterVariableNames', uniqueName);
+    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
-else 
-    error('txtltoolbox:txtl_prom_p70:undefinedmode', ...
+else
+    error('txtltoolbox:txtl_protein_lacI:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end 
+end    
+    
 
-% Automatically use MATLAB mode in Emacs (keep at end of file)
-% Local variables:
-% mode: matlab
-% End:
+end

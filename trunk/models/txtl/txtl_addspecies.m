@@ -1,4 +1,4 @@
-function txtl_addspecies(tube, name, amount)
+function simBioSpecies = txtl_addspecies(tube, name, amount)
 %TXTL_ADDSPECIES   Add one or more molecular species to a tube
 %
 % Sobj = TXTL_ADDSPECIES(tube, name, amount) adds a molecule to a
@@ -37,7 +37,6 @@ function txtl_addspecies(tube, name, amount)
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-% TODO! zoltuz 12/8/12 handle string or cellarrry input for one specie
 
 % check 
 if (size(amount,2) > 1)
@@ -51,8 +50,16 @@ if size(index,2) > 1
         addOneSpecie(tube,name{k},amount{k},index(k));
     end
 else
-    addOneSpecie(tube,name,amount,index);    
+    if iscell(name)
+        addOneSpecie(tube,name{1},amount{1},index);    
+    else
+        addOneSpecie(tube,name,amount,index);    
+    end
+    
 end
+
+indexPost = findspecies(tube, name);
+simBioSpecies = tube.Species(indexPost); 
 
 end
 

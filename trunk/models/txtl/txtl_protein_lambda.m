@@ -44,12 +44,12 @@ function varargout = txtl_protein_lambda(mode, tube, protein, varargin)
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
-    geneData = [varargin{1};varargin{2}];
+    geneData = varargin{1};
     defaultBasePairs = {'lambda','lva','terminator';647,40,100};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
-    varargout{1} = geneData(2,:);
+    varargout{1} = geneData;
 
     % call other functions in 'Setup Species' mode
     txtl_protein_dimerization('Setup Species', tube,protein);

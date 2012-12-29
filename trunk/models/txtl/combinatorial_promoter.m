@@ -32,18 +32,11 @@ txtl_adddna(tube4, ...
 
 % Mix the contents of the individual tubes
 well_a1 = txtl_combine([tube1, tube2, tube3], [10, 8, 1]);
-protein = well_a1.Species(findspecies(well_a1,'protein deGFP-lva-terminator*'));
-protein.UserData = 500 / 3;
-degradationRate = [0.01 0.001 1]; % !TODO: Find a reasonable value
-Rlist = txtl_protein_degradation(well_a1, protein,degradationRate);
 
 
 
 % set up well_b1
 well_b1 = txtl_combine([tube1, tube2, tube4], [10, 8, 1]);
-protein_b = well_b1.Species(findspecies(well_b1,'protein deGFP-lva-terminator*'));
-protein_b.UserData = 500 / 3;
-Rlist = txtl_protein_degradation(well_b1, protein_b,degradationRate);
 
 
 

@@ -36,92 +36,33 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function [] = txtl_transcription(mode, varargin)
+function txtl_transcription(mode, varargin)
 
 % Choose the NTP model
-NTP_model = 2;
+    NTP_model = 2;
     
-if strcmp(mode, 'Setup Species')
-
-    
-    if nargin < 6
-        error('the number of argument should be at least 6, not %d',nargin);
-    elseif nargin > 6
-        extraSpecies = varargin{6};
-    end
-
     tube = varargin{1};
     dna = varargin{2};
     rna = varargin{3};
     RNAP = varargin{4}; % RNA polymerase name for reactions
     RNAPbound = varargin{5};    
 
-
-    if NTP_model == 1
-        
-        foo = sbioselect(tube, 'Name', 'NTP');
-        if isempty(foo)
-            addspecies(tube, 'NTP');
-        end
-        foo = [];
-
-        foo = sbioselect(tube, 'Name', RNAPbound);
-        if isempty(foo)
-            addspecies(tube, RNAPbound);
-        end
-        foo = [];
-
-        foo = sbioselect(tube, 'Name', ['NTP:' RNAPbound]);
-        if isempty(foo)
-            addspecies(tube, ['NTP:' RNAPbound]);
-        end
-        foo = [];
-
-        foo = sbioselect(tube, 'Name', RNAPbound);
-        if isempty(foo)
-            addspecies(tube, RNAPbound);
-        end
-        foo = [];
-
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(mode, 'Setup Species')
+    
+    if nargin < 6
+        error('the number of argument should be at least 6, not %d',nargin);
+    elseif nargin > 6
+        extraSpecies = varargin{6};
+        coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAP,extraSpecies{:}};
     else
-            
-        foo = sbioselect(tube, 'Name', 'NTP');
-        if isempty(foo)
-            addspecies(tube, 'NTP');
-        end
-        foo = [];
-
-        foo = sbioselect(tube, 'Name', RNAPbound);
-        if isempty(foo)
-            addspecies(tube, RNAPbound);
-        end
-        foo = [];
-        foo = sbioselect(tube, 'Name', 'RNAP');
-        if isempty(foo)
-            addspecies(tube, 'RNAP');
-        end
-        foo = [];
-
-        foo = sbioselect(tube, 'Name',  ['NTP:' RNAPbound]);
-        if isempty(foo)
-            addspecies(tube,  ['NTP:' RNAPbound]);
-        end
-        foo = [];        
-       
+        coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAP};
     end
 
-    if nargin == 6
-        % do nothing
-    else        
-        for k=1:size(extraSpecies,1)
-            foo = sbioselect(tube, 'Name',  extraSpecies{k});
-            if isempty(foo)
-                addspecies(tube,  extraSpecies{k});
-            end
-            foo = []; 
-        end
-    end
-
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+      
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode,'Setup Reactions')
     
     if nargin < 6
@@ -138,12 +79,6 @@ elseif strcmp(mode,'Setup Reactions')
             ktx = varargin{7};
         end
     end
-
-    tube = varargin{1};
-    dna = varargin{2};
-    rna = varargin{3};
-    RNAP = varargin{4}; % RNA polymerase name for reactions
-    RNAPbound = varargin{5};    
 
     if NTP_model == 1
         % Compute the number of NTPs required, in 100 NTP blocks
@@ -196,9 +131,10 @@ elseif strcmp(mode,'Setup Reactions')
         set(Kobj2, 'ParameterVariableNames', uniqueName);
     end
 
-    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%     
 else
-    error('txtltoolbox:txtl_transcription:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_transcription:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end     
 
 

@@ -38,40 +38,22 @@
 
 function varargout = txtl_protein_deGFP(mode, tube, protein, varargin)
 
-
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
-    geneFull = varargin{1};
-    genelen = varargin{2};
-    % set up gene default lengths
-    geneDefaultUsed = 0;
-    for i = 1: length(geneFull)
-        if isempty(genelen{i})
-            geneDefaultUsed = geneDefaultUsed+1;
-            geneDefIdx(geneDefaultUsed) = i; %idx of segments to set defaults for
-        end
-    end
-    if geneDefaultUsed ~= 0
-        for i = 1:length(geneDefIdx)
-            switch geneFull{geneDefIdx(i)}
-                case 'deGFP'
-                    genelen{geneDefIdx(i)} = 1000;
-                case 'lva'
-                    genelen{geneDefIdx(i)} = 40; 
-                case 'terminator'
-                    genelen{geneDefIdx(i)} = 100; 
-            end
-        end
-    end
-
-    % add relevant species
-    foo = sbioselect(tube, 'Name', [protein.Name '*']);
-    if isempty(foo)
-        addspecies(tube, [protein.Name '*']);
-    end
-    foo = [];
     
-    varargout{1} = genelen;
-   
+    geneData = varargin{1};
+    
+    defaultBasePairs = {'deGFP','lva','terminator';1000,40,100};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
+    
+    varargout{1} = geneData;
+    
+    coreSpecies = {[protein.Name '*']};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+ 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
 
     % Parameters for maturation rate
@@ -82,19 +64,11 @@ elseif strcmp(mode, 'Setup Reactions')
     Kobj1 = addkineticlaw(Robj1, 'MassAction');   
     Pobj1f = addparameter(Kobj1, 'TXTL_PROT_DEGFP_MATURATION', Kmat);
     set(Kobj1, 'ParameterVariableNames', {'TXTL_PROT_DEGFP_MATURATION'});
-    
 
-    %! TODO: add protein degradation based on ClpXP
-    %! Removed degradation since this doesn't occur in TX-TL w/out ClpXP
-    % Robj2 = addreaction(tube, [protein.Name '* -> null']);
-    % Kobj2 = addkineticlaw(Robj2,'MassAction');
-    % Pobj2 = addparameter(Kobj2,  'kf', 0.001);
-    % set(Kobj2, 'ParameterVariableNames','kf');
-    % Rlist = [Rlist, Robj2];
-
-    % Return the list of reactions that we set up
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else
-    error('txtltoolbox:txtl_protein_deGFP:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_protein_deGFP:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end
 
 

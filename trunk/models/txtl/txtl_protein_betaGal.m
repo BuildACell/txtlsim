@@ -43,12 +43,12 @@ function varargout = txtl_protein_betaGal(mode, tube, protein, varargin)
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
-    geneData = [varargin{1};varargin{2}];
+    geneData = varargin{1};
     defaultBasePairs = {'betaGal','lva','terminator';1000,40,100};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
-    varargout{1} = geneData(2,:);
+    varargout{1} = geneData;
     
     coreSpecies = {'Lactose','alloLactose','Glu+Gal',...
         'protein lacItetramer','alloLactose:protien lacItetramer',...

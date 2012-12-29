@@ -44,19 +44,14 @@ function txtl_dna_degradation(mode, tube,dna,varargin)
 % dna: simBiology species object
 % reacctionRate: degradation rate
 %
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
-    foo = sbioselect(tube, 'Name', 'RecBCD');
-    if isempty(foo)
-        addspecies(tube, 'RecBCD');
-    end
-    foo = [];
+    coreSpecies = {'RecBCD',[dna.Name ':RecBCD']};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
-    foo = sbioselect(tube, 'Name', [dna.Name ':RecBCD']);
-    if isempty(foo)
-        addspecies(tube, [dna.Name ':RecBCD']);
-    end
-
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode,'Setup Reactions')
     
     reactionRates = varargin{1};    
@@ -89,8 +84,10 @@ elseif strcmp(mode,'Setup Reactions')
            Pobj1 = addparameter(Kobj1,  'kf_deg', reactionRates(1));
            set(Kobj1, 'ParameterVariableNames', 'kr_deg');
     end
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else
-    error('txtltoolbox:txtl_dna_degradation:undefinedmode', 'The possible modes are ''Setup Species'' and ''Setup Reactions''.')
+    error('txtltoolbox:txtl_dna_degradation:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
 
 end

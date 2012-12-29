@@ -48,12 +48,12 @@ function varargout = txtl_prom_plambda(mode, tube, dna, rna,varargin)
 if strcmp(mode, 'Setup Species')
     
     
-    promoterData = [varargin{1};varargin{2}];
+    promoterData = varargin{1};
     defaultBasePairs = {'plambda','junk','thio';50,500,0};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
-    varargout{1} = promoterData(2,:);
+    varargout{1} = promoterData;
 
     coreSpecies = {RNAP,RNAPbound};
     % empty cellarray for amount => zero amount

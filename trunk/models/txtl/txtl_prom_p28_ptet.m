@@ -53,12 +53,12 @@ function varargout= txtl_prom_p28_ptet(mode, tube, dna, rna, varargin)
 if strcmp(mode, 'Setup Species')
 
     
-    promoterData = [varargin{1};varargin{2}];
+    promoterData = varargin{1};
     defaultBasePairs = {'p28_ptet','junk','thio';150,500,0};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
-    varargout{1} = promoterData(2,:);
+    varargout{1} = promoterData;
     
     coreSpecies = {RNAP,RNAPbound,P1,P2};
     % empty cellarray for amount => zero amount
@@ -145,7 +145,7 @@ elseif strcmp(mode,'Setup Reactions')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
 else
     error('txtltoolbox:txtl_prom_p28_ptet:undefinedmode', ...
-        'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
 
 

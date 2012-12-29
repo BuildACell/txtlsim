@@ -1,3 +1,11 @@
+2012-12-29  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* txtl_adddna.m: major code refactoring
+	* txtl_protein_*.m: input/output data format has changed (geneData: cellarray
+	names + lengths)
+	* txtl_prom_*.m: input/output data format has changed (promData: cellarray
+	names + lengths)
+
 2012-12-08  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* txtl_setup_default_basepair_lengths.m: multipurpose default length basepair set up

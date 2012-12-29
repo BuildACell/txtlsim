@@ -40,12 +40,12 @@ function varargout = txtl_protein_sigma28(mode, tube, protein, varargin)
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
-    geneData = [varargin{1};varargin{2}];
-    defaultBasePairs = {'lambda','lva','terminator';1000,40,100};
+    geneData = varargin{1};
+    defaultBasePairs = {'simga28','lva','terminator';1000,40,100};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
-    varargout{1} = geneData(2,:);
+    varargout{1} = geneData;
 
     coreSpecies = {'RNAP','RNAP28'};
     % empty cellarray for amount => zero amount
@@ -58,7 +58,7 @@ elseif strcmp(mode, 'Setup Reactions')
     Kf = 100; % nM^-1s^-1
     Kr = 0.01; % s^-1
 
-    %RNAP + Sigma70 <-> RNAP70
+    %RNAP + Sigma28 <-> RNAP28
     % Set up the reaction
     Robj1 = addreaction(tube, ['RNAP + [' protein.Name '] <-> RNAP28']);
     Kobj1 = addkineticlaw(Robj1, 'MassAction');
