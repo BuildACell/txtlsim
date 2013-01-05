@@ -58,14 +58,16 @@ function [t_ode, x_ode, modelObj, varargout] = txtl_runsim(varargin)
     end
     
 m = get(modelObj, 'UserData');
-datalen = length(m);
+datalen = size(m,1);
 if ~strcmp(m{datalen},'notFirstRun')
     % if it is first run, userdata only has dna spec data 
     % if it is second run, the last element in the userdata is a string
     % 'notFirstRun'
     for i = 1:length(m)
-        for j= 1:length(m{i})
-            foo = txtl_adddna(modelObj, m{i}{j}{1}, m{i}{j}{2}, m{i}{j}{3}, m{i}{j}{4}, m{i}{j}{5}, 'Setup Reactions');
+        if ~isa(m{i},'txtl_reaction_config')
+            for j= 1:length(m{i})
+                txtl_adddna(modelObj, m{i}{j}{1}, m{i}{j}{2}, m{i}{j}{3}, m{i}{j}{4}, m{i}{j}{5}, 'Setup Reactions');
+            end
         end
     end
     txtl_setup_parameters(modelObj); 

@@ -35,6 +35,8 @@
 function tube = txtl_extract(name)
 tube = txtl_newtube(name);
 
+%% setting up species and concentrations in the extract 
+
 % Add in ribosomes and RNAP70
 %! TODO: update these numbers based on measurements
 df = 1000;				% dilution factor of TX-TL mix
@@ -60,6 +62,11 @@ set(Kobj, 'ParameterVariableNames', {'kf'});
 
 % Add in RNA degradation
 addspecies(tube, 'RNase', 25/df);	% 25 nM to match RNAP
+
+%% building configuration object for the current experiment
+
+TXTLconfig = txtl_reaction_config(name);
+tube.UserData = TXTLconfig;
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

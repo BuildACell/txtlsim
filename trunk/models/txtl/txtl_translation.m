@@ -28,7 +28,7 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-function [] = txtl_translation(mode, tube, dna, rna, protein, Ribobound)
+function txtl_translation(mode, tube, dna, rna, protein, Ribobound)
 
 
 
@@ -44,9 +44,8 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
-    AA_model = 1;
-    if AA_model == 1
-        %tube.UserData.AAmodel == 1
+    
+    if tube.UserData{1}.AAmodel == 1
 
         aacnt = floor(protein.UserData/100);	% get number of K amino acids
         if (aacnt == 0) 

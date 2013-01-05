@@ -37,9 +37,6 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 function txtl_transcription(mode, varargin)
-
-% Choose the NTP model
-    NTP_model = 2;
     
     tube = varargin{1};
     dna = varargin{2};
@@ -80,7 +77,7 @@ elseif strcmp(mode,'Setup Reactions')
         end
     end
 
-    if NTP_model == 1
+    if tube.UserData{1}.NTPmodel == 1
         % Compute the number of NTPs required, in 100 NTP blocks
         ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
         if (ntpcnt == 0) 
