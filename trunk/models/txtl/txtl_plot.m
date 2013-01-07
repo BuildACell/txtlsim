@@ -1,4 +1,4 @@
-function txtl_plot(t_ode,x_ode,modelObj,dataGroups)
+function processedData = txtl_plot(t_ode,x_ode,modelObj,dataGroups,varargin)
 % initial version for txtl_plot, the RNAs and proteins are automatically 
 % exploited from the provided DNA sequence. 
 % t_ode: nx1 time vector, no time scaling is applied inside!
@@ -59,14 +59,23 @@ listOfRNAs = {};
 listOfDNAs = {};
 [~,listOfSpecies] = getstoichmatrix(modelObj);
 
-figure('Name',modelObj.Name); clf(); 
+if ~isempty(varargin{1}) && strcmp(varargin{1},'GUI')
+    operationMode = varargin{1};
+    axesHandles = varargin{2};
+else
+    operationMode = 'standalone';
+end
+
+if strcmp(operationMode,'standalone')
+    figure('Name',modelObj.Name); clf(); 
+end
+
+% building the output cell structure
+processedData = cell(1,3);
 
 for k = 1:numOfGroups
 
-   %%%%%%%
-   % DNA and mRNA plot
-   %
-   %%%%%%%
+   %%%%% DNA and mRNA plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    if(strcmp(dataGroups{k,1},'DNA and mRNA'))
 
     %! TODO further refinement of str spliting
@@ -98,29 +107,35 @@ for k = 1:numOfGroups
         warning('No DNA strings were provided!');
     end
     % plot the data 
-    %! TODO zoltuz 18 Oct
-    %! TODO handling color/line style vector when regular expr is present 
-     subplot(223)
-    if (~isempty(dataGroups{k,3}))
-      [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(dataGroups{k,3});
-      for l=1:size(dataX,2)
-          line('XData',t_ode/60,'YData',dataX(:,l),'Color',ColorMtx(l,:),'LineStyle',LineStyle{l});
-      end
+  
+    % ---- Calling the txtl_plot standalone -> figure is generated -------%
+    if strcmp(operationMode,'standalone')
+        currentHandler = subplot(223);
+    % ---- GUI mode -> graphic data is given to the appropriate handler --%
     else
-      plotID_dna = plot(t_ode/60,dataX);
+        currentHandler = axesHandles.dnaRna;
     end
     
-   
+    if (~isempty(dataGroups{k,3}))
+        
+       hold(currentHandler);
+       for l=1:size(dataX,2)
+        plot(currentHandler,t_ode/60,dataX(:,l),dataGroups{k,3}{l});
+       end
+    else
+       plot(currentHandler,t_ode/60,dataX);
+    end    
     
-    lgh = legend(listOfDNAsRNAs, 'Location', 'Best');
-    legend(lgh, 'boxoff');
-    ylabel('Species amounts [nM]');
-    xlabel('Time [min]');
-    title(dataGroups{k,1});
-   %%%%%%%%%%
-   % Gene Expression plot
-   %
-   %%%%%%%%%%
+    lgh =legend(currentHandler,listOfDNAsRNAs, 'Location', 'Best');
+    legend(lgh,'boxoff');
+    ylabel(currentHandler,'Species amounts [nM]');
+    xlabel(currentHandler,'Time [min]');
+    title(currentHandler,dataGroups{k,1});
+    
+    % add the processed data to the output structure
+    processedData{2} = {['Time' listOfDNAsRNAs],[t_ode dataX]};
+    
+   %%%%%%% Gene Expression plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    elseif(strcmp(dataGroups{k,1},'Gene Expression'))
        
     % if total amount of selected protein is calculated   
@@ -161,7 +176,8 @@ for k = 1:numOfGroups
                 totalAmount{p,2} =  sum(x_ode(:,indx),2);
                 p = p+1;
               else
-                warning('total concetration: no match was found for: %s',regString);
+                warning('total concetration: no match was found for: %s',...
+                regString);
               end
             end % end for z =
             % deleting special strings
@@ -184,53 +200,70 @@ for k = 1:numOfGroups
         dataX(:,end+1) = totalAmount{k,2};
         end
     end 
-   
- 
-   subplot(2,2,1:2);
     
-        if (~isempty(dataGroups{k,3}))
-            [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(dataGroups{k,3});
-            for l=1:size(dataX,2)
-              line('XData',t_ode/60,'YData',dataX(:,l),'Color',ColorMtx(l,:),'LineStyle',LineStyle{l});
-            end
-        else
-        plotID = plot(t_ode/60,dataX);
-        end
+    % ---- Calling the txtl_plot standalone -> figure is generated -------%
+    if strcmp(operationMode,'standalone')
+        currentHandler = subplot(2,2,1:2);
+    % ---- GUI mode -> graphic data is given to the appropriate handler --%
+    else
+        currentHandler = axesHandles.genePlot;
+    end
+   
+    if (~isempty(dataGroups{k,3}))
+        
+       hold(currentHandler);
+       for l=1:size(dataX,2)
+        plot(currentHandler,t_ode/60,dataX(:,l),dataGroups{k,3}{l});
+       end
+    else
+       plot(currentHandler,t_ode/60,dataX);
+    end    
     
    
-    lgh = legend(listOfProteins, 'Location', 'NorthEast');
+    lgh = legend(currentHandler,listOfProteins, 'Location', 'NorthEast');
     legend(lgh, 'boxoff');
-    ylabel('Species amounts [nM]');
-    xlabel('Time [min]');
-    title(dataGroups{k,1});
+    ylabel(currentHandler,'Species amounts [nM]');
+    xlabel(currentHandler,'Time [min]');
+    title(currentHandler,dataGroups{k,1});
+    
+    % add the processed data to the output structure
+    processedData{1} = {['Time' listOfProteins],[t_ode dataX]};
    
-   %%%%%%%%%%
-   % Resource usage plot
-   %
-   %%%%%%%%%% 
+   %%%%%%%%%%% Resource usage plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    elseif(strcmp(dataGroups{k,1},'Resource usage'))
        
     listOfResources = {'NTP','AA','RNAP','Ribo'};
     dataX = getDataForSpecies(modelObj,x_ode,listOfResources);
     
-    subplot(224)
+    % ---- Calling the txtl_plot standalone -> figure is generated -------%
+    if strcmp(operationMode,'standalone')
+        currentHandler = subplot(224);
+    % ---- GUI mode -> graphic data is given to the appropriate handler --%
+    else
+        currentHandler = axesHandles.resourceUsage;
+    end
+    
     mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
-    plot(...
+    plot(currentHandler,...
       t_ode/60, dataX(:, 1)/dataX(1, 1), 'b-', ...
       t_ode/60, dataX(:, 2)/dataX(1, 2), 'r-', ...
       t_ode/60, dataX(:, 3)/dataX(1, 3), 'b--', ...
       t_ode/60, dataX(:, 4)/dataX(1, 4), 'r--');
 
-    title('Resource usage');
-    lgh = legend(...
+    title(currentHandler,'Resource usage');
+    lgh = legend(currentHandler,...
       {'NTP [mM]', 'AA [mM]', 'RNAP [nM]', 'Ribo [nM]'}, ...
       'Location', 'Best');
     legend(lgh, 'boxoff');
-    ylabel('Species amounts [normalized]');
-    xlabel('Time [min]');
-
+    ylabel(currentHandler,'Species amounts [normalized]');
+    xlabel(currentHandler,'Time [min]');
+    
+    % add the processed data to the output structure
+    processedData{3} = {['Time' listOfResources],[t_ode dataX]};
+    
+   %%%%%%%%%%% Error Handling  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    else
-       disp('no option were provided!');
+       disp('no option was provided!');
    
    end % end of if dataGroups
     

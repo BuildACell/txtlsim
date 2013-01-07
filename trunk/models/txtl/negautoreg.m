@@ -121,6 +121,25 @@ ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
 
+%% plot the result
+% close all
+% DNA and mRNA plot
+dataGroups{1,1} = 'DNA and mRNA';
+dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'};
+%dataGroups{1,2} = {'DNA p70--rbs--sigma28'};
+dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--','m-','k-','y--'};
+
+% Gene Expression Plot
+dataGroups{2,1} = 'Gene Expression';
+%dataGroups{2,2} = {'protein deGFP-lva-terminator*'};
+dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.','c-','y--','m-','k-','r-'};
+
+% Resource Plot
+dataGroups{3,1} = 'Resource usage';
+%
+txtl_plot_gui(t_ode,x_ode,Mobj,dataGroups);
+
+
 %
 % Run a set of experiments to explore the effect of inducers
 %
