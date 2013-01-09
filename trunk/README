@@ -2,6 +2,18 @@ This is the main directory for the TX-TL cell-free expression toolbox.
 The subdiretories here contain models and code that can be used in
 working with the TX-TL system.
 
-models/	     Subdirectory containing component models
+Contents:
 
-RMM, 2 Sep 2012
+  ChangeLog - list of changes that have been made
+  Makefile - makefile for creating distributions
+  Pending - (obsolete) list of pending tasks.  See wiki version
+  components/ - component models
+  core/ - core functionality
+  doc/ - toolbox documentation
+  examples/ - examples that use the toolbox
+  models/ - (obsolete) old directory structure.  To be deleted.
+  tests/ - unit tests
+  txtl_init.m - script to initalize toolbox (mainly setting up the path)
+  unused/ - old files that are no longer used and scheduled to be deleted
+
+
