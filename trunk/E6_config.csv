@@ -1,0 +1,23 @@
+NTPmodel,Numeric,2, NTP model in use, see documentation
+AAmodel,Numeric,2, AA model in use, see documentation
+Transcription_Rate, Expression, log(2)/(RNA_Length/30), 30 NTP/second transcription
+Translation_Rate, Expression, log(2)/(Protein_Length/10), 10 AA/second translation 
+
+DNA_RecBCD_Forward, Numeric, 0.4, 
+DNA_RecBCD_Reverse, Numeric, 0.1,
+DNA_RecBCD_complex_deg, Numeric, 0.5, 
+
+Protein_ClpXP_Forward, Numeric, 0.005 ,
+Protein_ClpXP_Reverse, Numeric, 0.001 ,
+Protein_ClpXP_complex_deg, Numeric, 0.001, 
+
+AA_Forward,Expression,log(2) / 0.001, binding rate of 1 ms
+AA_Reverse,Expression, 1 * log(2) / 0.001, Km of 100 for amino acid usage
+
+RNA_deg,Expression,log(2)/10, mRNA degradation: 10 sec half life
+
+NTP_Forward,Expression, log(2) / 0.001, binding rate of 1 ms
+NTP_Reverse,Expression, 1 * log(2) / 0.001, Km of 100 for NTP usage
+
+
+

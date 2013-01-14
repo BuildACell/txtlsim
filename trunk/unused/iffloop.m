@@ -6,7 +6,7 @@ close all
 %% My test run
 
 % Set up the standard TXTL tubes
-tube1 = txtl_extract('e1');
+tube1 = txtl_extract('E6');
 tube2 = txtl_buffer('b1');
 
 % Set up a tube that will contain our DNA

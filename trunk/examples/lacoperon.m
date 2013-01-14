@@ -9,7 +9,7 @@ close all
 %% set up the tubes and Species
 
 % Set up the standard TXTL tubes
-tube1 = txtl_extract('e1');
+tube1 = txtl_extract('E6');
 tube2 = txtl_buffer('b1');
 
 
@@ -24,12 +24,12 @@ dna_gamS = txtl_adddna(tube3, ...
 % Mix the contents of the individual tubes and add some inducer
 well_a1 = txtl_combine([tube1, tube2, tube3], [20, 8, 2]);
 
-txtl_setup_parameters(well_a1);
 
 % The concentration of lacI is constant
 txtl_addspecies(well_a1, 'protein lacItetramer', 8);
 % adding external Lactose
 txtl_addspecies(well_a1, 'Lactose_ext', 5);
+
 
 % Vl = 0.006;
 % Kl = 1.25;
@@ -50,10 +50,8 @@ set(configsetObj, 'StopTime', simulationTime);
 set(configsetObj, 'SolverType', 'ode23s');
 
 % 1st run
-simData = sbiosimulate(well_a1, configsetObj);
-t_ode = simData.Time;
-x_ode = simData.Data;
-names = simData.DataNames;
+[t_ode, x_ode, mObj, simData] = txtl_runsim(well_a1, configsetObj,[], []);
+
 
 
 %% plot the results

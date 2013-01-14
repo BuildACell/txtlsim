@@ -1,13 +1,10 @@
 % txtl_protein_lacI.m - protein information for lacI
-% RMM, 9 Sep 2012
-%! TODO: header information incorrect (RMM didn't write this)
-%! TODO: inconsistent naming - genes should start with lower case (lacI)
 %
 % This file contains a description of the protein produced by tetR.
 % Calling the function txtl_protein_tetR() will set up the reactions for
 % sequestration by the inducer aTc.
 
-% Written by Richard Murray, 9 Sep 2012
+% Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -40,11 +37,15 @@
 
 function varargout = txtl_protein_lacI(mode, tube, protein, varargin)
 
+% importing the corresponding parameters
+paramObj = txtl_component_config('lacI');
+
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
     geneData = varargin{1};
-    defaultBasePairs = {'lacI','lva','terminator';647,40,100};
+    defaultBasePairs = {'lacI','lva','terminator';...
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
@@ -64,34 +65,45 @@ if strcmp(mode, 'Setup Species')
 elseif strcmp(mode, 'Setup Reactions')
     
     % Parameters that describe this reaction
-     kf_IPTG = 0.1; kr_IPTG = 0.01; 
+    
+    % Set up the binding reaction for all protein variants
+    matchStr = regexp(listOfSpecies,'(^protein LacI.*tetramer$)','tokens','once'); 
+    listOftetramers = vertcat(matchStr{:});
 
-    % Set up the binding reaction
-    Robj1 = addreaction(tube, [protein.Name ' + IPTG <-> IPTG:' protein.Name]);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_F', kf_IPTG);
-    Pobj1r = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_R', kr_IPTG);
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_INDUCER_LACI_IPTG_F', 'TXTL_INDUCER_LACI_IPTG_R'});
+    for k = 1:size(listOftetramers,1)
+        txtl_addreaction(tube, ...
+         ['[' listOftetramers{k} '] + IPTG <-> [IPTG:' listOftetramers{k} ']'],...
+         'MassAction',{'TXTL_INDUCER_LacI_IPTG_F',paramObj.Protein_Inducer_Forward;...
+                       'TXTL_INDUCER_LacI_IPTG_R',paramObj.Protein_Inducer_Reverse});
+    end
+    
+     % degrade the IPTG inducer
+    txtl_addreaction(tube,'IPTG -> null',...
+     'MassAction',{'TXTL_INDUCER_DEGRADATION_IPTG',paramObj.Inducer_Degradation});
+    
+%      kf_IPTG = 0.1; kr_IPTG = 0.01; 
+% 
+%     % Set up the binding reaction
+%     Robj1 = addreaction(tube, [protein.Name ' + IPTG <-> IPTG:' protein.Name]);
+%     Kobj1 = addkineticlaw(Robj1, 'MassAction');
+%     Pobj1f = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_F', kf_IPTG);
+%     Pobj1r = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_R', kr_IPTG);
+%     set(Kobj1, 'ParameterVariableNames', {'TXTL_INDUCER_LACI_IPTG_F', 'TXTL_INDUCER_LACI_IPTG_R'});
+% 
+%     % degrade the IPTG inducer
+%     kf_IPTGdeg = 0.0001;
+%     Robj2 = addreaction(tube, 'IPTG -> null');
+%     Kobj2 = addkineticlaw(Robj2, 'MassAction');
+%     Pobj2 = addparameter(Kobj2, 'TXTL_INDUCER_DEGRADATION_IPTG', kf_IPTGdeg);
+%     set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_IPTG'});
 
-    % degrade the IPTG inducer
-    kf_IPTGdeg = 0.0001;
-    Robj2 = addreaction(tube, 'IPTG -> null');
-    Kobj2 = addkineticlaw(Robj2, 'MassAction');
-    Pobj2 = addparameter(Kobj2, 'TXTL_INDUCER_DEGRADATION_IPTG', kf_IPTGdeg);
-    set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_IPTG'});
-
-    %Set up dimerization
-    % Hsieh & Brenowitz 1997 JBC
-    kf_dimer = 0.08637; % 1/(molecule*sec)
-    kr_dimer =0.1; %0.00000001; % 1/sec
-
-    txtl_protein_dimerization(mode, tube,protein, [kf_dimer, kr_dimer]); 
+    % set up a reaction for protein dimerization
+    txtl_protein_dimerization(mode, tube,protein, ...
+        [paramObj.Dimmerization_Forward, paramObj.Dimmerization_Reverse]);
 
     %Set up tetramerization
-    % Hsieh & Brenowitz 1997 JBC
-    kf_tetramer = 0.00000602; % 1/(molecule*sec)
-    kr_tetramer = 0.000001; %0.000001; % 1/sec
-    txtl_protein_tetramerization(mode, tube,protein,[kf_tetramer,kr_tetramer]);
+    txtl_protein_tetramerization(mode, tube,protein,...
+        [paramObj.Tetramerization_Forward, paramObj.Tetramerization_Reverse]);
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else

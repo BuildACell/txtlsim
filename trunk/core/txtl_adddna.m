@@ -68,7 +68,8 @@ function dna = txtl_adddna(tube, promspec, rbsspec, genespec, dnaamount, type, v
     promoterName = promData{1,end}; % assuming {'thio','junk','prom'}
     
     dnastr = ['DNA ' promStr '--' rbsStr '--' geneStr];
-
+    
+    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if isempty(varargin)
     mode = 'Setup Species';
@@ -81,7 +82,6 @@ if isempty(varargin)
     foo{i+1,1} = {promspec, rbsspec, genespec, dnaamount, type};
     set(tube, 'UserData', foo)
     clear dnaInfo
-
 
     % set up protein reactions and data, followed by utr followed by promoter
     % (promoter reactions require the lengths of the rna, therefore need to be
@@ -224,27 +224,29 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
             junkLength = promData{2,junkIndex};
             kDNA_complex_deg = log(2)/(1+junkLength/100);	
         else
-            kDNA_complex_deg = 0.5;
+            kDNA_complex_deg = tube.UserData{1}.DNA_RecBCD_complex_deg;
         end
         if thioDNAFlag
             kDNA_complex_deg = 0.5*kDNA_complex_deg;
         end
 
-        % Parameters used in this file
-        kDNA_recbcd_f = 0.4;% forward rr for DNA + RecBCD <-> DNA:RecBCD
-        kDNA_recbcd_r = 0.1;% backward rr for DNA + RecBCD <-> DNA:RecBCD
+        % forward rr for DNA + RecBCD <-> DNA:RecBCD
+        kDNA_recbcd_f = tube.UserData{1}.DNA_RecBCD_Forward;
+        % backward rr for DNA + RecBCD <-> DNA:RecBCD
+        kDNA_recbcd_r = tube.UserData{1}.DNA_RecBCD_Forward;
 
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
     end
 
     % Add in mRNA degradation reactions
-    Robj2 = addreaction(tube, [rna.Name ' + RNase -> RNase']);
-    Kobj2 = addkineticlaw(Robj2,'MassAction');
-    set(Kobj2, 'ParameterVariableNames', {'TXTL_RNAdeg_F'});
+     txtl_addreaction(tube,[rna.Name ' + RNase -> RNase'],...
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
 
     % Protein degradation (if tagged)
     if protDEGflag
-      degradationRate = [0.005 0.001 0.001]; 
+      degradationRate = ...
+          [tube.UserData{1}.Protein_ClpXP_Forward tube.UserData{1}.Protein_ClpXP_Forward...
+          tube.UserData{1}.Protein_ClpXP_complex_deg]; 
       txtl_protein_degradation(mode, tube, protein,degradationRate);
     end
 

@@ -10,7 +10,7 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('c1');
+tube1 = txtl_extract('E6');
 tube2 = txtl_buffer('e1');
 
 % Now set up a tube that will contain our DNA

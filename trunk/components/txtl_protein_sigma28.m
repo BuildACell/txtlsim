@@ -37,11 +37,15 @@
 
 function varargout = txtl_protein_sigma28(mode, tube, protein, varargin)
 
+% importing the corresponding parameters
+paramObj = txtl_component_config('sigma28');
+
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
     geneData = varargin{1};
-    defaultBasePairs = {'simga28','lva','terminator';1000,40,100};
+    defaultBasePairs = {'simga28','lva','terminator';...
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
@@ -55,20 +59,13 @@ if strcmp(mode, 'Setup Species')
 elseif strcmp(mode, 'Setup Reactions')
     
     %sequestration of RNAP by sigma28 factor
-    Kf = 100; % nM^-1s^-1
-    Kr = 0.01; % s^-1
-
-    %RNAP + Sigma28 <-> RNAP28
-    % Set up the reaction
-    Robj1 = addreaction(tube, ['RNAP + [' protein.Name '] <-> RNAP28']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(Kobj1, 'kf', Kf);
-    Pobj1r = addparameter(Kobj1, 'kr', Kr);
-    set(Kobj1, 'ParameterVariableNames', {'kf','kr'});
-    
+        txtl_addreaction(tube,['RNAP + [' protein.Name '] <-> RNAP28'],...
+         'MassAction',{'Sigma28_RNAP_F',paramObj.Protein_Protein_Forward;...
+                       'Sigma28_RNAP_R',paramObj.Protein_Protein_Reverse});
+                   
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_lacI:undefinedmode', ...
+    error('txtltoolbox:txtl_protein_sigma28:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end     
 

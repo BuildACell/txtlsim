@@ -43,12 +43,15 @@ function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
+    % importing the corresponding parameters
+    paramObj = txtl_component_config('lacI');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
     promoterData = varargin{1};
-    defaultBasePairs = {'placI','junk','thio';50,500,0};
+    defaultBasePairs = {'placI','junk','thio';...
+        paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
@@ -68,23 +71,15 @@ elseif strcmp(mode,'Setup Reactions')
     listOfSpecies = varargin{1};
 
     % Parameters that describe this promoter
-    %! TODO: replace these values with correct values
-    kf_placI = log(2)/0.1;			% 100 ms bind rate
-    kr_placI = 10 * kf_placI;			% Km of 10 (same as p70, from VN)
-    ktx_placI = log(2)/(rna.UserData/30);	% 30 base/second transcription
-
-    
+    parameters = {'TXTL_PLACI_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                  'TXTL_PLACI_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
-    Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(Kobj1, 'TXTL_PLACI_RNAPbound_F', kf_placI);
-    Pobj1r = addparameter(Kobj1, 'TXTL_PLACI_RNAPbound_R', kr_placI);
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_PLACI_RNAPbound_F', 'TXTL_PLACI_RNAPbound_R'});
+    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+        'MassAction',parameters);
     %
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
     %
-
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
 
     %
@@ -98,23 +93,15 @@ elseif strcmp(mode,'Setup Reactions')
     %there are two sites where the tetramer binds: Om and Oa (see Alberts p437,
     %5th ed). We model these as equivalent for now. 
 
-    placIRepression = false;
+    
     matchStr = regexp(listOfSpecies,'(^protein lacI.*tetramer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
     listOflacItetramers = vertcat(matchStr{:});
     if ~isempty(listOflacItetramers)
-        placIRepression = true;
-    end
-    
-    %bind tetramer to a single side
-    if placIRepression
         for i = 1:size(listOflacItetramers,1)
-            Robj4 = addreaction(tube, ...
-              [DNA ' + ' listOflacItetramers{i} ' <-> [' dna.name ':' listOflacItetramers{i} ']']);
-            Kobj4 = addkineticlaw(Robj4,'MassAction');
-            rN = regexprep(listOflacItetramers{i}, {'( )'}, {''});
-            uniqueNameF = sprintf('TXTL_PLACI_REPRESSION_%s_F',rN);
-            uniqueNameR = sprintf('TXTL_PLACI_REPRESSION_%s_R',rN);
-            set(Kobj4, 'ParameterVariableNames', {uniqueNameF, uniqueNameR});
+             txtl_addreaction(tube,...
+                [DNA ' + ' listOflacItetramers{i} ' <-> [' dna.name ':' listOflacItetramers{i} ']'],...
+            'MassAction',{'placI_sequestration_F',paramObj.Protein_DNA_Forward;...
+                          'placI_sequestration_R',paramObj.Protein_DNA_Reverse});
         end
     end
     

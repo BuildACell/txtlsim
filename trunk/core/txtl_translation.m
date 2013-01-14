@@ -44,42 +44,45 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
+    AAparameters = {'TXTL_AA_F',tube.UserData{1}.NTP_Forward;
+                  'TXTL_AA_R',tube.UserData{1}.NTP_Reverse};
     
+    % translation rate             
+    ktlExpression =  strrep(tube.Userdata{1}.Translation_Rate,...
+            'Protein_Length','protein.UserData');             
+    ktl_rbs = eval(ktlExpression);              
+              
+    % AA consumption models              
     if tube.UserData{1}.AAmodel == 1
 
-        aacnt = floor(protein.UserData/100);	% get number of K amino acids
+        aacnt = floor(protein.UserData/100);  % get number of K amino acids
         if (aacnt == 0) 
           aastr = '';
         else
           aastr = int2str(aacnt);
         end
-        Robj = addreaction(tube, ...
-          ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']']);
-        Kobj = addkineticlaw(Robj, 'MassAction');
-        set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
+        
+        txtl_addreaction(tube,...
+            ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']'],...
+            'MassAction',AAparameters);
     else
-        Robj = addreaction(tube, ...
-          ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']']);
-        Kobj = addkineticlaw(Robj, 'MassAction');
-        set(Kobj, 'ParameterVariableNames', {'TXTL_AA_F', 'TXTL_AA_R'});
-
-        Robj3 = addreaction(tube, ...
-         ['[AA:' Ribobound.Name '] -> ' rna.Name ' +  Ribo']);
-        Kobj3 = addkineticlaw(Robj3, 'MassAction');
-        %generate unique parameter name for the current protein
-        rN = regexprep(protein.Name, {'( )'}, {''});
-        uniqueName = sprintf('TXTL_TL_rate_%s_AA_consumption',rN);
-        set(Kobj3, 'ParameterVariableNames', uniqueName);
-
-
+        
+        txtl_addreaction(tube, ...
+            ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']'],...
+            'MassAction',AAparameters);
+        
+        aacnt = floor(protein.UserData/100);
+        aa_consump_rate = (aacnt-1)*ktl_rbs;
+        
+        txtl_addreaction(tube, ...
+            ['[AA:' Ribobound.Name '] -> ' rna.Name ' +  Ribo'],...
+            'MassAction',{'TXTL_TL_AA_consumption',aa_consump_rate});
     end
-    Robj1 = addreaction(tube, ...
-      ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    %generate unique parameter name for the current protein
-    rN = regexprep(protein.Name, {'( )'}, {''});
-    uniqueName = sprintf('TXTL_TL_rate_%s',rN);
-    set(Kobj1, 'ParameterVariableNames', uniqueName);
+    
+    % Translation
+    txtl_addreaction(tube, ...
+     ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo'],...
+     'MassAction',{'TXTL_TL_rate',ktl_rbs});
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else

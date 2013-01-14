@@ -1,3 +1,12 @@
+2013-01-14  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* core/txtl_reaction_config.m: all extract related parameters are
+	added to this objectall extract related parameters areadded to this
+	object.
+	* core/txtl_component_config.m: object for component (promoter,protein) related
+	parameters.
+	* components/{txtl_prom_*,txtl_protein}: parameters are pulled from
+	the corresponding parameter file through the parameter-set handling object 
 2013-01-06  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* txtl_plot: making adjustment to the GUI

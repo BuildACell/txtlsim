@@ -40,12 +40,15 @@ function varargout = txtl_protein_lambda(mode, tube, protein, varargin)
 % in 'setup Species' mode, it returns an array of gene lengths, having
 % added defaults in places where the lengths are missing. 
 
+% importing the corresponding parameters
+paramObj = txtl_component_config('lambda');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
     geneData = varargin{1};
-    defaultBasePairs = {'lambda','lva','terminator';647,40,100};
+    defaultBasePairs = {'lambda','lva','terminator';...
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
@@ -58,7 +61,9 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
   
-  txtl_protein_dimerization('Setup Reactions', tube,protein, [0.001, 0.0001]);
+   % set up a reaction for protein dimerization
+    txtl_protein_dimerization('Setup Reactions', tube,protein, ...
+        [paramObj.Dimmerization_Forward, paramObj.Dimmerization_Reverse]);
   
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

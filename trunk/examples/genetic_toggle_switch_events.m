@@ -18,7 +18,7 @@ inductionTimePoints = [1*60*60 3*60*60];
 inducerConc = 9; % setting this to 10 gives strange fluctuations in the AA conc
 
 % Set up the standard TXTL tubes
-tube1 = txtl_extract('c1');
+tube1 = txtl_extract('E6');
 tube2 = txtl_buffer('e1');
 
 % Now set up a tube that will contain our DNA

@@ -43,12 +43,15 @@ function varargout = txtl_prom_p28(mode, tube, dna, rna, varargin)
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
     RNAP = 'RNAP28';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP28:' dna.Name];
+    % importing the corresponding parameters
+    paramObj = txtl_component_config('sigma28');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
     promoterData = varargin{1};
-    defaultBasePairs = {'p28','junk','thio';50,500,0};
+    defaultBasePairs = {'p28','junk','thio';...
+         paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
@@ -67,20 +70,12 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode,'Setup Reactions')
     
-   
     % Parameters that describe this promoter
-    %! TODO: replace these values with correct values
-    kf_p28 = log(2)/0.1;			% 100 ms bind rate
-    kr_p28 = 10 * kf_p28;			% Km of 10 (same as p70, from VN)
-    ktx_p28 = log(2)/(rna.UserData/30);	% 30 base/second transcription
-
+    parameters = {'TXTL_S28_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                  'TXTL_S28_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
-    Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(Kobj1, 'kf', kf_p28);
-    Pobj1r = addparameter(Kobj1, 'kr', kr_p28);
-    set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
-
+    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+        'MassAction',parameters);
     %
     % Now put in the reactions for the utilization of NTPs
     %

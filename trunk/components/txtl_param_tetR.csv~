@@ -1,0 +1,7 @@
+PTET_RNAPbound_Forward, Expression, log(2)/0.1
+PTET_RNAPbound_Reverse, Expression, 10 *PTET_RNAPbound_Forward
+PTET_Transcription, Expression, log(2)/(RNA_length/30)
+
+
+
+Gene_length

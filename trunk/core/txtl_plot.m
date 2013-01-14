@@ -59,7 +59,7 @@ listOfRNAs = {};
 listOfDNAs = {};
 [~,listOfSpecies] = getstoichmatrix(modelObj);
 
-if ~isempty(varargin{1}) && strcmp(varargin{1},'GUI')
+if ~isempty(varargin) && strcmp(varargin{1},'GUI')
     operationMode = varargin{1};
     axesHandles = varargin{2};
 else

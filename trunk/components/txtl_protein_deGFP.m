@@ -38,12 +38,15 @@
 
 function varargout = txtl_protein_deGFP(mode, tube, protein, varargin)
 
+paramObj = txtl_component_config('deGFP');
+
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
     geneData = varargin{1};
     
-    defaultBasePairs = {'deGFP','lva','terminator';1000,40,100};
+    defaultBasePairs = {'deGFP','lva','terminator';...
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
@@ -56,15 +59,10 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
 
-    % Parameters for maturation rate
-    Kmat = log(2)/(15*60);			% protein maturation rate = 15 min
-
     % Set up the maturation reaction
-    Robj1 = addreaction(tube, ['[' protein.Name '] -> [' protein.Name '*]']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');   
-    Pobj1f = addparameter(Kobj1, 'TXTL_PROT_DEGFP_MATURATION', Kmat);
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_PROT_DEGFP_MATURATION'});
-
+    txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...
+     'MassAction',{'TXTL_PROT_DEGFP_MATURATION',paramObj.Protein_Maturation});
+    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else
     error('txtltoolbox:txtl_protein_deGFP:undefinedmode', ...

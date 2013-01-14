@@ -43,13 +43,16 @@ function varargout = txtl_prom_plambda(mode, tube, dna, rna,varargin)
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
+    % importing the corresponding parameters
+    paramObj = txtl_component_config('lambda');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
     
     promoterData = varargin{1};
-    defaultBasePairs = {'plambda','junk','thio';50,500,0};
+    defaultBasePairs = {'plambda','junk','thio';...
+        paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
@@ -70,23 +73,11 @@ elseif strcmp(mode,'Setup Reactions')
     listOfSpecies = varargin{1};
     
     % Parameters that describe this promoter
-    %! TODO: replace these values with correct values
-    
-    %generating unique parameter name for the current RNA
-
-    kf_plambda = log(2)/0.1;			% 100 ms bind rate
-    kr_plambda = 10 * kf_plambda;			% Km of 10 (same as p70, from VN)
-    %ktx_ptet = log(2)/(rna.UserData/30);	% 30 base/second transcription
-
-    
-
+    parameters = {'TXTL_PLambda_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                  'TXTL_PLambda_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
-    Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> [' RNAPbound ']']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(Kobj1, 'TXTL_PLAMBDA_RNAPbound_F', kf_plambda);
-    Pobj1r = addparameter(Kobj1, 'TXTL_PLAMBDA_RNAPbound_R', kr_plambda);
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_PLAMBDA_RNAPbound_F', 'TXTL_PLAMBDA_RNAPbound_R'});
-
+    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+        'MassAction',parameters);
     %
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
@@ -94,26 +85,19 @@ elseif strcmp(mode,'Setup Reactions')
 
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound); 
     
-    plambdaRepression = false;
+   
     %! TODO make all these reactions conditional on specie availability
     matchStr = regexp(listOfSpecies,'(^protein lambda.*dimer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
     listOflambdadimer = vertcat(matchStr{:});
     if ~isempty(listOflambdadimer)
-        plambdaRepression = true;
-    end
-    
-    if plambdaRepression
         for i = 1:size(listOflambdadimer,1)
-            Robj8 = addreaction(tube, ...
-              [DNA ' + ' listOflambdadimer{i} ' <-> [' dna.name ':' listOflambdadimer{i} ']']);
-            Kobj8 = addkineticlaw(Robj8,'MassAction');
-            rN = regexprep(listOflambdadimer{i}, {'( )'}, {''});
-            uniqueNameF = sprintf('TXTL_PLAMBDA_REPRESSION_%s_F',rN);
-            uniqueNameR = sprintf('TXTL_PLAMBDA_REPRESSION_%s_R',rN);
-            set(Kobj8, 'ParameterVariableNames', {uniqueNameF, uniqueNameR});            
+            txtl_addreaction(tube,...
+                [DNA ' + ' listOflambdadimer{i} ' <-> [' dna.name ':' listOflambdadimer{i} ']'],...
+            'MassAction',{'ptet_sequestration_F',paramObj.Protein_DNA_Forward;...
+                          'ptet_sequestration_R',paramObj.Protein_DNA_Reverse});           
         end
-    end 
-        
+    end
+  
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
     error('txtltoolbox:txtl_prom_plambda:undefinedmode', ...

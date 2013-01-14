@@ -43,12 +43,16 @@ function varargout = txtl_prom_p70(mode, tube, dna, rna, varargin)
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];	% Name of bound complex
+    
+    % importing the corresponding parameters
+    paramObj = txtl_component_config('p70');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
     promoterData = varargin{1};
-    defaultBasePairs = {'p70','junk','thio';50,500,0};
+    defaultBasePairs = {'p70','junk','thio';...
+        paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
@@ -67,12 +71,12 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
 elseif strcmp(mode, 'Setup Reactions')
     
-    %
+    % Parameters that describe this promoter
+    parameters = {'TXTL_P70_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                  'TXTL_P70_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
-    %
-    Robj1 = addreaction(tube, [DNA ' + ' RNAP ' <-> ' RNAPbound]);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_P70_RNAPbound_F', 'TXTL_P70_RNAPbound_R'});
+    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+        'MassAction',parameters);
     %
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting

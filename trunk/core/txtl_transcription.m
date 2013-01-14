@@ -71,12 +71,27 @@ elseif strcmp(mode,'Setup Reactions')
         for k=2:size(extraSpecies,1)
             extraStr = [extraStr '+' extraSpecies{k}];
         end
-        %! TODO come up with a better parameter handling - zoltuz
-        if nargin == 8
+        transcriptionEq = ...
+            ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr];
+    else
+        transcriptionEq = ...
+            ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP];
+    end
+    
+    % transcription rate can come out side of the function
+    if nargin == 8
             ktx = varargin{7};
-        end
+        else
+            ktxExpression =  strrep(tube.Userdata{1}.Transcription_Rate,...
+            'RNA_Length','rna.UserData');             
+            ktx = eval(ktxExpression);
     end
 
+    % parameter values
+        NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData{1}.NTP_Forward;
+                         'TXTL_NTP_RNAP_R', tube.UserData{1}.NTP_Reverse};
+            
+    % NTP consumption models
     if tube.UserData{1}.NTPmodel == 1
         % Compute the number of NTPs required, in 100 NTP blocks
         ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
@@ -85,48 +100,25 @@ elseif strcmp(mode,'Setup Reactions')
         else
           ntpstr = int2str(ntpcnt);
         end
-        Robj1 = addreaction(tube, ...
-          ['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']']);
-        Kobj1 = addkineticlaw(Robj1, 'MassAction');
-        set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});
+                
+        txtl_addreaction(tube,['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters);
     else
-        % to deal with stiffness due high reaction-order    
-        Robj1 = addreaction(tube, ...
-          ['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']']);
-        Kobj1 = addkineticlaw(Robj1, 'MassAction');
-        set(Kobj1, 'ParameterVariableNames', {'TXTL_NTP_RNAP_F', 'TXTL_NTP_RNAP_R'});   
-
+        % to deal with stiffness due to high reaction-order
+        txtl_addreaction(tube,['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters);
+    
         %dummy raction
-        Robj5 = addreaction(tube, ...
-        ['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP]);
-        Kobj5 =  addkineticlaw(Robj5, 'MassAction');
-        %generating unique parameter name for the current RNA with NTP
-        %consumptio
-        rN = regexprep(rna.Name, {'( )'}, {''});
-        uniqueName = sprintf('TXTL_TX_rate_%s_NTP_consumption',rN);
-        set(Kobj5, 'ParameterVariableNames', uniqueName);    
+        ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
+        NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
+        
+        txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
+        'MassAction',NTPConsumptionRate);  
     end
 
-
-    if nargin == 6
-        Robj2 = addreaction(tube, ...
-          ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP]);
-    else
-        Robj2 = addreaction(tube, ...
-          ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr]);    
-    end
-
-    Kobj2 = addkineticlaw(Robj2, 'MassAction');
-
-    if nargin == 8 && ~isempty(ktx)
-        addparameter(Kobj2, 'TX_rate', ktx);
-        set(Kobj2, 'ParameterVariableNames', 'TX_rate');
-    else
-        %generating unique parameter name for the current RNA
-        rN = regexprep(rna.Name, {'( )'}, {''});
-        uniqueName = sprintf('TXTL_TX_rate_%s',rN);
-        set(Kobj2, 'ParameterVariableNames', uniqueName);
-    end
+    % Transcription
+    txtl_addreaction(tube,transcriptionEq,'MassAction',{'TXTL_transcription_rate',ktx});  
+    
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%     
 else

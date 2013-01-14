@@ -40,11 +40,16 @@ function varargout = txtl_protein_tetR(mode, tube, protein, varargin)
 % in 'setup Species' mode, it returns an array of gene lengths, having
 % added defaults in places where the lengths are missing. 
 
+% importing the corresponding parameters
+paramObj = txtl_component_config('tetR');
+
+
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
 
     geneData = varargin{1};
-    defaultBasePairs = {'tetR','lva','terminator';647,40,100};
+    defaultBasePairs = {'tetR','lva','terminator';
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
@@ -59,25 +64,26 @@ if strcmp(mode, 'Setup Species')
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
-    
-    %!TODO: set up user defined parameters. 
-    kf_aTc = 1; kr_aTc = 0.1; 
-    % Set up the binding reaction
-    Robj1 = addreaction(tube, ['[' protein.Name '] + aTc <-> [aTc:' protein.Name ']']);
-    Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(Kobj1, 'TXTL_INDUCER_TETR_ATC_F', kf_aTc);
-    Pobj1r = addparameter(Kobj1, 'TXTL_INDUCER_TETR_ATC_R', kr_aTc);
-    set(Kobj1, 'ParameterVariableNames', {'TXTL_INDUCER_TETR_ATC_R', 'TXTL_INDUCER_TETR_ATC_R'});
+    [~,listOfSpecies] = getstoichmatrix(tube);
+  
+    % Set up the binding reaction for all protein variants
+    matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
+    listOftetRdimer = vertcat(matchStr{:});
+
+    for k = 1:size(listOftetRdimer,1)
+        txtl_addreaction(tube, ...
+         ['[' listOftetRdimer{k} '] + aTc <-> [aTc:' listOftetRdimer{k} ']'],...
+         'MassAction',{'TXTL_INDUCER_TETR_ATC_F',paramObj.Protein_Inducer_Forward;...
+                       'TXTL_INDUCER_TETR_ATC_R',paramObj.Protein_Inducer_Reverse});
+    end
 
     % degrade the aTc inducer
-    kf_aTcdeg = 0.0001;
-    Robj2 = addreaction(tube, ['aTc -> null']);
-    Kobj2 = addkineticlaw(Robj2, 'MassAction');
-    Pobj2 = addparameter(Kobj2, 'TXTL_INDUCER_DEGRADATION_ATC', kf_aTcdeg);
-    set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_ATC'});
+    txtl_addreaction(tube,'aTc -> null',...
+     'MassAction',{'TXTL_INDUCER_DEGRADATION_ATC',paramObj.Inducer_Degradation});
 
-
-    txtl_protein_dimerization('Setup Reactions', tube,protein, [0.001, 0.0001]);
+    % set up a reaction for protein dimerization
+    txtl_protein_dimerization(mode, tube,protein, ...
+        [paramObj.Dimmerization_Forward, paramObj.Dimmerization_Reverse]);
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
