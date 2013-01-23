@@ -63,8 +63,8 @@ if strcmp(mode, 'Setup Species')
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
-    
-    % Parameters that describe this reaction
+   
+    [~,listOfSpecies] = getstoichmatrix(tube);
     
     % Set up the binding reaction for all protein variants
     matchStr = regexp(listOfSpecies,'(^protein LacI.*tetramer$)','tokens','once'); 

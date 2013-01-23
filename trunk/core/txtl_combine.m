@@ -76,14 +76,12 @@ for m = 1:length(tubelist)
   mobjUser = get(Mobj, 'UserData');
   tubeUser = get(tube, 'UserData');
   if ~isempty(tubeUser)
-      i = length(mobjUser);
-      foo = cell(i+1, 1);
-      for j = 1:i
-          foo{j} = mobjUser{j};
+      if isempty(mobjUser)
+         set(Mobj, 'UserData', tubeUser);
+      else
+         outCell = {mobjUser(:); tubeUser(:)};
+         set(Mobj, 'UserData', outCell);
       end
-      
-      foo{i+1,1} = tubeUser;
-      set(Mobj, 'UserData', foo)
   end
   
 end

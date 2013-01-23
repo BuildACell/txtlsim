@@ -1,5 +1,6 @@
 %TXTL_ADDDNA   Set up species and reactions for a DNA segment
 %
+%
 %   dna = TXTL_ADDDNA(tube, promspec, rbsspec, genespec, amount, type)
 %   constructs the species and reactions required for transcription,
 %   translation and degradation of DNA, mRNA and proteins in the 
@@ -74,13 +75,8 @@ function dna = txtl_adddna(tube, promspec, rbsspec, genespec, dnaamount, type, v
 if isempty(varargin)
     mode = 'Setup Species';
     dnaInfo = get(tube, 'UserData');
-    i = length(dnaInfo);
-    foo = cell(i+1, 1);
-    for j = 1:i
-        foo{j} = dnaInfo{j};
-    end
-    foo{i+1,1} = {promspec, rbsspec, genespec, dnaamount, type};
-    set(tube, 'UserData', foo)
+    dnaInfo{end+1} = {promspec, rbsspec, genespec, dnaamount, type};
+    set(tube, 'UserData', dnaInfo)
     clear dnaInfo
 
     % set up protein reactions and data, followed by utr followed by promoter
