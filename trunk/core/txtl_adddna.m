@@ -237,6 +237,13 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     % Add in mRNA degradation reactions
      txtl_addreaction(tube,[rna.Name ' + RNase -> RNase'],...
         'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
+    
+     txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase -> Ribo + RNase'],...
+        'MassAction',{'TXTL_RNAdeg_F',log(2)/(60*12)});
+    
+     txtl_addreaction(tube,['AA:Ribo:' rna.Name ' + RNase -> AA + Ribo + RNase'],...
+        'MassAction',{'TXTL_RNAdeg_F',log(2)/(60*12)});
+
 
     % Protein degradation (if tagged)
     if protDEGflag

@@ -95,14 +95,24 @@ for k = 1:numOfGroups
         %! TODO skip already added proteins and mRNAs to avoid duplicates
         % get each RNAs
         RNAs = cellfun(@(x) strcat('RNA',{' '},x(2),'--',x(3)),r);
+        listOfRNAs = horzcat(listOfRNAs,RNAs);
+        % calculate the total amount for each RNA
+        totRNAs = cellfun(@(x) totalAmountOfSpecies(listOfSpecies,x_ode,x),RNAs,'UniformOutput',false); 
+        % merge into one cell array
+        totRNAs = vertcat(totRNAs{:});
         % get each proteins
         proteins = cellfun(@(x) strcat('protein',{' '}, x(3)), r); % adding protein string for each element
         listOfProteins = horzcat(listOfProteins,proteins);
-        listOfRNAs = horzcat(listOfRNAs,RNAs);
+        
 
         % collect the data   
         listOfDNAsRNAs = horzcat(listOfDNAs,listOfRNAs);
         dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs);
+        
+        % replace free RNA concentration with total RNA concentration
+        [~, ia, ib] = intersect(listOfDNAsRNAs, totRNAs(:,1));
+        dataX(:,ia) = horzcat(totRNAs{ib,2});
+        
     else
         warning('No DNA strings were provided!');
     end
@@ -165,29 +175,16 @@ for k = 1:numOfGroups
             
             %totalAmount = cell(size(matchStrings,1),2);
             for z = 1:size(matchStrings,1)
-              p = 1;  
-              regString = [matchStrings{z} '.*'];
-              matchProtein = regexp(listOfSpecies,regString,'match');
-              if ~isempty(vertcat(matchProtein{:}))
-                totalAmount{p,1} = matchStrings{z};
-                totalAmount{p,2} = [];
-                binVec = cellfun(@(x) isempty(x),matchProtein);
-                indx = find(binVec == 0);
-                totalAmount{p,2} =  sum(x_ode(:,indx),2);
-                p = p+1;
-              else
-                warning('total concetration: no match was found for: %s',...
-                regString);
-              end
+                tA = totalAmountOfSpecies(listOfSpecies,x_ode,matchStrings{z});
+                totalAmount = vertcat(totalAmount,tA);
             end % end for z =
             % deleting special strings
             dataGroups{k,2}(needlessStr) = [];
-            
-        %%% no special string in the list, so we add it to the rest.    
-        else
-           listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
+           
         end
-       
+        
+        % finally, add the manually listed species
+        listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
         
     end
     dataX = getDataForSpecies(modelObj,x_ode,listOfProteins);
@@ -270,6 +267,30 @@ for k = 1:numOfGroups
 end % end of for
     
 end
+
+
+function totalAmount = totalAmountOfSpecies(listOfSpecies,x_ode,SpecieString)
+
+   
+        matchSpecie = regexp(listOfSpecies,SpecieString,'match');
+        if ~isempty(vertcat(matchSpecie{:}))
+            totalAmount{1,1} = SpecieString;
+            totalAmount{1,2} = [];
+            binVec = cellfun(@(x) isempty(x),matchSpecie);
+            indx = find(binVec == 0);
+            totalAmount{1,2} =  sum(x_ode(:,indx),2);
+
+        else
+            totalAmount{1,1} = SpecieString;
+            totalAmount{1,2} =  0;
+            warning('total concetration: no match was found for: %s',...
+                regString);
+
+        end
+
+end
+
+
 
 function autoSpecies = extractRegexpAndExecute(regexp_ind,modelObj,dataSource)
 autoSpecies = {};

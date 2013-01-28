@@ -1,3 +1,17 @@
+2013-01-27  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* core/txtl_plot.m: calculation of total RNA concentration, showing
+	on the corresponding plot.
+	* core/txtl_buffer.m: NTP and AA number are adjusted
+	* core/txtl_adddna.m: reactions for bounded mRNA degradation was added
+	* core/txtl_extract: numbers are adjusted
+
+2013-01-23  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* core/txtl_adddna.m: minor refactoring
+	* core/txtl_combine.m: minor refactoring
+	* doc/usersmanual.tex: latex template for the user's manual
+
 2013-01-14  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* core/txtl_reaction_config.m: all extract related parameters are

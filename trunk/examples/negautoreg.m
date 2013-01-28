@@ -25,6 +25,7 @@ dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 
 
+
 %
 % Next we have to set up the reactions that describe how the circuit
 % works.  Transcription and translation are already included above, so
@@ -137,7 +138,7 @@ dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.','c-','y--','m-','k-','r-'};
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';
 %
-txtl_plot_gui(t_ode,x_ode,Mobj,dataGroups);
+% txtl_plot_gui(t_ode,x_ode,Mobj,dataGroups);
 
 
 %

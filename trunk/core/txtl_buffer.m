@@ -36,9 +36,14 @@ function tube = txtl_buffer(name)
 tube = txtl_newtube(name);
 
 % Add in NTPs and amino acids
-%! TODO: need to adjust these when reaction usage is updated properly
-addspecies(tube, 'NTP', 250);		% 100 ntp's/unit
-addspecies(tube, 'AA', 1000);		% 100 aa's/unit
+% Buffer contents
+%    NTP: ATP 1.2mM, GTP 1.2mM, CTP 1.2mM, UTP 1.2mM
+%    AA: 1.5nM (for each amino acid)
+% due to limiting factors only 20% percent can be utilized, c.f. V Noireaux
+% 2003.
+addspecies(tube, 'NTP', (4*12000)*0.2);		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
+addspecies(tube, 'AA', 15000*20*0.2);		% 100 aa's/unit (20 amino acid)
+
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

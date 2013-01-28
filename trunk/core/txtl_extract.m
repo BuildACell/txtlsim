@@ -40,9 +40,10 @@ tube = txtl_newtube(name);
 % Add in ribosomes and RNAP70
 %! TODO: update these numbers based on measurements
 df = 1000;				% dilution factor of TX-TL mix
-addspecies(tube, 'RNAP', 25/df);	% 25 nM based on simulac
-sigma70 = addspecies(tube, 'protein sigma70', 25/df);	% 25 nM based on simulac
-addspecies(tube, 'Ribo', 300/df);	% 300 nM based on simulac
+addspecies(tube, 'RNAP', 100);	% 100 nM based on VN's paper
+sigma70 = addspecies(tube, 'protein sigma70', 35); % 35 nM based on VN's paper
+sigma28 = addspecies(tube, 'protein sigma28', 20); % <20 nM based on VN's paper
+addspecies(tube, 'Ribo', 1000);	% 2300 nM based on VN's paper
 
 % Add RNAP+Sigma70 <-> RNAP70 reaction
 
@@ -54,14 +55,14 @@ set(Kobj1, 'ParameterVariableNames', {'TXTL_RNAP_S70_F','TXTL_RNAP_S70_R'});
 % Add in exonuclease + protection reactions (if [protein gamS] > 0)
 %! TODO: update these numbers based on measurements
 kgamS = 1;				% gamS binding rate
-addspecies(tube, 'RecBCD', 25/df);	% 25 nM to match RNAP
+addspecies(tube, 'RecBCD', 100);	% 100 nM to match RNAP
 Robj = addreaction(tube, 'RecBCD + [protein gamS] -> RecBCD:gamS');
 Kobj = addkineticlaw(Robj,'MassAction');
 Pobj = addparameter(Kobj, 'kf', kgamS);
 set(Kobj, 'ParameterVariableNames', {'kf'});
 
 % Add in RNA degradation
-addspecies(tube, 'RNase', 25/df);	% 25 nM to match RNAP
+addspecies(tube, 'RNase', 1);	% 100 nM to match RNAP
 
 %% building configuration object for the current experiment
 
