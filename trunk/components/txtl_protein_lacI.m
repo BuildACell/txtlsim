@@ -58,8 +58,8 @@ if strcmp(mode, 'Setup Species')
     
     % call additional functions to setup any other relevant species (like
     % multimers)
-    txtl_protein_dimerization(mode, tube, protein); 
-    txtl_protein_tetramerization(mode, tube, protein);
+    txtl_dimerize(mode, tube, protein); 
+    txtl_tetramerize(mode, tube, protein);
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
@@ -98,11 +98,11 @@ elseif strcmp(mode, 'Setup Reactions')
 %     set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_IPTG'});
 
     % set up a reaction for protein dimerization
-    txtl_protein_dimerization(mode, tube,protein, ...
+    txtl_dimerize(mode, tube,protein, ...
         [paramObj.Dimmerization_Forward, paramObj.Dimmerization_Reverse]);
 
     %Set up tetramerization
-    txtl_protein_tetramerization(mode, tube,protein,...
+    txtl_tetramerize(mode, tube,protein,...
         [paramObj.Tetramerization_Forward, paramObj.Tetramerization_Reverse]);
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    

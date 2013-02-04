@@ -32,12 +32,12 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 8, 2]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-simulationTime = 24*60*60;
+simulationTime = 14*60*60;
 set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
-[t_ode,x_ode] = txtl_runsim(Mobj,configsetObj,[],[]);
+[t_ode,x_ode] = txtl_runsim(Mobj,configsetObj);
 
 %% plot the result
 

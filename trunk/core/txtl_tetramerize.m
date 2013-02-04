@@ -1,4 +1,4 @@
-% txtl_protein_tetramerization-m - general protein tetramerization
+% txtl_tetramerize.m - general protein tetramerization
 % Zoltan A. Tuza Sep 2012
 %
 % This file contains a description of the protein produced by tetR.
@@ -35,7 +35,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function txtl_protein_tetramerization(mode, tube,protein, varargin)
+function txtl_tetramerize(mode, tube,protein, varargin)
 % function for protein tetramerization.
 % tube: sbiomodel object, where the reaction occurs
 % protein: SimBiology Species Array
@@ -80,7 +80,7 @@ elseif strcmp(mode, 'Setup Reactions')
  reactionRate = varargin{1};
     
     if isempty(reactionRate)
-        error('txtltoolbox:txtl_protein_tetramerization:unspecifiedRR', ...
+        error('txtltoolbox:txtl_tetramerize:unspecifiedRR', ...
         'Please specify default tetramerization reaction rates as an input vector');
     else
        Robj = addreaction(tube, ['2 [' protein.Name 'dimer] <-> [' protein.Name 'tetramer]']); 
@@ -95,7 +95,7 @@ elseif strcmp(mode, 'Setup Reactions')
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else
-    error('txtltoolbox:txtl_protein_tetramerization:undefinedmode', ...
+    error('txtltoolbox:txtl_tetramerize:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end   
 

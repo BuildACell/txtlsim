@@ -49,7 +49,6 @@ end
 % sensitivity analysis
 configsetObj.SolverOptions.SensitivityAnalysis = true;
 sensitivityOpt = configsetObj.SensitivityAnalysisOptions;
-txtl_setup_parameters(Mobj);
 lacIprotein = sbioselect(Mobj, 'Name','protein lacI-lva-terminator');
 sensitivityOpt.Outputs = [lacIprotein];
 params = sbioselect(Mobj,'Type','parameter','Name',{'TXTL_NTP_RNAP_F','TXTL_TX_rate_RNArbs--lacI-lva-terminator_NTP_consumption','TXTL_TL_rate_proteinlacI-lva-terminator_AA_consumption'});

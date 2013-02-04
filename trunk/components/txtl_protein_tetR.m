@@ -55,12 +55,12 @@ if strcmp(mode, 'Setup Species')
     
     varargout{1} = geneData;
     
-    coreSpecies = {'aTc',['aTc:' protein.Name]};
+    coreSpecies = {'aTc'};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
  
     % call other functions in 'Setup Species' mode
-    txtl_protein_dimerization('Setup Species', tube,protein);
+    txtl_dimerize('Setup Species', tube,protein);
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
@@ -82,7 +82,7 @@ elseif strcmp(mode, 'Setup Reactions')
      'MassAction',{'TXTL_INDUCER_DEGRADATION_ATC',paramObj.Inducer_Degradation});
 
     % set up a reaction for protein dimerization
-    txtl_protein_dimerization(mode, tube,protein, ...
+    txtl_dimerize(mode, tube,protein, ...
         [paramObj.Dimmerization_Forward, paramObj.Dimmerization_Reverse]);
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%

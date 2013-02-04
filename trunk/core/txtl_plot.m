@@ -108,10 +108,12 @@ for k = 1:numOfGroups
         % collect the data   
         listOfDNAsRNAs = horzcat(listOfDNAs,listOfRNAs);
         dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs);
+        dataDNAs = getDataForSpecies(modelObj,x_ode,listOfDNAs);
+        dataRNAs = getDataForSpecies(modelObj,x_ode,listOfRNAs);
         
         % replace free RNA concentration with total RNA concentration
-        [~, ia, ib] = intersect(listOfDNAsRNAs, totRNAs(:,1));
-        dataX(:,ia) = horzcat(totRNAs{ib,2});
+        [~, ia, ib] = intersect(listOfRNAs, totRNAs(:,1));
+        dataRNAs(:,ia) = horzcat(totRNAs{ib,2});
         
     else
         warning('No DNA strings were provided!');
@@ -127,18 +129,27 @@ for k = 1:numOfGroups
     end
     
     if (~isempty(dataGroups{k,3}))
-        
-       hold(currentHandler);
-       for l=1:size(dataX,2)
-        plot(currentHandler,t_ode/60,dataX(:,l),dataGroups{k,3}{l});
+       [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(dataGroups{k,3});
+       ax2 = axes('Position',get(currentHandler,'Position'),...
+           'YAxisLocation','right',...
+           'Color','none',...
+           'YColor','k','XTick',[]);
+
+       hold(currentHandler,'on');
+       for l=1:size(dataDNAs,2)
+         hl2 = line(t_ode/60,dataRNAs(:,l),'Parent',currentHandler,'Color',ColorMtx(l,:),'LineWidth',1);
+         hl1 = line(t_ode/60,dataDNAs(:,l),'Parent',ax2,'Color',ColorMtx(l,:),'LineStyle','--');
        end
+       
+       hold(currentHandler,'off');
     else
        plot(currentHandler,t_ode/60,dataX);
     end    
     
-    lgh =legend(currentHandler,listOfDNAsRNAs, 'Location', 'Best');
+    lgh =legend(currentHandler,listOfRNAs, 'Location', 'Best');
     legend(lgh,'boxoff');
-    ylabel(currentHandler,'Species amounts [nM]');
+    ylabel(currentHandler,'mRNA amounts [nM]');
+    ylabel(ax2,'DNA amounts [nM]');
     xlabel(currentHandler,'Time [min]');
     title(currentHandler,dataGroups{k,1});
     

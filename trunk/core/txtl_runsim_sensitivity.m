@@ -94,14 +94,7 @@ else
             % no data was provided, no action needed 
 end
 
-%{
-if (isempty(data))
-    %this is the first run, therefore we have setup the parameters
-    txtl_setup_parameters(modelObj);
-    disp('3')
-end
-%}
- 
+
 % run the simbiology simulation
 
 simData = sbiosimulate(modelObj, configsetObj);

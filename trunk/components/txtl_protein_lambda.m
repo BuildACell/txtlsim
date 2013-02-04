@@ -55,14 +55,14 @@ if strcmp(mode, 'Setup Species')
     varargout{1} = geneData;
 
     % call other functions in 'Setup Species' mode
-    txtl_protein_dimerization('Setup Species', tube,protein);
+    txtl_dimerize('Setup Species', tube,protein);
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
   
    % set up a reaction for protein dimerization
-    txtl_protein_dimerization('Setup Reactions', tube,protein, ...
+    txtl_dimerize('Setup Reactions', tube,protein, ...
         [paramObj.Dimmerization_Forward, paramObj.Dimmerization_Reverse]);
   
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%

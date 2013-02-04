@@ -59,18 +59,10 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode,'Setup Reactions')
 
-    % Parameters that describe this RBS
-    %! TODO: replace these values with correct values
-    kf_rbs = log(2)/0.1;			% 100 ms bind rate
-    kr_rbs = 0.05 * kf_rbs;			% Km of ~0.05 (from VN model)
-
     % Set up the binding reaction
-    
-    Robj = addreaction(tube, ['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']']);
-    Kobj = addkineticlaw(Robj, 'MassAction');
-    Pobjf = addparameter(Kobj, 'TXTL_UTR_RBS_F', kf_rbs);
-    Pobjr = addparameter(Kobj, 'TXTL_UTR_RBS_R', kr_rbs);
-    set(Kobj, 'ParameterVariableNames', {'TXTL_UTR_RBS_F', 'TXTL_UTR_RBS_R'});
+     txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
+     'MassAction',{'TXTL_UTR_RBS_F',tube.UserData{1}.Ribosome_Binding_F;
+                   'TXTL_UTR_RBS_R',tube.UserData{1}.Ribosome_Binding_R});
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

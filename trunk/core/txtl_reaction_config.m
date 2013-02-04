@@ -13,8 +13,12 @@ classdef txtl_reaction_config
         Protein_ClpXP_Forward;
         Protein_ClpXP_Reverse;
         Protein_ClpXP_complex_deg;
+        RNAP_S70_F;
+        RNAP_S70_R;
         AA_Forward;
         AA_Reverse;
+        Ribosome_Binding_F;
+        Ribosome_Binding_R;
         RNA_deg;
         NTP_Forward;
         NTP_Reverse;

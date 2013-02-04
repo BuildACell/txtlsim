@@ -1,7 +1,6 @@
-% txtl_protein_dimerization.m - general protein dimerization
+% txtl_dimerize.m - general protein dimerization
 % Zoltan A. Tuza Sep 2012
 %
-%! TODO: this file should probably be called txtl_dimerize (RMM, 29 Sep)
 %
 % This file contains a description of the protein produced by tetR.
 % Calling the function txtl_protein_tetR() will set up the reactions for
@@ -37,14 +36,13 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function txtl_protein_dimerization(mode, tube,protein,varargin)
+function txtl_dimerize(mode, tube,protein,varargin)
 % function for protein dimerization.
 % tube: sbiomodel object, where the reaction occurs
 % protein: SimBiology Species Array
 % reacctionRates: 2x1 or 1x2 vector contains the forward and reverse
 % reaction rates. (For forward reaction only, set the reverse reaction rete to zero!)
 %
-% Return: SimBiology Reaction Array
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
@@ -55,22 +53,10 @@ if strcmp(mode, 'Setup Species')
 elseif strcmp(mode, 'Setup Reactions')
     
     reactionRate = varargin{1};
-    Robj = addreaction(tube, ['2 [' protein.Name '] <-> [' protein.Name 'dimer]']); 
-    Kobj = addkineticlaw(Robj,'MassAction');
-    rN = regexprep(protein.Name, {'( )'}, {''});
-    uniqueNameF = sprintf('TXTL_PROT_DIMER_%s_F',rN);
-    uniqueNameR = sprintf('TXTL_PROT_DIMER_%s_R',rN);
-    Pobjf = addparameter(Kobj, uniqueNameF, reactionRate(1));
-    Pobjr = addparameter(Kobj, uniqueNameR, reactionRate(2));
-    set(Kobj, 'ParameterVariableNames', {uniqueNameF, uniqueNameR});
-    
-    % !TODO: change the userdata structure to a larger structure so that
-    % a reaction rate vector can be specified. til then, we use the setup
-    % parameters method, with a reversible dimerization reaction. -Vipul
-    %{ 
-    
+
     if isempty(reactionRate)
-        error('txtltoolbox:txtl_protein_dimerization:unspecifiedRR', 'Please specify dimerization reaction rates as an input vector')
+        error('txtltoolbox:txtl_dimerize:unspecifiedRR', ...
+            'Please specify dimerization reaction rates as an input vector');
     elseif reactionRate(2) == 0 || length(reactionRate) == 1
        Robj = addreaction(tube, ['2 [' protein.Name '] -> [' protein.Name 'dimer]']);
        Kobj = addkineticlaw(Robj,'MassAction');
@@ -83,10 +69,10 @@ elseif strcmp(mode, 'Setup Reactions')
        Pobjr = addparameter(Kobj, 'kr', reactionRate(2));
        set(Kobj, 'ParameterVariableNames', {'kf', 'kr'});
     end
-    %}
+    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_dimerization:undefinedmode', ...
+    error('txtltoolbox:txtl_dimerize:undefinedmode', ...
        'The possible modes are ''Setup Species'' and ''Setup Reactions''');
 end
 

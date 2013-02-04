@@ -11,13 +11,19 @@ Protein_ClpXP_Forward, Numeric, 0.005 ,
 Protein_ClpXP_Reverse, Numeric, 0.001 ,
 Protein_ClpXP_complex_deg, Numeric, 0.001, 
 
+RNAP_S70_F, Numeric, 100,
+RNAP_S70_R, Numeric, 0.01
+
 AA_Forward,Expression,log(2) / 0.001, binding rate of 1 ms
-AA_Reverse,Expression, 1 * log(2) / 0.001, Km of 100 for amino acid usage
+AA_Reverse,Expression, 100 * log(2) / 0.001, Km of 100 for amino acid usage 10uM
 
 RNA_deg,Expression,log(2)/(60*12), mRNA degradation: 10 sec half life
 
+Ribosome_Binding_F, Expression, log(2)/0.1, 100 ms bind rate
+Ribosome_Binding_R, Expression, 0.05 * log(2)/0.1, Km of ~0.05 (from VN model)
+
 NTP_Forward,Expression, log(2) / 0.001, binding rate of 1 ms
-NTP_Reverse,Expression, 5000 * log(2) / 0.001, Km of 100 for NTP usage
+NTP_Reverse,Expression, 5000 * log(2) / 0.001, Km of 100 for NTP usage 500uM
 
 
 

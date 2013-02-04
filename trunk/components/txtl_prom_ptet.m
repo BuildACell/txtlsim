@@ -79,10 +79,23 @@ elseif strcmp(mode,'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
     %
-    % Now put in the reactions for the utilization of NTPs
-    % Use an enzymatic reaction to proper rate limiting
-    
+    % nominal transcription
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    
+    matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
+    listOftetRdimer = vertcat(matchStr{:});
+    
+   
+    if ~isempty(listOftetRdimer)
+        for k = 1:size(listOftetRdimer,1)
+            txtl_addreaction(tube,...
+                [DNA ' + aTc:' listOftetRdimer{k} ' <-> [' dna.name ':aTc:' listOftetRdimer{k} ']'],...
+            'MassAction',{'ptet_atc_dna_F',0.2;...
+                          'ptet_atc_dna_R',1}); 
+            dnaaTcTetR = sbioselect(tube, 'Type', 'species', 'Name', [dna.name ':aTc:' listOftetRdimer{k}]);          
+            txtl_transcription(mode, tube, dnaaTcTetR, rna, RNAP, RNAPbound);          
+        end
+    end
 
     %
     % Add reactions for sequestration of promoter by tetRdimer 
@@ -90,14 +103,13 @@ elseif strcmp(mode,'Setup Reactions')
     
  
     %! TODO make all these reactions conditional on specie availability
-    matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
-    listOftetRdimer = vertcat(matchStr{:});
+    
     if ~isempty(listOftetRdimer)
-        for i = 1:size(listOftetRdimer,1)
+        for k = 1:size(listOftetRdimer,1)
             txtl_addreaction(tube,...
-                [DNA ' + ' listOftetRdimer{i} ' <-> [' dna.name ':' listOftetRdimer{i} ']'],...
-            'MassAction',{'ptet_sequestration_F',paramObj.Protein_DNA_Forward;...
-                          'ptet_sequestration_R',paramObj.Protein_DNA_Reverse});
+                [DNA ' + ' listOftetRdimer{k} ' <-> [' dna.name ':' listOftetRdimer{k} ']'],...
+            'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
+                          'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
             %{
             Robj10 = addreaction(tube, ...
               [DNA ' + ' listOftetR{i} ' <-> [' dna.name ':' listOftetR{i} '2]']);

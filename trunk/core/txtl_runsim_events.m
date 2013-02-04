@@ -42,7 +42,6 @@ Mobj = varargin{1};
 configsetObj = varargin{2};
 eventTriggers = varargin{3};
 eventFcns = varargin{4};
-txtl_setup_parameters(Mobj);
 evt = cell(1, length(eventTriggers));
 for i = 1:length(eventTriggers)
 evt{i} = addevent(Mobj, eventTriggers{i}(1:end), eventFcns{i}(1:end));

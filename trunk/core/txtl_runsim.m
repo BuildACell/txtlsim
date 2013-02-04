@@ -43,20 +43,30 @@
 
 
 function [t_ode, x_ode, modelObj, varargout] = txtl_runsim(varargin)
+    
 
-    if nargin ~= 4 && nargin~= 5
-        error('txtl_runsim should be called either with 4 or 5 arguments.');
-    else
-        modelObj = varargin{1};
-        configsetObj = varargin{2};
-        data = varargin{4};
-        time_vector = varargin{3};
-        if nargin == 5
+    switch nargin
+        case 2
+            modelObj = varargin{1};
+            configsetObj = varargin{2};
+            time_vector = [];
+            data =  [];
+        case 4
+            modelObj = varargin{1};
+            configsetObj = varargin{2};
+            time_vector = varargin{3};
+            data = varargin{4};
+        case 5
+            modelObj = varargin{1};
+            configsetObj = varargin{2};
+            time_vector = varargin{3};
+            data = varargin{4};
             simData = varargin{5};
-        end
-        
+        otherwise
+        error('txtl_runsim should be called either with 4 or 5 arguments.');    
     end
     
+%! TODO zoltuz 2/4/13 review this part
 m = get(modelObj, 'UserData');
 datalen = size(m,1);
 if ~strcmp(m{datalen},'notFirstRun')
@@ -70,7 +80,7 @@ if ~strcmp(m{datalen},'notFirstRun')
             end
         end
     end
-    txtl_setup_parameters(modelObj); 
+    
     newUserData = cat(1, m, 'notFirstRun');
     set(modelObj, 'UserData', newUserData)
 end
@@ -119,11 +129,6 @@ elseif size(modelObj.Species,1) == size(data,2) && size(data,1) > 1
 else
             % no data was provided, no action needed 
 end
-% 
-% if (isempty(data))
-%     %this is the first run, therefore we have setup the parameters
-%     txtl_setup_parameters(modelObj);
-% end
 
 
 simData = sbiosimulate(modelObj, configsetObj);
