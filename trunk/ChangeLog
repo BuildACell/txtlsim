@@ -1,12 +1,13 @@
 2013-02-04  Zoltan Tuza <zoltuz@zoltuz-laptop>
 	
 	* core/txtl_setup_parameters.m: deprecated, new parameter handling is
-	managed through component and reaction config object
+	managed through component and reaction config objects
 	* core/txtl_runsim_*.m: removing setup_parameters calling
 	* core/txtl_component_config.m: enabling multiple protein complexes to
 	sequester the same DNA. 
 	* component/txtl_param_*.m: adjusting the file format to the
 	format in component config class.
+	* examples/toxin_antitoxin.m: model of the toxin-antitoxin system
 
 
 2013-01-27  Zoltan Tuza <zoltuz@zoltuz-laptop>
