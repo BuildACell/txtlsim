@@ -1,4 +1,4 @@
-%TXTL_COMBINE	Generate a model by composition two or more submodels
+%TXTL_COMBINE	Generate a model by composition of two or more submodels
 %
 % newtube = txtl_combine(tubelist, vollist) - combine the contents of
 % a list of tubes into a new tube.  The volume taken from each tube is

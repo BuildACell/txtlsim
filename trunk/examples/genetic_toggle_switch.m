@@ -6,10 +6,6 @@
 % switching that can be accomplished by the tetR repressing inducer aTc and
 % the lacI repressing inducer IPTG. 
 %
-close all 
-clear all
-clc
-
 
 tetR_initialConc = 10; 
 lacI_initialConc = 1; 
@@ -20,14 +16,14 @@ inducerConc = 9; % setting this to 10 gives strange fluctuations in the AA conc
 
 % Set up the standard TXTL tubes
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('e1');
+tube2 = txtl_buffer('b1');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-dna_lacI = txtl_adddna(tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_adddna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_lacI = txtl_add_dna(tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_add_dna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 lacIprotein = sbioselect(tube3, 'Name','protein lacI-lva-terminator');
 tetRprotein = sbioselect(tube3, 'Name','protein tetR-lva-terminator');

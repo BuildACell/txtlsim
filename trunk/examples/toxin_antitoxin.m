@@ -16,18 +16,18 @@ tube2 = txtl_buffer('b1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_deGFP = txtl_adddna(tube3, ...
+dna_deGFP = txtl_add_dna(tube3, ...
   'ppard(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
   16, ...					% concentration (nM)
   'plasmid');					% type
 
 
-dna_parD = txtl_adddna(tube3, ...
+dna_parD = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'parD(1000)', ...	% promoter, rbs, gene
   16, ...					% concentration (nM)
   'plasmid');					% type
 
-dna_parE = txtl_adddna(tube3, ...
+dna_parE = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'parE(1000)', ...	% promoter, rbs, gene
   10, ...					% concentration (nM)
   'plasmid');					% type

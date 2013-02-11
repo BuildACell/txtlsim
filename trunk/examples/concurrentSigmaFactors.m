@@ -12,14 +12,14 @@ tube2 = txtl_buffer('b1');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-dna_sigma28 = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 10, 'linear');
-dna_sigma282 = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)-lva(40)-terminator(100)', 10, 'linear');
-dna_deGFP =   txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 10, 'linear');
-dna_gamS =    txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_sigma28 = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 10, 'linear');
+dna_sigma282 = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)-lva(40)-terminator(100)', 10, 'linear');
+dna_deGFP =   txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 10, 'linear');
+dna_gamS =    txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 tube4 = txtl_newtube('no_s28_circuit');
-txtl_adddna(tube4, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 10, 'linear');
-txtl_adddna(tube4, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 10, 'linear');
+txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes and add some inducer
 well_a1 = txtl_combine([tube1, tube2, tube3], [22, 8, 3]);

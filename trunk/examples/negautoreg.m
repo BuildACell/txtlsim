@@ -18,9 +18,9 @@ tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_adddna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 16, 'linear');%
-dna_deGFP = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 16, 'linear');
-dna_gamS = txtl_adddna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 16, 'linear');%
+dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 16, 'linear');
+dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 
 
@@ -64,6 +64,9 @@ if ~strcmp(version('-release'),'2012a')
 end
 
 [t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj,[], []);
+%{
+!TODO vipul 2/10/13 delete all these old plotting commands?
+
 names = simData.DataNames
 % Top row: protein and RNA levels
 figure('Name','negautoreg'); clf(); subplot(2,1,1);
@@ -119,7 +122,7 @@ lgh = legend(...
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-
+%}
 
 %% plot the result
 % close all
@@ -137,7 +140,7 @@ dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.','c-','y--','m-','k-','r-'};
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';
 %
-% txtl_plot_gui(t_ode,x_ode,Mobj,dataGroups);
+ txtl_plot(t_ode,x_ode,Mobj,dataGroups);
 
 
 %

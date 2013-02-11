@@ -60,8 +60,8 @@ addspecies(tube, 'Ribo', 1000);	% 2300 nM based on VN's paper
 
 % Add in exonuclease + protection reactions (if [protein gamS] > 0)
 %! TODO: update these numbers based on measurements
-kgamS = 1;				% gamS binding rate
-addspecies(tube, 'RecBCD', 100);	% 100 nM to match RNAP
+kgamS = 100;				% gamS binding rate
+addspecies(tube, 'RecBCD', 0.3);	% 0.3 from Clare Chen (Jongmin will provide ref) nM to match RNAP
 Robj = addreaction(tube, 'RecBCD + [protein gamS] -> RecBCD:gamS');
 Kobj = addkineticlaw(Robj,'MassAction');
 Pobj = addparameter(Kobj, 'kf', kgamS);

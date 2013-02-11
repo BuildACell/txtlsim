@@ -14,11 +14,11 @@ tube2 = txtl_buffer('b1');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_deGFP = txtl_adddna(tube3, ...
+dna_deGFP = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
   16, ...					% concentration (nM)
-  'plasmid');					% type
-
+  'linear');					% type
+txtl_addspecies(tube3, 'protein gamS', 3000)
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 8, 2]);
 
@@ -33,7 +33,7 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 8, 2]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 simulationTime = 14*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
+% set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run

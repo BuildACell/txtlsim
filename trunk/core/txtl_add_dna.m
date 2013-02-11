@@ -1,20 +1,22 @@
 %TXTL_ADD_DNA   Set up species and reactions for a DNA segment
 %
 %
-%   dna = TXTL_ADD_DNA(tube, promspec, rbsspec, genespec, amount, type)
+%   dna = TXTL_ADD_DNA(tube, prom_spec, rbs_spec, gene_spec, amount, type)
 %   constructs the species and reactions required for transcription,
 %   translation and degradation of DNA, mRNA and proteins in the 
 %   TX-TL system.
 %
 %   * tube = Simbiology model object
-%   * prepromspec = Cell array of nucleatide sequences and corresponding
+%   * preprom_spec = Cell array of nucleatide sequences and corresponding
 %   sizes. One example of their use is as a protection from exonucleases. 
-%   * promspec = spec of the form 'prom(nn)' where 'prom' is the 
-%     promoter name and 'len' is the length of the promoter.
-%   * rbsspec = spec of the form 'rbs(nn)' where 'rbs' is the RBS 
+%   * prom_spec = spec of the form 'pre_prom(nn)'-'prom(nn)' where 'prom' is the 
+%     promoter name and 'len' is the length of the promoter. pre_prom cound
+%     consist of nucleatide sequences and corresponding
+%   sizes. One example of their use is as a protection from exonucleases. 
+%   * rbs_spec = spec of the form 'rbs(nn)' where 'rbs' is the RBS 
 %     name and 'len' is the length of the RBS.
-%   * genespec = spec of the form 'gene(nn)' where 'gene' is the 
-%     gene name and 'len' is the length of the gene.
+%   * gene_spec = spec of the form 'gene(nn)-lva(nn)-terminator(nn)' where 'gene' is the 
+%     gene name and 'len' is the length of the gene. 
 %   * amount = amount of DNA to put in the tube (in nM)
 %   * type = 'linear' if you want to include degradation reactions
 
@@ -48,12 +50,12 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 %%
-function dna = txtl_add_dna(tube, promspec, rbsspec, genespec, dnaamount, type, varargin)
+function dna = txtl_add_dna(tube, prom_spec, rbs_spec, gene_spec, dna_amount, type, varargin)
 
     % Extract out the names and lengths
-    [promData, promStr] = txtl_parsespec(promspec);
-    [rbsData, rbsStr] = txtl_parsespec(rbsspec);
-    [geneData, geneStr] = txtl_parsespec(genespec);
+    [promData, promStr] = txtl_parsespec(prom_spec);
+    [rbsData, rbsStr] = txtl_parsespec(rbs_spec);
+    [geneData, geneStr] = txtl_parsespec(gene_spec);
 
     % check for degradation tag and terminator
     protDEGflag = checkForStringInACellList(geneData(1,:),'lva');
@@ -75,7 +77,7 @@ function dna = txtl_add_dna(tube, promspec, rbsspec, genespec, dnaamount, type, 
 if isempty(varargin)
     mode = 'Setup Species';
     dnaInfo = get(tube, 'UserData');
-    dnaInfo{end+1} = {promspec, rbsspec, genespec, dnaamount, type};
+    dnaInfo{end+1} = {prom_spec, rbs_spec, gene_spec, dna_amount, type};
     set(tube, 'UserData', dnaInfo)
     clear dnaInfo
 
@@ -122,7 +124,7 @@ if isempty(varargin)
 
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
     
-    dna = txtl_addspecies(tube, dnastr, dnaamount);
+    dna = txtl_addspecies(tube, dnastr, dna_amount);
     
     % Transcription %% 
     if exist(['txtl_prom_' promoterName], 'file') == 2    
@@ -218,7 +220,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
 
         if junkDNAFlag
             junkLength = promData{2,junkIndex};
-            kDNA_complex_deg = log(2)/(1+junkLength/100);	
+            kDNA_complex_deg = log(2)/(1+junkLength/100);
         else
             kDNA_complex_deg = tube.UserData{1}.DNA_RecBCD_complex_deg;
         end
@@ -229,8 +231,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         % forward rr for DNA + RecBCD <-> DNA:RecBCD
         kDNA_recbcd_f = tube.UserData{1}.DNA_RecBCD_Forward;
         % backward rr for DNA + RecBCD <-> DNA:RecBCD
-        kDNA_recbcd_r = tube.UserData{1}.DNA_RecBCD_Forward;
-
+        kDNA_recbcd_r = tube.UserData{1}.DNA_RecBCD_Reverse;
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
     end
 

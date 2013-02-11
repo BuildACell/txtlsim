@@ -61,7 +61,7 @@ if strcmp(mode, 'Setup Species')
     coreSpecies = {RNAP,RNAPbound};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
-  
+    
     %
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
@@ -85,43 +85,34 @@ elseif strcmp(mode,'Setup Reactions')
     matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
     listOftetRdimer = vertcat(matchStr{:});
     
-   
-    if ~isempty(listOftetRdimer)
-        for k = 1:size(listOftetRdimer,1)
-            txtl_addreaction(tube,...
-                [DNA ' + aTc:' listOftetRdimer{k} ' <-> [' dna.name ':aTc:' listOftetRdimer{k} ']'],...
-            'MassAction',{'ptet_atc_dna_F',0.2;...
-                          'ptet_atc_dna_R',1}); 
-            dnaaTcTetR = sbioselect(tube, 'Type', 'species', 'Name', [dna.name ':aTc:' listOftetRdimer{k}]);          
-            txtl_transcription(mode, tube, dnaaTcTetR, rna, RNAP, RNAPbound);          
-        end
-    end
 
-    %
-    % Add reactions for sequestration of promoter by tetRdimer 
-    %
-    
- 
     %! TODO make all these reactions conditional on specie availability
+    %! TODO has this todo been accomplished? Vipul 2/10/13
     
+    % repression of ptet by tetR dimer
     if ~isempty(listOftetRdimer)
         for k = 1:size(listOftetRdimer,1)
             txtl_addreaction(tube,...
                 [DNA ' + ' listOftetRdimer{k} ' <-> [' dna.name ':' listOftetRdimer{k} ']'],...
             'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
                           'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
-            %{
-            Robj10 = addreaction(tube, ...
-              [DNA ' + ' listOftetR{i} ' <-> [' dna.name ':' listOftetR{i} '2]']);
-            Kobj10 = addkineticlaw(Robj10,'MassAction');
-            uniqueNameF = sprintf('TXTL_PTET_REPRESSION2_%s_F',rN);
-            uniqueNameR = sprintf('TXTL_PTET_REPRESSION2_%s_R',rN);
-            set(Kobj10, 'ParameterVariableNames', {uniqueNameF, uniqueNameR});
-            %}
             
         end
     end
-    
+   
+       % Un-repression of tetRdimer repressed ptet in the presence of aTc inducer.
+    if ~isempty(listOftetRdimer)
+        for k = 1:size(listOftetRdimer,1)
+            txtl_addreaction(tube,...
+                [DNA ' + aTc:' listOftetRdimer{k} ' <-> [' dna.name ':aTc:' listOftetRdimer{k} ']'],...
+            'MassAction',{'ptet_atc_dna_F',0.2;...
+                          'ptet_atc_dna_R',1}); 
+            dnaaTcTetR = sbioselect(tube, 'Type', 'species', 'Name', [dna.name ':aTc:' listOftetRdimer{k}]);   
+            txtl_addreaction(tube,[dnaaTcTetR.name ' + ' RNAP ' <-> [' RNAP ':' dnaaTcTetR.name ']'],...
+        'MassAction',parameters);     
+            txtl_transcription(mode, tube, dnaaTcTetR, rna, RNAP, [RNAP ':' dnaaTcTetR.name]);          
+        end
+    end
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
     error('txtltoolbox:txtl_prom_ptet:undefinedmode', ...

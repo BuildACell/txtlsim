@@ -1,61 +1,292 @@
 \documentclass[english]{report}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+%\usepackage{fullpage}
 \setcounter{secnumdepth}{3}
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{4}
 \usepackage{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{cite}
+\usepackage{color} 
+
+
 \begin{document}
-
 \title{TXTL matlab toolbox - User's manual}
-
-
 \date{version 1.0}
-
-
-\author{Richard M. Murray, Vipul Singhal, Zoltan A. Tuza}
-
+\author{Zoltan A. Tuza, Vipul Singhal, Richard M. Murray}
 \maketitle
+\tableofcontents
+
+\chapter{The TXTL Modelling Toolbox}
+
+The TXTL modelling toolbox for MATLAB is a companion to the TXTL Breadboards (Cell-free expression) project being developed at the California Institute of Technology and the University of Minnesota. This toolbox aims to allow \textit{in-silico} prototyping of circuits before they are built \textit{in-vitro}, and to provide insight into circuit behaviour. 
+
+	\section{Protocol Overview}
+
+		\subsection{The TXTL Experimental Protocol}
+		\subsection{The TXTL Modelling Protocol}
+		The TXTL toolbox commands follow the experimental protocols closely, and a sample code is given in figure (?) below with brief explanations of the commands. More detailed explanations can be found in the 'Overview of Core Processes' chapter. More examples can be found in the 'Examples' Directory, and are documented in the 'Examples' Chapter below. \\
+
+\noindent Sample code:
+[Add a figure of the basic Negautoreg code] \\
+
+\noindent Brief explanation of commands:
+\begin{itemize}
+	\item Initialize Directories
+	\item Extract and Buffer
+	\item Newtube
+	\item Adddna
+	\item Combine
+	\item Runsim
+	\item Plot
+\end{itemize}
+
+\noindent This code produces the following figure: [add figure here]
+
 
 \chapter{Installation}
-
-
-\section{Prerequisites}
-
-
-\section{Installing the toolbox}
-
-
-\chapter{Overview of the core processes}
-
+	\section{Prerequisites}
+	\section{Installing the toolbox}
+	
+\chapter{Overview of the Core Processes}
+	\section{Introduction}
+	<Add a diagram showing the main species and reactions. The full list of reactions can be found in the appendix.>
+	\section{User Commands}		
+		\subsection*{txtl\_extract}
+			\begin{itemize}
+			\item Set up TXTL 'Extract'.
+			\item \texttt{tube = txtl\_extract(name)}
+			\item Input: name: (string) Name of extract. 
+			\item Output: tube: (double) Pointer to tube (model object).
+			\item Usage: \texttt{tube1 = txtl\_extract('E6');}
+			\item Set-up reaction rates and AA/NTP models to use. See \textbf{txtl\_reaction\_config}
+			\item Species: RNAP, Ribo, $\sigma 28$ and $\sigma 70$, RecBCD, RNA-ase.
+			\item Reactions: formation of RNAP70 and sequestration of RecBCD
+			\end{itemize}
+		\subsection*{txtl\_buffer}
+			\begin{itemize}
+			\item Setup TXTL 'Buffer'.
+			\item \texttt{tube = txtl\_buffer(name)}
+			\item Input: name: (string) Name of buffer.
+			\item Output: tube: (double) Pointer to tube (model object) 
+			\item Usage: \texttt{tube2 = txtl\_buffer('b1');}
+			\item Species: NTP and AA. 
+			\end{itemize}			
+		\subsection*{txtl\_newtube}		
+			\begin{itemize}
+			\item Add a new tube (model object).
+			\item \texttt{tube = txtl\_newtube(name)}
+			\item Input: name: (string) Name of new tube. 
+			\item Output: tube: (double) Pointer to tube (model object)
+			\item Usage: \texttt{tube3 = txtl\_newtube('circuit');} 
+			\end{itemize}					
+		\subsection*{txtl\_adddna}
+			\begin{itemize}
+			\item Add a specified amount of linear or plasmid dna to a tube.
+			\item \texttt{dna = txtl\_adddna(tube, promspec, rbsspec, genespec, dnaamount, type)}
+			\item Inputs: 
+				\begin{itemize}
+				\item tube: (double) pointer to the model object to add the DNA to.
+				\item promspec: (string) string representing promoter with length, and optional thiosulfate group, junk DNA (and optional lengths). The format is 'thio-junk(integer length in NTP)-promName(integer length in NTP)'
+				\item rbsspec: (string) ribosome binding site with optional length. 'rbs(integer length in NTP)
+				\item genespec: (string) DNA name with terminator and degradation tags (with lengths). Format: 'geneName(length)-degradationTag(length)-terminator(length)
+				\item dnaamount: (double) amount of DNA to be added.
+				\item type: (string) type of DNA: 'linear' or 'plasmid'.
+				\end{itemize}
+				\item Output: pointer to DNA object.
+			\item Usage: \texttt{dna\_tetR = txtl\_adddna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 16, 'linear');}
+			\item Species:
+			\item Reactions:
+			\end{itemize}		
+		\subsection*{txtl\_combine}
+			\begin{itemize}
+			\item Combine the contents (species and reactions) of tubes to form a new tube. 
+			\item \texttt{Mobj = txtl\_combine(tubelist, vollist)}
+			\item Inputs: 
+			\begin{itemize}
+			\item tubelist (vector of pointers: double) A list of tubes to combine together. 
+			\item vollist (vector of double) A list of the amounts (in $\mu l$) to combine them in. The total amount must add up to $10 \mu l$.
+			\end{itemize}
+			\item Output: Mobj: (double) Pointer to the new tube. 
+			\item Usage: \texttt{Mobj = txtl\_combine([tube1, tube2, tube3], [6, 1.5, 2.5])}
+			\end{itemize}		
+		\subsection*{txtl\_runsim}
+			\begin{itemize}
+			\item \texttt{[t\_ode\_output, x\_ode\_output, simData\_output] = txtl\_runsim(modelObj, configsetObj, t\_ode\_input, x\_ode\_input, simData\_input)}
+			\item Inputs: ... Outputs: ...
+			\end{itemize}		
+		Allows multiple Runs
+		\subsection*{txtl\_runsim\_events}
+			\begin{itemize}
+			\item <>
+			\end{itemize}		
+		\subsection*{txtl\_runsim\_sensitivity}
+			\begin{itemize}
+			\item <>
+			\end{itemize}		
+		\subsection*{txtl\_plot}
+			\begin{itemize}
+			\item <>
+			\end{itemize}		
+		\subsection*{txtl\_plot\_gui}
+			\begin{itemize}
+			\item <>
+			\end{itemize}		
+		\subsection*{txtl\_addspecies}
+			\begin{itemize}
+			\item <>
+			\end{itemize}		
+		\subsection*{txtl\_findspecies}
+			\begin{itemize}
+			\item <>
+			\end{itemize}		
+	\section{Externally Specified Parameters}
+		\subsection*{txtl\_reaction\_config (class)}
+		The txtl\_reaction\_config class enables users to input custom reaction parameters for the TXTL extract into their model. This is done via a comma-separated-value (.csv) file. The parameters controlled by this class are given in the properties of this class:
+			\begin{enumerate}
+			\item \textsc{NTPmodel} \\
+			There are two models for transcription that the toolbox can switch between....
+        	\item \textsc{AAmodel}
+        	\item \textsc{Transcription\_Rate}
+        	\item \textsc{Translation\_Rate}
+        	\item \textsc{DNA\_RecBCD\_Forward} \\
+        	Complex formation rate between RecBCD enzyme and DNA.        	
+        	\item \textsc{DNA\_RecBCD\_Reverse} \\
+        	Complex dissociation rate between RecBCD enzyme and DNA. 
+        	\item \textsc{DNA\_RecBCD\_complex\_deg} \\
+        	Degradation rate of RecBCD-DNA complex.
+        	\item \textsc{Protein\_ClpXP\_Forward} \\
+        	Complex formation rate between ClpXP enzyme and a protein tagged for degradation.
+        	\item \textsc{Protein\_ClpXP\_Reverse} \\
+        	Complex dissociation rate between ClpXP enzyme and a protein tagged for degradation.
+        	\item \textsc{Protein\_ClpXP\_complex\_deg} \\
+        	Degradation rate of ClpXP-Protein complex.
+        	\item \textsc{RNAP\_S70\_F}
+        	\item \textsc{RNAP\_S70\_R}
+        	\item \textsc{AA\_Forward}
+        	\item \textsc{AA\_Reverse}
+        	\item \textsc{Ribosome\_Binding\_F}
+        	\item \textsc{Ribosome\_Binding\_R}
+        	\item \textsc{RNA\_deg}
+        	\item \textsc{NTP\_Forward}
+        	\item \textsc{NTP\_Reverse}
+			\end{enumerate}		
+		\subsection*{txtl\_component\_config (class)}		
 
 \chapter{Examples}
-
-
-\section{Gene expression with fluorescent reporter}
-
-
-\section{Negative autoregulation}
-
-
-\section{Incoherent feedforward loop}
-
+	\section{Gene Expression with Fluorescent Reporter (geneexpr)}
+		\subsection{Overview}
+		\subsection{Code}
+		\subsection{Results}
+	\section{Negative Autoregulation (negautoreg)}
+		\subsection{Overview}
+		\subsection{Code}
+		\subsection{Results}	
+	\section{Induction of Gene Expression using aTc (induction)}
+		\subsection{Overview}
+		\subsection{Code}
+		\subsection{Results}	
+	\section{Incoherent Feedforward Loop (incoherent\_ff\_loop)}
+		\subsection{Overview}
+		\subsection{Code}
+		\subsection{Results}	
 
 \chapter{Creating new circuits}
-
-
-\section{Creating circuit based on library compontents}
-
-
-\section{Creating a library component}
+	\section{Creating Circuit Based on Library Components}
+	
+	\section{Creating a Library Component}
+	\section{Creating a Parameter File}
 
 
 \chapter{Appendix}
+	\section{List of Core Reactions}
+	These reactions are currently those of Dan, and refer to the Toxin-Antitoxin System. We will modify them so that they correspond to the reactions in the TXTL toolbox. 
+	\subsection{Transcription}
 
+\begin{align}
+& \mathrm{RNAP} + \sigma^{70} \rightleftharpoons \mathrm{RNAP^{70}} \\
+& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
+& \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
+& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
+& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \rightarrow \nonumber \\ 
+& \qquad \qquad \qquad \qquad P_{parDE}\textrm{--}rbs\textrm{--}deGFP +  (rbs\textrm{--}deGFP)_m + \mathrm{RNAP^{70}} \\
+& P_{70}\textrm{--}rbs\textrm{--}parD + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD \\
+& \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
+& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD \\
+& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD \rightarrow \nonumber \\ 
+& \qquad \qquad \qquad \qquad P_{70}\textrm{--}rbs\textrm{--}parD +  (rbs\textrm{--}parD)_m + \mathrm{RNAP^{70}} \\
+& P_{70}\textrm{--}rbs\textrm{--}parE + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE \\
+& \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
+& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE \\
+& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE \rightarrow \nonumber \\ 
+& \qquad \qquad \qquad \qquad P_{70}\textrm{--}rbs\textrm{--}parE +  (rbs\textrm{--}parE)_m + \mathrm{RNAP^{70}}
+\end{align}
 
-\section{list of core reactions}
+\subsection{Translation}
 
+\begin{align}
+& \mathrm{R} + (rbs\textrm{--}deGFP)_m \rightleftharpoons \mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m \\
+& \mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m + \mathrm{AA} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m \\
+& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m \rightarrow (rbs\textrm{--}deGFP)_m + \mathrm{deGFP} + \mathrm{R} \\
+& \mathrm{R} + (rbs\textrm{--}parD)_m \rightleftharpoons \mathrm{R}\!:\!(rbs\textrm{--}parD)_m \\
+& \mathrm{R}\!:\!(rbs\textrm{--}parD)_m + \mathrm{AA} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parD)_m \\
+& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parD)_m \rightarrow (rbs\textrm{--}parD)_m + \mathrm{D} + \mathrm{R} \\
+& \mathrm{R} + (rbs\textrm{--}parE)_m \rightleftharpoons \mathrm{R}\!:\!(rbs\textrm{--}parE)_m \\
+& \mathrm{R}\!:\!(rbs\textrm{--}parE)_m + \mathrm{AA} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parE)_m \\
+& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parE)_m \rightarrow (rbs\textrm{--}parE)_m + \mathrm{E} + \mathrm{R} 
+\end{align}
 
-\section{list of parameters}
+\subsection{Degradation}
 
-and their source
+\begin{align}
+& (rbs\textrm{--}deGFP)_m + \mathrm{RNase} \rightarrow  \mathrm{RNase} \\
+& \mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m + \mathrm{RNase} \rightarrow \mathrm{R} + \mathrm{RNase} \\
+& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m + \mathrm{RNase} \rightarrow \mathrm{AA} + \mathrm{R} + \mathrm{RNase} \\
+& (rbs\textrm{--}parD)_m + \mathrm{RNase} \rightarrow  \mathrm{RNase} \\
+& (rbs\textrm{--}parE)_m + \mathrm{RNase} \rightarrow  \mathrm{RNase} \\
+& \mathrm{R}\!:\!(rbs\textrm{--}parD)_m + \mathrm{RNase} \rightarrow \mathrm{R} + \mathrm{RNase} \\
+& \mathrm{R}\!:\!(rbs\textrm{--}parE)_m + \mathrm{RNase} \rightarrow \mathrm{R} + \mathrm{RNase} \\
+& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parD)_m + \mathrm{RNase} \rightarrow \mathrm{AA} + \mathrm{R} + \mathrm{RNase} \\
+& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parE)_m + \mathrm{RNase} \rightarrow \mathrm{AA} + \mathrm{R} + \mathrm{RNase}
+\end{align}
+
+\subsection{Protein complex association/dissociation}
+
+\begin{align}
+& \mathrm{D} + \mathrm{D} \rightleftharpoons \mathrm{D_2} \\
+& \mathrm{E} + \mathrm{E} \rightleftharpoons \mathrm{E_2} \\
+& \mathrm{D_2} + \mathrm{E_2} \rightleftharpoons \mathrm{D_2E_2} \\
+& \mathrm{RecBCD} + \mathrm{GamS} \rightarrow \mathrm{RecBCD}\!:\!\mathrm{GamS} 
+\end{align}
+
+\subsection{Repression}
+
+\begin{align}
+& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{D_2} \rightleftharpoons P_{parDE}\textrm{--}rbs\textrm{--}deGFP\!:\!\mathrm{D_2} \\
+& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{D_2E_2} \rightleftharpoons P_{parDE}\textrm{--}rbs\textrm{--}deGFP\!:\!\mathrm{D_2E_2}
+\end{align}
+
+\subsection{Other}
+
+\begin{align}
+& \mathrm{deGFP} \rightarrow \mathrm{deGFP^*}
+\end{align}
+	\section{List of Parameters}
+	\begin{tabular}{|c|c|c|c|c|}
+	\hline
+	\textbf{Parameter} & \textbf{Description} & \textbf{Value} & \textbf{Source*} & \textbf{file} \\ \hline
+	Transcription\_Rate & Rate of Transcription & $50 NTP/s$ & ? & \texttt{E6\_config.csv} \\ \hline
+	Translation\_Rate & Rate of Translation & $1.5 AA/s$ & ? & \texttt{E6\_config.csv} \\ \hline
+	DNA\_RecBCD\_Forward & Complex formation & $0.4 ?$ & ? & \texttt{E6\_config.csv} \\ \hline
+	$\sim$ & Amount of RNAP & $100 nM$ & VN & \texttt{txtl\_extract.m} \\ \hline
+	$\sim$ & Amount of $\sigma 70$ & $35 nM$ & VN & \texttt{txtl\_extract.m} \\ \hline
+	$\sim$ & Amount of $\sigma 28$ & $20 nM$ & VN & \texttt{txtl\_extract.m} \\ \hline	
+	$\sim$ & Amount of Ribosome & $1000 nM$ & $\sim$ & \texttt{txtl\_extract.m} \\ \hline
+	$\sim$ & Amount of RecBCD & $100 nM$ & Amount to match RNAP & \texttt{txtl\_extract.m} \\ \hline
+		$\sim$ & Amount of NTP & $100 nM$ & Amount to match RNAP & \texttt{txtl\_extract.m} \\ \hline
+	\end{tabular}
+	{\scriptsize * VN refers to publications by Vincent Noireaux (U. Minnesota).}
+
 \end{document}

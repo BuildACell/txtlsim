@@ -19,15 +19,15 @@ inducerConc = 9; % setting this to 10 gives strange fluctuations in the AA conc
 
 % Set up the standard TXTL tubes
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('e1');
+tube2 = txtl_buffer('b1');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
 
-dna_lacI = txtl_adddna('Setup Species', tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_tetR = txtl_adddna('Setup Species', tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_deGFP = txtl_adddna('Setup Species', tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_adddna('Setup Species', tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_lacI = txtl_add_dna(tube3,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
+dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+dna_gamS = txtl_add_dna(tube3,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 % Set initial lacI and tetR concentrations
 lacIprotein = sbioselect(tube3, 'Name','protein lacI-lva-terminator');
@@ -37,10 +37,6 @@ set(tetRprotein, 'InitialAmount', tetR_initialConc);
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
-dna_lacI = txtl_adddna('Setup Reactions', Mobj,'thio-junk(500)-ptet(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_tetR = txtl_adddna('Setup Reactions', Mobj, 'thio-junk(500)-ptrc2(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');
-dna_deGFP = txtl_adddna('Setup Reactions', Mobj, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
-dna_gamS = txtl_adddna('Setup Reactions', Mobj,  'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 configsetObj = getconfigset(Mobj, 'active');
 
 set(configsetObj, 'StopTime', simulationDuration)

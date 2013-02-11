@@ -76,7 +76,7 @@ if ~strcmp(m{datalen},'notFirstRun')
     for i = 1:length(m)
         if ~isa(m{i},'txtl_reaction_config')
             for j= 1:length(m{i})
-                txtl_adddna(modelObj, m{i}{j}{1}, m{i}{j}{2}, m{i}{j}{3}, m{i}{j}{4}, m{i}{j}{5}, 'Setup Reactions');
+                txtl_add_dna(modelObj, m{i}{j}{1}, m{i}{j}{2}, m{i}{j}{3}, m{i}{j}{4}, m{i}{j}{5}, 'Setup Reactions');
             end
         end
     end
@@ -84,14 +84,7 @@ if ~strcmp(m{datalen},'notFirstRun')
     newUserData = cat(1, m, 'notFirstRun');
     set(modelObj, 'UserData', newUserData)
 end
-
-% 
-%     
-% dna_tetR = txtl_adddna(modelObj, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear', 'Setup Reactions');%
-% dna_deGFP = txtl_adddna(modelObj, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear', 'Setup Reactions');
-% dna_gamS = txtl_adddna(modelObj, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid', 'Setup Reactions');
-%
-    
+  
     
 if ~isempty(time_vector) && size(time_vector,1) > 1
     prevData = zeros(size(time_vector,1),size(modelObj.Species,1));
@@ -130,7 +123,8 @@ else
             % no data was provided, no action needed 
 end
 
-
+% initial amounts set in modelObj.Species(k).InitialAmount. 
+% previousdata, if any, stored in prevData. 
 simData = sbiosimulate(modelObj, configsetObj);
    
 if isempty(time_vector) 
