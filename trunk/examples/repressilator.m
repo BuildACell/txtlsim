@@ -11,7 +11,7 @@
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('e1');
+tube2 = txtl_buffer('E6');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -45,7 +45,7 @@ dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid')
 %
 
 % Mix the contents of the individual tubes
-Mobj = txtl_combine([tube1, tube2, tube3], [6, 1, 1.5]);
+Mobj = txtl_combine([tube1, tube2, tube3]);
 
 %
 % Run a simulaton
@@ -58,11 +58,9 @@ Mobj = txtl_combine([tube1, tube2, tube3], [6, 1, 1.5]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', 5*60*60)
-if ~strcmp(version('-release'),'2012a')
- set(configsetObj, 'SolverType', 'ode23s');
-end
 
-[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj,[], []);
+
+[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
 names = simData.DataNames;
 
 [t_ode1, x_ode1, mObj, simData] = txtl_runsim(Mobj, configsetObj,t_ode, x_ode);
@@ -71,8 +69,7 @@ names = simData.DataNames;
 close all
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'};
-%dataGroups{1,2} = {'DNA p70--rbs--sigma28'};
+dataGroups{1,2} = {'ALL_DNA'};
 dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--','m-','k-','y--'};
 
 % Gene Expression Plot

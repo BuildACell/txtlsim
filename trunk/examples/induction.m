@@ -12,7 +12,7 @@ close all
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('b1');
+tube2 = txtl_buffer('E6');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -53,7 +53,7 @@ levels = [0 2 5 10 20 40 60 80 100];
 maxGFP = zeros(1, length(levels));
 colors = {'r', 'b', 'g', 'c', 'm', 'y', 'k', 'r--', 'b--'};
 % Mix the contents of the individual tubes
-  Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
+  Mobj = txtl_combine([tube1, tube2, tube3]);
 
 for atc = levels 
   

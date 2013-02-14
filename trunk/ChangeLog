@@ -1,3 +1,24 @@
+2013-02-13  Zoltan Tuza <zoltuz@zoltuz-laptop>
+
+	* components/txtl_prom_ptet.m: modeling error is corrected
+	* components/txtl_protein_tetR.m: 2aTc:tetR is formed instead of
+	aTc:tetR c.f. Vassilios et al. 2007.
+	* components/txtl_prom_p70pr1.m: new p70 promoter, 20% strength of p70
+	* components/txtl_param_*.m: parameter numbers are adjusted, to match
+	experimental data
+	* core/txtl_buffer.m and core/txtl_extract.m:  parameters
+	are moved to the extract config (EX.csv), actual numbers are multiplied since we
+	working with final concentrations in the parameter files before the
+	final MasterMix is assembled
+	* core/txtl_combine.m: the buffer,extract and dna ratio is wired in as a
+	default value. 
+	* core/txtl_plot.m: keyword handling, e.g. ALL_DNA to show all DNA and
+	RNA in the system. 
+	* core/txtl_add_dna.m: atp regeneration stops after 3hours and NTP
+	become unusable -> reaction for this process is added.   
+
+
+
 2013-02-04  Zoltan Tuza <zoltuz@zoltuz-laptop>
 	
 	* core/txtl_setup_parameters.m: deprecated, new parameter handling is

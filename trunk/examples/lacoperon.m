@@ -60,7 +60,7 @@ set(configsetObj, 'SolverType', 'ode23s');
 % DNA and mRNA plot
 % This should go first to have auto name extraction
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'DNA placI--rbs--betaGal'};
+dataGroups{1,2} = {'ALL_DNA'};
 dataGroups{1,3} = {'r-','b-','r--','b--'};
 
 % Gene Expression Plot

@@ -15,8 +15,9 @@ function processedData = txtl_plot(t_ode,x_ode,modelObj,dataGroups,varargin)
 %    (RNA and protein names are exploited and plotted automatically from DNA sequences)  
 %  +-----------------------------------------
 %  |Special strings:
-%  |
-%  | * it handles matlab compatible regular expressions 
+%  |  
+%  | * it handles keywords (e.g. ALL_DNA: plots all available dns species) 
+%  | * it alse handles matlab compatible regular expressions 
 %  |   (e.g. plotting all of the protein in the system: dataGroups{2,2} = {'#(protein \w*)'};)
 %  | * txtl_plot also can calculate the total concentration of selected
 %  | proteins and its variants with sprint "[protein name]_tot", where protein
@@ -73,6 +74,10 @@ end
 % building the output cell structure
 processedData = cell(1,3);
 
+% Keywords lookup table
+
+keywords = {'ALL_DNA','#(^DNA (\w+[-=]*)*)'};
+
 for k = 1:numOfGroups
 
    %%%%% DNA and mRNA plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -80,6 +85,9 @@ for k = 1:numOfGroups
 
     %! TODO further refinement of str spliting
     if ~isempty(dataGroups{k,2})
+        % search for keywords 
+        [row,col] = find(cell2mat(cellfun(@(x) strcmp(dataGroups{k,2},x),keywords(:,1),'UniformOutput',false)) == 1);
+        dataGroups{k,2}(col) = keywords(row,2); 
         regexp_ind = strmatch('#', dataGroups{k,2});
         if ~isempty(regexp_ind)
             autoSpecies = extractRegexpAndExecute(regexp_ind,modelObj,dataGroups{k,2});
@@ -146,7 +154,7 @@ for k = 1:numOfGroups
        plot(currentHandler,t_ode/60,dataX);
     end    
     
-    lgh =legend(currentHandler,listOfRNAs, 'Location', 'Best');
+    lgh =legend(currentHandler,listOfRNAs, 'Location', 'NorthEast');
     legend(lgh,'boxoff');
     ylabel(currentHandler,'mRNA amounts [nM]');
     ylabel(ax2,'DNA amounts [nM]');

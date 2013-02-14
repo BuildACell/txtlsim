@@ -35,14 +35,20 @@
 function tube = txtl_buffer(name)
 tube = txtl_newtube(name);
 
+TXTLconfig = txtl_reaction_config(name);
+
 % Add in NTPs and amino acids
 % Buffer contents
 %    NTP: ATP 1.2mM, GTP 1.2mM, CTP 1.2mM, UTP 1.2mM
 %    AA: 1.5nM (for each amino acid)
 % due to limiting factors only 20% percent can be utilized, c.f. V Noireaux
 % 2003.
-addspecies(tube, 'NTP', (4*12000)*0.2);		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
-addspecies(tube, 'AA', 15000*20*0.2);		% 100 aa's/unit (20 amino acid)
+%
+% Buffer is 41% of the 10ul reaction volume
+stockMulti = 10/4.1666; 
+ addspecies(tube, 'NTP', stockMulti*TXTLconfig.NTP_Concentration);		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
+ addspecies(tube, 'AA',  stockMulti*TXTLconfig.AA_Concentration);		% 100 aa's/unit (20 amino acid)
+
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

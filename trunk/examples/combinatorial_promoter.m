@@ -7,36 +7,36 @@ close all
 
 % Set up the standard TXTL tubes
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('b1');
+tube2 = txtl_buffer('E6');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit_notetR');
 txtl_add_dna(tube3, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)', 50, 'linear');
+    'p70(50)', 'rbs(20)', 'sigma28(600)', 5, 'linear');
 txtl_add_dna(tube3, ...
-    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)-lva-terminator', 50, 'linear');
+    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)-lva-terminator', 5, 'linear');
 txtl_add_dna(tube3, ...
-'p70(50)', 'rbs(20)', 'gamS(1000)', 20, 'plasmid');
+'p70(50)', 'rbs(20)', 'gamS(1000)', 2, 'plasmid');
 
 
 tube4 = txtl_newtube('circuit_with_tetR');
 txtl_add_dna(tube4, ...
-    'p70(50)', 'rbs(20)', 'tetR(600)', 30, 'linear');
+    'p70(50)', 'rbs(20)', 'tetR(600)', 3, 'linear');
 txtl_add_dna(tube4, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)', 50, 'linear');
+    'p70(50)', 'rbs(20)', 'sigma28(600)', 5, 'linear');
 txtl_add_dna(tube4, ...
-    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)-lva-terminator', 50, 'linear');
+    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)-lva-terminator', 5, 'linear');
 txtl_add_dna(tube4, ...
-'p70(50)', 'rbs(20)', 'gamS(1000)', 30, 'plasmid');
+'p70(50)', 'rbs(20)', 'gamS(1000)', 3, 'plasmid');
 
 
 % Mix the contents of the individual tubes
-well_a1 = txtl_combine([tube1, tube2, tube3], [10, 8, 1]);
+well_a1 = txtl_combine([tube1, tube2, tube3]);
 
 
 
 % set up well_b1
-well_b1 = txtl_combine([tube1, tube2, tube4], [10, 8, 1]);
+well_b1 = txtl_combine([tube1, tube2, tube4]);
 
 
 
@@ -45,28 +45,25 @@ well_b1 = txtl_combine([tube1, tube2, tube4], [10, 8, 1]);
 %% Run a simulation
 configsetObj = getconfigset(well_a1, 'active');
 simulationTime = 10*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
+
 set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
-[t_ode,x_ode] = txtl_runsim(well_a1,configsetObj,[],[]);
+[t_ode,x_ode] = txtl_runsim(well_a1,configsetObj);
 
 
 configsetObj_b1 = getconfigset(well_b1, 'active');
-
-set(configsetObj_b1, 'SolverType', 'ode23s');
 set(configsetObj_b1, 'StopTime', simulationTime);
 
 
-[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,configsetObj_b1,[],[]);
+[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,configsetObj_b1);
 
 
 %% plot the result
 
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'};
-%dataGroups{1,2} = {'DNA p70--rbs--sigma28'};
+dataGroups{1,2} = {'ALL_DNA'};
 dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
 
 % Gene Expression Plot

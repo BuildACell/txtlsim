@@ -52,7 +52,7 @@ dna_gamS = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes
-Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
+Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
@@ -68,8 +68,7 @@ end
 
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'};
-%dataGroups{1,2} = {'DNA p70--rbs--sigma28'};
+dataGroups{1,2} = {'ALL_DNA'};
 dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
 
 % Gene Expression Plot

@@ -35,6 +35,9 @@
 function tube = txtl_extract(name)
 tube = txtl_newtube(name);
 
+% Extract is 1/3 of the 10ul reaction volume
+stockMulti = 10/(10/3); 
+
 %% building configuration object for the current experiment
 
 TXTLconfig = txtl_reaction_config(name);
@@ -43,32 +46,26 @@ tube.UserData = TXTLconfig;
 
 %% setting up species and concentrations in the extract 
 
-% Add in ribosomes and RNAP70
-%! TODO: update these numbers based on measurements
-df = 1000;				% dilution factor of TX-TL mix
-addspecies(tube, 'RNAP', 100);	% 100 nM based on VN's paper
-sigma70 = addspecies(tube, 'protein sigma70', 35); % 35 nM based on VN's paper
-sigma28 = addspecies(tube, 'protein sigma28', 20); % <20 nM based on VN's paper
-addspecies(tube, 'Ribo', 1000);	% 2300 nM based on VN's paper
+% Add in ribosomes, RNAP, sigma70 and sigma 28
+addspecies(tube, 'RNAP', stockMulti*100);	% 100 nM based on VN's paper
+sigma70 = addspecies(tube, 'protein sigma70', stockMulti*35); % 35 nM based on VN's paper
+sigma28 = addspecies(tube, 'protein sigma28', stockMulti*20); % <20 nM based on VN's paper
+addspecies(tube, 'Ribo', stockMulti*1000);	% 2300 nM based on VN's paper
 
 % Add RNAP+Sigma70 <-> RNAP70 reaction
-
 % Set up the reaction
  txtl_addreaction(tube,['RNAP + ' sigma70.Name ' <-> RNAP70'],...
      'MassAction',{'TXTL_RNAP_S70_F',tube.UserData.RNAP_S70_F;
                    'TXTL_RNAP_S70_R',tube.UserData.RNAP_S70_F});
 
 % Add in exonuclease + protection reactions (if [protein gamS] > 0)
-%! TODO: update these numbers based on measurements
-kgamS = 100;				% gamS binding rate
-addspecies(tube, 'RecBCD', 0.3);	% 0.3 from Clare Chen (Jongmin will provide ref) nM to match RNAP
-Robj = addreaction(tube, 'RecBCD + [protein gamS] -> RecBCD:gamS');
-Kobj = addkineticlaw(Robj,'MassAction');
-Pobj = addparameter(Kobj, 'kf', kgamS);
-set(Kobj, 'ParameterVariableNames', {'kf'});
+addspecies(tube, 'RecBCD', stockMulti*0.3);	% % 0.3 from Clare Chen (Jongmin will provide ref)
+
+txtl_addreaction(tube,'RecBCD + [protein gamS] -> RecBCD:gamS',...
+     'MassAction',{'GamS_RecBCD_f',tube.UserData.GamS_RecBCD_F});
 
 % Add in RNA degradation
-addspecies(tube, 'RNase', 1);	% 100 nM to match RNAP
+addspecies(tube, 'RNase', stockMulti*1);	% 1 nM
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

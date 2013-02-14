@@ -15,6 +15,7 @@ classdef txtl_reaction_config
         Protein_ClpXP_complex_deg;
         RNAP_S70_F;
         RNAP_S70_R;
+        GamS_RecBCD_F;
         AA_Forward;
         AA_Reverse;
         Ribosome_Binding_F;
@@ -22,6 +23,8 @@ classdef txtl_reaction_config
         RNA_deg;
         NTP_Forward;
         NTP_Reverse;
+        NTP_Concentration;
+        AA_Concentration;
     end
     
     methods

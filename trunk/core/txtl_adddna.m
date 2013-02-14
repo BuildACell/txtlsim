@@ -71,6 +71,7 @@ function dna = txtl_add_dna(tube, promspec, rbsspec, genespec, dnaamount, type, 
     dnastr = ['DNA ' promStr '--' rbsStr '--' geneStr];
     
     
+    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if isempty(varargin)
     mode = 'Setup Species';
@@ -122,6 +123,9 @@ if isempty(varargin)
 
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
     
+    % DNA solution is 22.5% of the 10ul reaction volume
+    stockMulti = 10/2.25;
+    dnaamount = dnaamount*stockMulti;
     dna = txtl_addspecies(tube, dnastr, dnaamount);
     
     % Transcription %% 
@@ -229,7 +233,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         % forward rr for DNA + RecBCD <-> DNA:RecBCD
         kDNA_recbcd_f = tube.UserData{1}.DNA_RecBCD_Forward;
         % backward rr for DNA + RecBCD <-> DNA:RecBCD
-        kDNA_recbcd_r = tube.UserData{1}.DNA_RecBCD_Forward;
+        kDNA_recbcd_r = tube.UserData{1}.DNA_RecBCD_Reverse;
 
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
     end
@@ -252,7 +256,13 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
           tube.UserData{1}.Protein_ClpXP_complex_deg]; 
       txtl_protein_degradation(mode, tube, protein,degradationRate);
     end
-
+    
+    %
+    txtl_addreaction(tube,'NTP + NTP_GOES_BAD -> NTP_GOES_BAD',...
+        'MassAction',{'NTPdeg_F',0.0001});
+    % after 3hours the ATP regeneration stops and the remaining NTP
+    % becomes unusable
+    addevent(tube, 'time>= 10800', 'NTP_GOES_BAD = 1');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%        
 else

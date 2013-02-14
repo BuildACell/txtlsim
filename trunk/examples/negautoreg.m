@@ -10,8 +10,8 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('b1');
+tube1 = txtl_extract('E8');
+tube2 = txtl_buffer('E8');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -21,10 +21,6 @@ tube3 = txtl_newtube('circuit');
 dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 16, 'linear');%
 dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 16, 'linear');
 dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
-
-
-
-
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -45,8 +41,7 @@ dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid')
 %
 
 % Mix the contents of the individual tubes
-Mobj = txtl_combine([tube1, tube2, tube3], [6, 1, 1.5]);
-m = get(Mobj, 'UserData')
+Mobj = txtl_combine([tube1, tube2, tube3]);
 
 %
 % Run a simulaton
@@ -58,99 +53,28 @@ m = get(Mobj, 'UserData')
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 5*60*60)
-if ~strcmp(version('-release'),'2012a')
- set(configsetObj, 'SolverType', 'ode23s');
-end
+set(configsetObj, 'StopTime', 8*60*60)
 
-[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj,[], []);
-%{
-!TODO vipul 2/10/13 delete all these old plotting commands?
+[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
 
-names = simData.DataNames
-% Top row: protein and RNA levels
-figure('Name','negautoreg'); clf(); subplot(2,1,1);
-iTetR = findspecies(Mobj, 'protein tetR-lva-terminator');
-iGamS = findspecies(Mobj, 'protein gamS');
-iGFP = findspecies(Mobj, 'protein deGFP');
-iGFPs = findspecies(Mobj, 'protein deGFP*');
-p = plot(t_ode/60, x_ode(:, iTetR), 'b-', t_ode/60, x_ode(:, iGamS), 'r-', ...
-  t_ode/60, x_ode(:, iGFP) + x_ode(:, iGFPs), 'g--', ...
-  t_ode/60, x_ode(:, iGFPs), 'g-');
-
-title('Negative Autoregulation Example - Gene Expression');
-lgh = legend({'TetR', 'GamS', 'GFPt', 'GFP*'}, 'Location', 'NortheastOutside');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
-xlabel('Time [min]');
-
-% Second row, left: resource limits
-subplot(2,2,3);
-iNTP = findspecies(Mobj, 'NTP');
-iAA  = findspecies(Mobj, 'AA');
-iRNAP  = findspecies(Mobj, 'RNAP70');
-iRibo  = findspecies(Mobj, 'Ribo');
-mMperunit = 100 / 1000;			% convert from NTP, AA units to mM
-p = plot(...
-  t_ode/60, x_ode(:, iAA)/x_ode(1, iAA), 'b-', ...
-  t_ode/60, x_ode(:, iNTP)/x_ode(1, iNTP), 'r-', ...
-  t_ode/60, x_ode(:, iRNAP)/max(x_ode(:, iRNAP)), 'r--', ...
-  t_ode/60, x_ode(:, iRibo)/x_ode(1, iRibo), 'b--');
-
-title('Resource usage');
-lgh = legend(...
-  {'AA [mM]', 'NTP [mM]', 'RNAP70 [nM]', 'Ribo [nM]'}, ...
-  'Location', 'Northeast');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [normalized]');
-xlabel('Time [min]');
-% Second row, right: DNA and mRNA
-subplot(2,2,4);
-iDNA_tetR = findspecies(Mobj, 'DNA thio-junk-ptet--rbs--tetR-lva-terminator');%
-iDNA_gamS = findspecies(Mobj, 'DNA p70--rbs--gamS');
-iRNA_tetR = findspecies(Mobj, 'RNA rbs--tetR-lva-terminator');
-iRNA_gamS = findspecies(Mobj, 'RNA rbs--gamS');
-p = plot(t_ode/60, x_ode(:, iDNA_tetR), 'b-', ...
-  t_ode/60, x_ode(:, iDNA_gamS), 'r-', ...
-  t_ode/60, x_ode(:, iRNA_tetR), 'b--', ...
-  t_ode/60, x_ode(:, iRNA_gamS), 'r--');
-
-title('DNA and mRNA');
-lgh = legend(...
-  names([iDNA_tetR, iDNA_gamS, iRNA_tetR, iRNA_gamS]), ...
-  'Location', 'NortheastOutside');
-legend(lgh, 'boxoff');
-ylabel('Species amounts [nM]');
-xlabel('Time [min]');
-%}
 
 %% plot the result
 % close all
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'};
-%dataGroups{1,2} = {'DNA p70--rbs--sigma28'};
-dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--','m-','k-','y--'};
+dataGroups{1,2} = {'ALL_DNA'};
+dataGroups{1,3} = {'b-','r-','g--','r--','y-','c-','g-','g--','m-','k-','y--'};
 
 % Gene Expression Plot
 dataGroups{2,1} = 'Gene Expression';
-%dataGroups{2,2} = {'protein deGFP-lva-terminator*'};
-dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.','c-','y--','m-','k-','r-'};
+dataGroups{2,2} = {'protein tetR-lva-terminatordimer'};% 'protein deGFP*',
+dataGroups{2,3} = {'g-','b-','g--','b--','r--','b-.','c-','y--','m-','k-','r-'};
 
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';
 %
  txtl_plot(t_ode,x_ode,Mobj,dataGroups);
 
-
-%
-% Run a set of experiments to explore the effect of inducers
-%
-%! TODO: write up this section
-
-% Mobj = txtl_combine(tube1, 6, tube2, 2, tube3, 2);
-% Add inducer at a given concentration (must be nanomolar)
-% txtl_addspecies(Mobj, 'aTc', 50);
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

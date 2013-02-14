@@ -69,8 +69,7 @@ x_ode = x_ode_3;[x_ode; x_ode_2; x_ode_3];
 
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
-%dataGroups{1,2} = {'#(^DNA (\w+[-=]*)*)'}
-dataGroups{1,2} = {'DNA p70--rbs--lacI'};
+dataGroups{1,2} = {'ALL_DNA'};
 dataGroups{1,3} = {'b-','r-','b--','r--'};
 
 % Gene Expression Plot

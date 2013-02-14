@@ -16,7 +16,7 @@ inducerConc = 9; % setting this to 10 gives strange fluctuations in the AA conc
 
 % Set up the standard TXTL tubes
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('b1');
+tube2 = txtl_buffer('E6');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -34,7 +34,7 @@ txtl_addspecies(tube3, 'IPTG',0);
 
 
 % Mix the contents of the individual tubes
-Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
+Mobj = txtl_combine([tube1, tube2, tube3]);
 sobj_aTc = sbioselect(Mobj, 'Type', 'species', 'Name', 'aTc');
 sobj_IPTG = sbioselect(Mobj, 'Type', 'species', 'Name', 'IPTG');
 configsetObj = getconfigset(Mobj, 'active');

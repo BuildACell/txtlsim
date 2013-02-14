@@ -36,7 +36,15 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function Mobj = txtl_combine(tubelist, vollist)
+function Mobj = txtl_combine(tubelist, varargin)
+
+if nargin == 2
+    warning('You are changing the Extract-Buffer-DNA ratios, is that what you really want?'); 
+    vollist = varargin{1};
+else
+    vollist = [10/3 4.41666 2.25];
+end
+    
 
 % Create a model for the mixture
 Mobj = txtl_newtube('mix_of_');

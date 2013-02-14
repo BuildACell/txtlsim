@@ -124,6 +124,9 @@ if isempty(varargin)
 
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
     
+    % DNA solution is 22.5% of the 10ul reaction volume
+    stockMulti = 10/2.25;
+    dna_amount = dna_amount*stockMulti;
     dna = txtl_addspecies(tube, dnastr, dna_amount);
     
     % Transcription %% 
@@ -240,10 +243,10 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
     
      txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase -> Ribo + RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',log(2)/(60*12)});
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
     
      txtl_addreaction(tube,['AA:Ribo:' rna.Name ' + RNase -> AA + Ribo + RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',log(2)/(60*12)});
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
 
 
     % Protein degradation (if tagged)
@@ -253,6 +256,16 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
           tube.UserData{1}.Protein_ClpXP_complex_deg]; 
       txtl_protein_degradation(mode, tube, protein,degradationRate);
     end
+    
+    %
+    % After 3hours because of the ATP regeneration stops the remaining NTP
+    % becomes unusable c.f. V Noireaux 2003. 
+    % for solver specific reason the we need some amount of "NTP_GOES_BAD",
+    % otherwise the rapid transition of 0->1nM at 3hours stops the solver.
+    txtl_addspecies(tube, 'NTP_GOES_BAD',0.001);
+    txtl_addreaction(tube,'NTP + NTP_GOES_BAD -> NTP_GOES_BAD',...
+        'MassAction',{'NTPdeg_F',0.0001});
+    addevent(tube, 'time>= 10800', 'NTP_GOES_BAD = 1');
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%        

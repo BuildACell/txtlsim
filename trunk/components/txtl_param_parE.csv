@@ -9,9 +9,7 @@ LVA_tag_Length, Numeric, 40
 Terminator_Length, Numeric, 100
 
 
-Dimmerization_Forward, Numeric, 0.001
-Dimmerization_Reverse, Numeric, 0.0001 
+Dimmerization_Forward, Numeric, 0.01
+Dimmerization_Reverse, Numeric, 0.1 
 
-Protein_Inducer_Forward, Numeric, 1, !TODO: set up user defined parameters.
-Protein_Inducer_Reverse, Numeric, 0.1, 
-Inducer_Degradation, Numeric, 0.0001, 
+
