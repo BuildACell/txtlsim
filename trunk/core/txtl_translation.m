@@ -44,8 +44,8 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
-    AAparameters = {'TXTL_AA_F',tube.UserData{1}.NTP_Forward;
-                  'TXTL_AA_R',tube.UserData{1}.NTP_Reverse};
+    AAparameters = {'TXTL_AA_F',tube.UserData{1}.AA_Forward;
+                  'TXTL_AA_R',tube.UserData{1}.AA_Reverse};
     
     % translation rate             
     ktlExpression =  strrep(tube.Userdata{1}.Translation_Rate,...
