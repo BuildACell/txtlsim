@@ -4,24 +4,73 @@
 
 The TXTL modelling toolbox for MATLAB is a companion to the TXTL Breadboards (Cell-free expression) project being developed at the California Institute of Technology and the University of Minnesota. This toolbox aims to allow \textit{in-silico} prototyping of circuits before they are built \textit{in-vitro}, and to provide insight into circuit behaviour. 
 
-	\section{Protocol Overview}
+\section{Protocol Overview}
 
-		\subsection{The TXTL Experimental Protocol}
-		\subsection{The TXTL Modelling Protocol}
-		The TXTL toolbox commands follow the experimental protocols closely, and a sample code is given in figure (?) below with brief explanations of the commands. More detailed explanations can be found in the 'Overview of Core Processes' chapter. More examples can be found in the 'Examples' Directory, and are documented in the 'Examples' Chapter below. \\
+The cell-free circuit breadboard family is a collection of in vitro
+protocols that can be used to test transcription and translation
+(TX-TL) circuits in a set of systematically-constructed environments
+that explore different elements of the external conditions in which
+the circuits must operate. This breadboard is based on the work of
+Vincent Noireaux at U. Minnesota. The transcription and translation
+machineries are extracted from E. coli cells (Shin and Noireaux,
+2010). The endogenous DNA and mRNA from the cells are eliminated
+during the preparation. The resulting protein synthesis machinery is
+used to program cell-free TX-TL gene circuits in reactions of
+12uL. The gene circuits can engineered in the laboratory using
+standard molecular cloning techniques, but it is also possible to use
+PCR products (linear DNA), which substantially decreases the design
+cycle time. 
 
-\noindent Sample code:
-[Add a figure of the basic Negautoreg code] \\
+\begin{comment}
+\subsection{The TXTL Experimental Protocol}
 
-\noindent Brief explanation of commands:
-\begin{itemize}
-	\item Initialize Directories
-	\item Extract and Buffer
-	\item Newtube
-	\item Adddna
-	\item Combine
-	\item Runsim
-	\item Plot
-\end{itemize}
+The endogenous Escherichia coli based TX-TL cell-free expression
+system described here is an easy-to-run three-tube reaction that can
+take less than 8 hours to set-up, collect, and interpret data. 
 
-\noindent This code produces the following figure: [add figure here]
+\subsection{The TXTL Modelling Protocol}
+\end{comment}
+
+The TXTL toolbox commands follow the experimental protocols closely,
+and a sample code is given below with brief explanations
+of the commands. More detailed explanations can be found in the
+'Overview of Core Processes' chapter. More examples can be found in
+the 'Examples' Directory, and are documented in the 'Examples' Chapter
+below.
+
+The following code sets up a simple simulation of a negatively
+autoregulated gene in the TXTL system:
+\begin{verbatim}
+% Set up the standard TX-TL tubes
+tube1 = txtl_extract('E8');
+tube2 = txtl_buffer('E8');
+
+% Set up a tube that will contain our DNA
+tube3 = txtl_newtube('circuit');
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', ...
+  'tetR(647)-lva(40)', 16, 'linear');
+dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', ...
+  16, 'linear');
+dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', ...
+  1, 'plasmid');
+
+% Mix the contents of the individual tubes 
+Mobj = txtl_combine([tube1, tube2, tube3]);
+
+% Run a simulation
+configsetObj = getconfigset(Mobj, 'active');
+set(configsetObj, 'StopTime', 8*60*60);
+[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
+
+% Plot the results
+txtl_plot(t_ode,x_ode,Mobj);
+\end{verbatim}
+Figure~\ref{fig:intro:negautoreg} shows the output from this code (plotted
+using the \url{txtl_plot} function).
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{negauto_1nM_toolbox}
+  \caption{Sample simulation of a negatively autoregulated
+  transcriptional circuit.}
+  \label{fig:intro:negautoreg}
+\end{figure}
