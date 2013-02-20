@@ -19,9 +19,10 @@ tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_tetR = txtl_add_dna(tube3, ...
-  'ptet(50)', 'rbs(20)', 'tetR(647)', 15, 'linear');
-dna_deGFP = txtl_add_dna(tube3, ...
-  'ptet(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
+  'ptet(50)', 'rbs(20)', 'tetR(1200)', 15, 'linear');
+dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 0, 'plasmid');
+% dna_deGFP = txtl_add_dna(tube3, ...
+%   'ptet(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -49,7 +50,7 @@ figure(2); clf();
 count = 1;
 
 % Do runs at different inducer levels, linearly spaced
-levels = [0 2 5 10 20 40 60 80 100];
+levels = [0 2 5 10 20 40 100 300 1000];
 maxtetR = zeros(1, length(levels));
 colors = {'r', 'b', 'g', 'c', 'm', 'y', 'k', 'r--', 'b--'};
 % Mix the contents of the individual tubes
@@ -62,7 +63,7 @@ for atc = levels
   configsetObj = getconfigset(Mobj, 'active');
   set(configsetObj, 'StopTime', 6*60*60);
    
-  [t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj,[], []);
+  [t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
   
 
   % Plot the time trace
