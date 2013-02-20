@@ -18,9 +18,9 @@ tube2 = txtl_buffer('E6');
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_adddna(tube3, ...
-  'p70(50)', 'rbs(20)', 'tetR(647)', 15, 'linear');
-dna_deGFP = txtl_adddna(tube3, ...
+dna_tetR = txtl_add_dna(tube3, ...
+  'ptet(50)', 'rbs(20)', 'tetR(647)', 15, 'linear');
+dna_deGFP = txtl_add_dna(tube3, ...
   'ptet(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 
 %
@@ -50,7 +50,7 @@ count = 1;
 
 % Do runs at different inducer levels, linearly spaced
 levels = [0 2 5 10 20 40 60 80 100];
-maxGFP = zeros(1, length(levels));
+maxtetR = zeros(1, length(levels));
 colors = {'r', 'b', 'g', 'c', 'm', 'y', 'k', 'r--', 'b--'};
 % Mix the contents of the individual tubes
   Mobj = txtl_combine([tube1, tube2, tube3]);
@@ -67,12 +67,12 @@ for atc = levels
 
   % Plot the time trace
   figure(2); hold on;
-  iGFP = findspecies(Mobj, 'protein deGFP*');
-  plot(t_ode, x_ode(:, iGFP), colors{count});
+  itetR = findspecies(Mobj, 'protein tetR');
+  plot(t_ode, x_ode(:, itetR), colors{count});
   labels{count} = [int2str(atc) ' nM aTc'];
   
   % Keep track of the max expression for later plotting
-  maxGFP(count) = max(x_ode(:, iGFP));
+  maxtetR(count) = max(x_ode(:, itetR));
   
   % Add additional inducer for the next run
   if count < size(levels,2)
@@ -83,7 +83,7 @@ end
 
 % Label the time trace
 title('Time Responses');
-lgh = legend(labels, 'Location', 'Northwest');
+lgh = legend(labels, 'Location', 'Best');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
@@ -91,9 +91,9 @@ xlabel('Time [min]');
 % Plot the characteristic curve
 figure(3); clf();
 title('Characteristic Curve');
-plot(levels, maxGFP);
+plot(levels, maxtetR);
 xlabel('aTc concentration [nM]');
-ylabel('max GFP expression [nM]');
+ylabel('max tetR expression [nM]');
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
