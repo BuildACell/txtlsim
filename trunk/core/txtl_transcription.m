@@ -78,6 +78,8 @@ elseif strcmp(mode,'Setup Reactions')
             ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP];
     end
     
+    %replace the string for RNA_length variable in the expression with the
+    %string for the actual rna length. 
     ktxExpression =  strrep(tube.Userdata{1}.Transcription_Rate,...
         'RNA_Length','rna.UserData');
     ktx = eval(ktxExpression);

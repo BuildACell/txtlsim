@@ -54,23 +54,27 @@ function dna = txtl_add_dna(tube, prom_spec, rbs_spec, gene_spec, dna_amount, ty
 
     % Extract out the names and lengths
     [promData, promStr] = txtl_parsespec(prom_spec);
-    [rbsData, rbsStr] = txtl_parsespec(rbs_spec);
+    [utrData, utrStr] = txtl_parsespec(rbs_spec);
     [geneData, geneStr] = txtl_parsespec(gene_spec);
+    %utrData is a cell array, 2 x n, n = num of utr domains. 1st row:
+    %names ('att', 'rbs'). second: lengths. 
 
     % check for degradation tag and terminator
     protDEGflag = checkForStringInACellList(geneData(1,:),'lva');
     protTERMflag = checkForStringInACellList(geneData(1,:),'terminator');
+    utrATTflag = checkForStringInACellList(utrData(1,:),'att');
 
     % species name string building
     geneName = geneData{1,1}; %assuming the format is gene-lva-...-terminator
     protstr = ['protein ' geneStr]; % protstr looks something like 'protein tetR-lva-terminator'
     
-    rbsName = rbsData{1,1};
-    rnastr = ['RNA ' rbsStr '--' geneStr];
+    rbsName = utrData{1,end};
+    rnastr = ['RNA ' utrStr '--' geneStr]; 
+    %! TODO change this to mRNA, and make all the corresponding changes in the code.
     
     promoterName = promData{1,end}; % assuming {'thio','junk','prom'}
     
-    dnastr = ['DNA ' promStr '--' rbsStr '--' geneStr];
+    dnastr = ['DNA ' promStr '--' utrStr '--' geneStr];
     
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -107,20 +111,30 @@ if isempty(varargin)
    
     
     % Translation: setup file should return pointer to RBS bound species
-    if exist(['txtl_utr_' rbsName], 'file') == 2
+    
+    if ~utrATTflag && exist(['txtl_utr_' rbsName], 'file') == 2
       % Run the RBS specific setup
-      [Ribobound, rbslen] = eval(['txtl_utr_' rbsName '(''Setup Species'', tube, rna, protein, rbsData)']);
+      [Ribobound, utrlen] = eval(['txtl_utr_' rbsName '(''Setup Species'', tube, rna, protein, utrData)']);
+    elseif utrATTflag && exist(['txtl_utr_att' rbsName], 'file') == 2
+      [Ribobound, utrlen] = eval(['txtl_utr_att' rbsName '(''Setup Species'', tube, rna, protein, utrData)']); 
+      %the reason you canot return asRNABound (the equivalent of RiboBound,
+      %but the the ASRNA binding case, is because at this stage you may not
+      %know if asRNA is present in the experiment. This was not a problem
+      %for Ribo cuz Ribo is always present. However, we do not (?) need to
+      %return asRNABound at this stage. So it all works  (?). In the case
+      %When asRNA is absent, this function still produces the ribobound
+      %rna.
     else
       % Issue a warning and run the default RBS
       warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
           '; using default rbs params']);
-      [Ribobound, rbslen] = txtl_utr_rbs('Setup Species', tube, rna, protein, rbsData);
+      [Ribobound, utrlen] = txtl_utr_rbs('Setup Species', tube, rna, protein, utrData);
     end
     
     % utr lengths
-    rbslenTot = sum(cell2mat(rbslen(2,:)));
+    utrlenTot = sum(cell2mat(utrlen(2,:)));
     
-    rna.UserData = rbslenTot + genelenTot;
+    rna.UserData = utrlenTot + genelenTot;
 
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
     
@@ -143,7 +157,7 @@ if isempty(varargin)
     promlenTot = sum(cell2mat(promData(2,:)));
 
     % total dna length
-    dna.UserData = promlenTot + rbslenTot + genelenTot;
+    dna.UserData = promlenTot + utrlenTot + genelenTot;
     
     % Translation %%
     txtl_translation(mode, tube, dna, rna, protein, Ribobound);
@@ -184,17 +198,25 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     end
 
     %% Untranslated Region properties, parameters and reactions %%%%%%%%%%%
-
-    rna = sbioselect(tube, 'Name', rnastr);
-    % Translation: setup file should return pointer to RBS bound species
-    if exist(['txtl_utr_' rbsName], 'file') == 2
+    
+        rna = sbioselect(tube, 'Name', rnastr);
+    if ~utrATTflag && exist(['txtl_utr_' rbsName], 'file') == 2
       % Run the RBS specific setup
       eval(['txtl_utr_' rbsName '(mode, tube, rna, protein)']);
+    elseif utrATTflag && exist(['txtl_utr_att' rbsName], 'file') == 2
+      eval(['txtl_utr_att' rbsName '(mode, tube, rna, protein)']); 
     else
       % Issue a warning and run the default RBS
-      warning(['TXTL: can''t find txtl_utr_' rbsName ...
+      if ~utrATTflag
+      warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
           '; using default rbs params']);
-      txtl_utr_rbs(mode, tube, rna, protein);
+      txtl_utr_rbs(mode, tube, rna, protein, utrData);
+      else
+          warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_att' rbsName ...
+          '; using default rbs params']);
+      txtl_utr_attrbs(mode, tube, rna, protein, utrData);
+      end
+          
     end
 
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
@@ -269,15 +291,19 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     
      txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase -> Ribo + RNase'],...
         'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
+    if utrATTflag
+           
+    txtl_addreaction(tube,['asRNA:' rna.Name ' + RNase -> asRNA + RNase'],...
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
+    end
     
      txtl_addreaction(tube,['AA:Ribo:' rna.Name ' + RNase -> AA + Ribo + RNase'],...
         'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
 
-
     % Protein degradation (if tagged)
     if protDEGflag
       degradationRate = ...
-          [tube.UserData{1}.Protein_ClpXP_Forward tube.UserData{1}.Protein_ClpXP_Forward...
+          [tube.UserData{1}.Protein_ClpXP_Forward tube.UserData{1}.Protein_ClpXP_Reverse...
           tube.UserData{1}.Protein_ClpXP_complex_deg]; 
       txtl_protein_degradation(mode, tube, protein,degradationRate);
     end

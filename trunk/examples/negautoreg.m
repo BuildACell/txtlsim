@@ -10,17 +10,17 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E9');
-tube2 = txtl_buffer('E9');
+tube1 = txtl_extract('E10');
+tube2 = txtl_buffer('E10');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', 1*4.2, 'plasmid');%
-% dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'deGFP(1000)', dna_amount, 'plasmid');
-
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'att(10)-rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', 1*4.2, 'plasmid');%
+% dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)',
+% 'deGFP(1000)', dna_amount, 'plasmid');
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -43,7 +43,7 @@ dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
  %txtl_addspecies(Mobj, 'aTc', atc_conc);
- 
+ asRNA = txtl_addspecies(Mobj, 'asRNA', 1000);
 
 % Run a simulaton
 %

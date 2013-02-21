@@ -25,6 +25,8 @@ classdef txtl_reaction_config
         NTP_Reverse;
         NTP_Concentration;
         AA_Concentration;
+        asRNA_Binding_F;
+        asRNA_Binding_R;
     end
     
     methods
