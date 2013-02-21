@@ -18,7 +18,7 @@ tube3 = txtl_newtube('circuit');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
   'ppard(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
-  5, ...					% concentration (nM)
+  4.5, ...					% concentration (nM)
   'plasmid');					% type
 
 
@@ -36,7 +36,24 @@ dna_parE = txtl_add_dna(tube3, ...
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
-txtl_addspecies(Mobj,'protein parD',80000/50); % parD Anti 80uM 
+ntp_deg = 0.0008;
+     txtl_addspecies(Mobj, 'NTP_REGEN_SUP',1);
+      txtl_addreaction(Mobj,'NTP_REGEN_SUP -> null',...
+          'MassAction',{'NTP_F',0.00035});                      
+      txtl_addreaction(Mobj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP_UNUSE',...
+          'MassAction',{'NTP_F',0.00035});  
+    
+      txtl_addreaction(Mobj,'NTP -> NTP_UNUSE',...
+         'MassAction',{'NTPdeg_F',ntp_deg});
+     
+      txtl_addreaction(Mobj,'NTP_UNUSE + NTP_REGEN_SUP <-> NTP_UNUSE:NTP_REGEN_SUP',...
+          'MassAction',{'NTPdeg_F',50; 'R',0.001});
+      
+      txtl_addreaction(Mobj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP + NTP_REGEN_SUP',...
+         'MassAction',{'NTPdeg_F',30});
+
+
+txtl_addspecies(Mobj,'protein parD',0); % parD Anti 80uM 
 txtl_addspecies(Mobj,'protein parE',0); % parE Toxin 68 uM
 
 %
@@ -50,6 +67,7 @@ txtl_addspecies(Mobj,'protein parE',0); % parE Toxin 68 uM
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 simulationTime = 10*60*60;
+set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run

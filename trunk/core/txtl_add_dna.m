@@ -239,6 +239,31 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     end
 
     % Add in mRNA degradation reactions
+
+%    kon = 0.01
+%     koff = 0.1;
+%     kcat = 10;%10*log(2)/(12*60);
+%      txtl_addreaction(tube,[rna.Name ' + RNase <-> ' rna.Name ':RNase'],...
+%         'MassAction',{'TXTL_RNAdeg_F',kon;
+%                       'r',koff});
+%      txtl_addreaction(tube,[ rna.Name ':RNase -> RNase'],...
+%         'MassAction',{'TXTL_RNAdeg_F',kcat});
+%                   
+%     
+%          txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase <-> ' rna.Name ':RNase + Ribo'],...
+%         'MassAction',{'TXTL_RNAdeg_F',kon;
+%                       'r',koff});
+%      txtl_addreaction(tube,[ rna.Name ':RNase -> RNase'],...
+%         'MassAction',{'TXTL_RNAdeg_F',kcat});
+%     
+%          txtl_addreaction(tube,['AA:Ribo:' rna.Name ' + RNase <-> ' rna.Name ':RNase + Ribo + AA'],...
+%         'MassAction',{'TXTL_RNAdeg_F',kon;
+%                       'r',koff});
+%      txtl_addreaction(tube,[ rna.Name ':RNase -> RNase'],...
+%         'MassAction',{'TXTL_RNAdeg_F',kcat});
+    
+
+    
      txtl_addreaction(tube,[rna.Name ' + RNase -> RNase'],...
         'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
     
@@ -257,15 +282,6 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
       txtl_protein_degradation(mode, tube, protein,degradationRate);
     end
     
-    %
-    % After 3hours because of the ATP regeneration stops the remaining NTP
-    % becomes unusable c.f. V Noireaux 2003. 
-    % for solver specific reason the we need some amount of "NTP_GOES_BAD",
-    % otherwise the rapid transition of 0->1nM at 3hours stops the solver.
-    txtl_addspecies(tube, 'NTP_GOES_BAD',0.001);
-    txtl_addreaction(tube,'NTP + NTP_GOES_BAD -> NTP_GOES_BAD',...
-        'MassAction',{'NTPdeg_F',0.0001});
-    addevent(tube, 'time>= 10800', 'NTP_GOES_BAD = 1');
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%        

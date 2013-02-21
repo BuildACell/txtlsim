@@ -123,6 +123,27 @@ else
             % no data was provided, no action needed 
 end
 
+    %
+    % After 3hours because of the ATP regeneration stops the remaining NTP
+    % becomes unusable c.f. V Noireaux 2003. 
+    % for solver specific reason the we need some amount of "NTP_GOES_BAD",
+    % otherwise the rapid transition of 0->1nM at 3hours stops the solver.
+ntp_deg = 0.00008;
+     txtl_addspecies(modelObj, 'NTP_REGEN_SUP',1);
+      txtl_addreaction(modelObj,'NTP_REGEN_SUP -> null',...
+          'MassAction',{'NTP_F',0.00035});                      
+      txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP_UNUSE',...
+          'MassAction',{'NTP_F',0.00035});  
+    
+      txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
+         'MassAction',{'NTPdeg_F',ntp_deg});
+     
+      txtl_addreaction(modelObj,'NTP_UNUSE + NTP_REGEN_SUP <-> NTP_UNUSE:NTP_REGEN_SUP',...
+          'MassAction',{'NTPdeg_F',50; 'R',0.001});
+      
+      txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP + NTP_REGEN_SUP',...
+         'MassAction',{'NTPdeg_F',30});
+
 % initial amounts set in modelObj.Species(k).InitialAmount. 
 % previousdata, if any, stored in prevData. 
 simData = sbiosimulate(modelObj, configsetObj);

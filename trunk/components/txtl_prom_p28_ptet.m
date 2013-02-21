@@ -89,13 +89,13 @@ elseif strcmp(mode,'Setup Reactions')
     Robj3 = addreaction(tube, [dna.Name ' + ' P2 ' <-> ' dna.Name ':' P2 ]);
     Kobj3 = addkineticlaw(Robj3, 'MassAction');
     Pobj3f = addparameter(Kobj3, 'kf', 2.86e-3);
-    Pobj3r = addparameter(Kobj3, 'kr', 5.11e-4);
+    Pobj3r = addparameter(Kobj3, 'kr', 0.11e-4);
     set(Kobj3, 'ParameterVariableNames', {'kf', 'kr'});
     % 
     Robj4 = addreaction(tube, [RNAPbound  ' + ' P2 ' <-> ' RNAPbound ':' P2 ]);
     Kobj4 = addkineticlaw(Robj4, 'MassAction');
     Pobj4f = addparameter(Kobj4, 'kf', 2.86e-3);
-    Pobj4r = addparameter(Kobj4, 'kr', 5.11e-4);
+    Pobj4r = addparameter(Kobj4, 'kr', 0.11e-4);
     set(Kobj4, 'ParameterVariableNames', {'kf', 'kr'});
     % 
     % Set up binding reaction for tetR

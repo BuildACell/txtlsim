@@ -10,17 +10,17 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E8');
-tube2 = txtl_buffer('E8');
+tube1 = txtl_extract('E9');
+tube2 = txtl_buffer('E9');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 16, 'linear');%
-dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 16, 'linear');
-dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', 1*4.2, 'plasmid');%
+% dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'deGFP(1000)', dna_amount, 'plasmid');
+
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -42,8 +42,9 @@ dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid')
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
+ %txtl_addspecies(Mobj, 'aTc', atc_conc);
+ 
 
-%
 % Run a simulaton
 %
 % At this point, the entire experiment is set up and loaded into 'Mobj'.
@@ -53,8 +54,8 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 8*60*60)
-
+set(configsetObj, 'StopTime', 14*60*60)
+set(configsetObj, 'SolverType', 'ode23s');
 [t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
 
 
@@ -68,7 +69,7 @@ dataGroups{1,3} = {'b-','r-','g--','r--','y-','c-','g-','g--','m-','k-','y--'};
 % Gene Expression Plot
 dataGroups{2,1} = 'Gene Expression';
 dataGroups{2,2} = {'protein tetR-lva-terminatordimer'};% 'protein deGFP*',
-dataGroups{2,3} = {'g-','b-','g--','b--','r--','b-.','c-','y--','m-','k-','r-'};
+%dataGroups{2,3} = {'g-','b-','g--','b--','r--','b-.','c-','y--','m-','k-','r-'};
 
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';

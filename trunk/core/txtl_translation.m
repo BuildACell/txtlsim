@@ -36,7 +36,7 @@ function txtl_translation(mode, tube, dna, rna, protein, Ribobound)
 if strcmp(mode, 'Setup Species')
 
      % Set up the species for translation 
-    coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo','RNase'};
+    coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo'};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
     
@@ -86,7 +86,7 @@ elseif strcmp(mode, 'Setup Reactions')
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else
-    error('txtltoolbox:txtl_protein_lacI:undefinedmode', ...
+    error('txtltoolbox:txtl_translation:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end    
     

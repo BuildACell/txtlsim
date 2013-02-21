@@ -1,29 +1,29 @@
 %% clean up
 
-clear variables
-clc
-close all
+% clear variables
+% clc
+% close all
 %% My test run
 
 % Set up the standard TXTL tubes
-tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('E6');
+tube1 = txtl_extract('E7');
+tube2 = txtl_buffer('E7');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit_open_loop');
 txtl_add_dna(tube3, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)', 1.6, 'plasmid');
+    'p70(50)', 'rbs(20)', 'sigma28(600)', 0.2*4.5, 'plasmid');
 txtl_add_dna(tube3, ...
-    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)', 8, 'plasmid');
+    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)', 1*4.5, 'plasmid');
 
 
 
 tube4 = txtl_newtube('circuit_closed_loop');
 txtl_add_dna(tube4, ...
-    'p28(50)', 'rbs(20)', 'tetR(600)', 1, 'plasmid');
+    'p28(50)', 'rbs(20)', 'tetR(600)', 0.01*4.5, 'plasmid');
 txtl_add_dna(tube4, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)',1.6, 'plasmid');
-txtl_add_dna(tube4,'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)',8, 'plasmid');
+    'p70(50)', 'rbs(20)', 'sigma28(600)',0.2*4.5, 'plasmid');
+txtl_add_dna(tube4,'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)',1*4.5, 'plasmid');
 
 
 
@@ -42,8 +42,8 @@ well_b1 = txtl_combine([tube1, tube2, tube4]);
  
 %% Run a simulation
 configsetObj = getconfigset(well_a1, 'active');
- simulationTime = 8*60*60;
-%set(configsetObj, 'SolverType', 'ode23s');
+ simulationTime = 12*60*60;
+set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
@@ -51,7 +51,7 @@ set(configsetObj, 'StopTime', simulationTime);
 
 configsetObj_b1 = getconfigset(well_b1, 'active');
 
-%set(configsetObj_b1, 'SolverType', 'ode23s');
+set(configsetObj_b1, 'SolverType', 'ode23s');
 set(configsetObj_b1, 'StopTime', simulationTime);
 
 

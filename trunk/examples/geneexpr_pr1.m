@@ -7,23 +7,23 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('E6');
+tube1 = txtl_extract('E7');
+tube2 = txtl_buffer('E7');
 
 % Now set up a tube that will contain our DNA
-tube3 = txtl_newtube('gene_expression');
+tube3 = txtl_newtube('gene_expression_pr1');
 
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
- 4.2, ...					% concentration (nM)
+  'p70pr1(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
+ 4.5, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 %
-% Run a simulaton
+% Run a simulaton 
 %
 % At this point, the entire experiment is set up and loaded into 'Mobj'.
 % So now we just use standard Simbiology and MATLAB commands to run
@@ -32,7 +32,7 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-simulationTime = 14*60*60;
+simulationTime = 25*60*60;
 %set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 

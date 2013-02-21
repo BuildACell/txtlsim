@@ -1,5 +1,5 @@
-RNAPbound_Forward, Expression, 0.0086, V. Sotiropoulos 2007 BMC Sys Bio Table 1 
-RNAPbound_Reverse, Expression, 0.01, V. Sotiropoulos 2007 BMC Sys Bio Table 1 
+RNAPbound_Forward, Expression, .006, V. Sotiropoulos 2007 BMC Sys Bio Table 1 
+RNAPbound_Reverse, Expression, 5, V. Sotiropoulos 2007 BMC Sys Bio Table 1 
 
 Promoter_Length, Numeric, 50
 Thio_Length, Numeric, 500
@@ -13,8 +13,8 @@ Dimmerization_Forward, Numeric, 1, V. Sotiropoulos 2007 BMC Sys Bio Table 1
 Dimmerization_Reverse, Numeric, 60, V. Sotiropoulos 2007 BMC Sys Bio Table 1 
 
 Protein_Inducer_Forward, Numeric, 2e-3, V. Sotiropoulos 2007 BMC Sys Bio Table 1
-Protein_Inducer_Reverse, Numeric, 0.001, V. Sotiropoulos 2007 BMC Sys Bio Table 1
+Protein_Inducer_Reverse, Numeric, 0.00001, V. Sotiropoulos 2007 BMC Sys Bio Table 1
 Inducer_Degradation, Numeric, 2.67e-3, 
 
 DNA_Sequestration_F, Numeric, 2.86e-3, V. Sotiropoulos 2007 BMC Sys Bio Table 1
-DNA_Sequestration_R, Numeric, 0.11e-4, V. Sotiropoulos 2007 BMC Sys Bio Table 1
+DNA_Sequestration_R, Numeric, 5.11e-4, V. Sotiropoulos 2007 BMC Sys Bio Table 1
