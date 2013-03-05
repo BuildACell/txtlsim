@@ -20,7 +20,7 @@ tube3 = txtl_newtube('circuit');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_tetR = txtl_add_dna(tube3, ...
   'ptet(50)', 'rbs(20)', 'tetR(1200)', 15, 'linear');
-dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 0, 'plasmid');
+%dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 0, 'plasmid');
 % dna_deGFP = txtl_add_dna(tube3, ...
 %   'ptet(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');
 
@@ -57,15 +57,13 @@ colors = {'r', 'b', 'g', 'c', 'm', 'y', 'k', 'r--', 'b--'};
   Mobj = txtl_combine([tube1, tube2, tube3]);
 
 for atc = levels 
-  
-
   % Run a simulation
   configsetObj = getconfigset(Mobj, 'active');
+  set(configsetObj, 'SolverType', 'ode23s');
   set(configsetObj, 'StopTime', 6*60*60);
    
   [t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
   
-
   % Plot the time trace
   figure(2); hold on;
   itetR = findspecies(Mobj, 'protein tetR');

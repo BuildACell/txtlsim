@@ -91,7 +91,7 @@ if isempty(varargin)
 
     %% Protein properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%%
     
-    protein = txtl_addspecies(tube, protstr, 0);
+    protein = txtl_addspecies(tube, protstr, 0, 'Internal');
     
     if exist(['txtl_protein_' geneName], 'file') == 2
       % Run the protein specific setup
@@ -107,7 +107,7 @@ if isempty(varargin)
 
     %% Untranslated Region properties, parameters and reactions %%%%%%%%%%%
     
-    rna = txtl_addspecies(tube, rnastr, 0);
+    rna = txtl_addspecies(tube, rnastr, 0, 'Internal');
    
     
     % Translation: setup file should return pointer to RBS bound species
@@ -141,7 +141,7 @@ if isempty(varargin)
     % DNA solution is 22.5% of the 10ul reaction volume
     stockMulti = 10/2.25;
     dna_amount = dna_amount*stockMulti;
-    dna = txtl_addspecies(tube, dnastr, dna_amount);
+    dna = txtl_addspecies(tube, dnastr, dna_amount, 'Internal');
     
     % Transcription %% 
     if exist(['txtl_prom_' promoterName], 'file') == 2    

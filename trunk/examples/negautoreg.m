@@ -18,7 +18,7 @@ tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'att(10)-rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', 1*4.2, 'plasmid');%
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', 1*4.2, 'plasmid');%
 % dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)',
 % 'deGFP(1000)', dna_amount, 'plasmid');
 
@@ -43,7 +43,7 @@ dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'att(10)-rbs(20)', 'te
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
  %txtl_addspecies(Mobj, 'aTc', atc_conc);
- asRNA = txtl_addspecies(Mobj, 'asRNA', 1000);
+
 
 % Run a simulaton
 %

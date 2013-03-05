@@ -38,7 +38,7 @@ if strcmp(mode, 'Setup Species')
      % Set up the species for translation 
     coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo'};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%

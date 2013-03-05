@@ -55,9 +55,15 @@ if strcmp(mode, 'Setup Species')
     
     varargout{1} = geneData;
     
+    % it is possible that this file is called while 'protein tetR' 
+    % (with maybe lva, terminator) is not present (for instance, if protein
+    % tetRdimer is added using txtl_addspecies. That is why it is necessary
+    % to add 'protein tetR' if it is not present ----> actually maybe its
+    % not needed! addspecies takes care of it!
+    
     coreSpecies = {'aTc'};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
     % call other functions in 'Setup Species' mode
     txtl_dimerize('Setup Species', tube,protein);

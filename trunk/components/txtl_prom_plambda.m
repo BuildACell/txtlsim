@@ -60,7 +60,7 @@ if strcmp(mode, 'Setup Species')
 
     coreSpecies = {RNAP,RNAPbound};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
     %
     % Now put in the reactions for the utilization of NTPs

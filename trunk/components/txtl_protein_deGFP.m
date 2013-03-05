@@ -1,9 +1,6 @@
-% txtl_protein_deGFP.m - protein information for deGFP
-% RMM, 9 Sep 2012
-%
-% This file contains a description of the protein produced by tetR.
-% Calling the function txtl_protein_tetR() will set up the reactions for
-% sequestration by the inducer aTc.
+% txtl_protein_RFP.m - protein information for RFP
+% VS, 4 March 2013
+
 
 % Written by Richard Murray, 9 Sep 2012
 %
@@ -36,16 +33,16 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_protein_deGFP(mode, tube, protein, varargin)
+function varargout = txtl_protein_RFP(mode, tube, protein, varargin)
 
-paramObj = txtl_component_config('deGFP');
+paramObj = txtl_component_config('RFP');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
     geneData = varargin{1};
     
-    defaultBasePairs = {'deGFP','lva','terminator';...
+    defaultBasePairs = {'RFP','lva','terminator';...
         paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
@@ -54,14 +51,14 @@ if strcmp(mode, 'Setup Species')
     
     coreSpecies = {[protein.Name '*']};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
 
     % Set up the maturation reaction
     txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...
-     'MassAction',{'TXTL_PROT_DEGFP_MATURATION',paramObj.Protein_Maturation});
+     'MassAction',{'TXTL_PROT_RFP_MATURATION',paramObj.Protein_Maturation});
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else

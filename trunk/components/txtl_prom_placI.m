@@ -59,8 +59,7 @@ if strcmp(mode, 'Setup Species')
     
     coreSpecies = {RNAP,RNAPbound};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
-    
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
     
@@ -76,26 +75,13 @@ elseif strcmp(mode,'Setup Reactions')
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
-    %
-    % Now put in the reactions for the utilization of NTPs
-    % Use an enzymatic reaction to proper rate limiting
-    %
+
+    % nominal transcription
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
-    %
-    %% Add reactions for sequestration of promoter by lacI 
-    %
-    % bind lacI tetramer to one site of the dna:
-    % DNA + tetramer <-> DNA:tetramer
-    % then bind the tetramer to the other site on the dna
-    % DNA:tetramer <-> DNA:tetramerLoop
-
-    %there are two sites where the tetramer binds: Om and Oa (see Alberts p437,
-    %5th ed). We model these as equivalent for now. 
-
-    
+   
     matchStr = regexp(listOfSpecies,'(^protein lacI.*tetramer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
     listOflacItetramers = vertcat(matchStr{:});
+    % repression of placI by lacItetramer
     if ~isempty(listOflacItetramers)
         for i = 1:size(listOflacItetramers,1)
              txtl_addreaction(tube,...
@@ -106,55 +92,6 @@ elseif strcmp(mode,'Setup Reactions')
     end
     
 
-    %DNA looping and other variations commented out for now (for
-    %simplicity's sake)
-    %{
-        kf_lacI2 = 20; kr_lacI2 = 1;		
-    Robj5 = addreaction(tube, ...
-      ['[' dna.Name ':protein lacItetramer] <-> ' ...
-      '[' dna.Name ':protein lacItetramerLoop]']);
-    Kobj5 = addkineticlaw(Robj5,'MassAction');
-    Pobj5 = addparameter(Kobj5, 'k5', kf_lacI2);
-    Pobj5r = addparameter(Kobj5, 'k5r', kr_lacI2);
-    set(Kobj5, 'ParameterVariableNames', {'k5', 'k5r'});
-    %}
-
-    %{
-    % bind dimers individually, ad then tetramerize. I think this is the 'Shea Ackers' model.
-    % http://dx.doi.org/10.1016/0022-2836(85)90086-5
-    % (we set reaction rates to 0
-    % for these first. Can be activate by changing rr's to nonzero values. 
-
-    % single dimer binding to the DNA
-    kf_lacI3 = 0; kr_lacI3 = 0;		
-    Robj6 = addreaction(tube, ...
-      ['[' dna.Name '] + [protein lacIdimer] <-> ' ...
-       '[' dna.Name ':protein lacIdimer]']);
-    Kobj6 = addkineticlaw(Robj6,'MassAction');
-    Pobj6 = addparameter(Kobj6, 'k6', kf_lacI3);
-    Pobj6r = addparameter(Kobj6, 'k6r', kr_lacI3);
-    set(Kobj6, 'ParameterVariableNames', {'k6', 'k6r'});
-
-    % 2 dimers bound individually to the DNA
-    kf_lacI4 = 0; kr_lacI4 = 0;		
-    Robj7 = addreaction(tube, ...
-      ['[' dna.Name ':protein lacIdimer] + [protein lacIdimer] <-> ' ...
-       '[' dna.Name ':protein lacIdimer:protein lacIdimer]']);
-    Kobj7 = addkineticlaw(Robj7,'MassAction');
-    Pobj7 = addparameter(Kobj7, 'k7', kf_lacI4);
-    Pobj7r = addparameter(Kobj7, 'k7r', kr_lacI4);
-    set(Kobj7, 'ParameterVariableNames', {'k7', 'k7r'});
-
-    % DNA bound to two dimer -> dimers joining to form tetramer-DNA loop
-    kf_lacI5 = 0; kr_lacI5 = 0;		
-    Robj8 = addreaction(tube, ...
-      [ '[' dna.Name ':protein lacIdimer:protein lacIdimer] <-> ' ...
-       '[' dna.Name ':protein lacItetramerLoop]']);
-    Kobj8 = addkineticlaw(Robj8,'MassAction');
-    Pobj8 = addparameter(Kobj8, 'k8', kf_lacI5);
-    Pobj8r = addparameter(Kobj8, 'k8r', kr_lacI5);
-    set(Kobj8, 'ParameterVariableNames', {'k8', 'k8r'});
-    %}
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

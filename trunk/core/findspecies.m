@@ -28,11 +28,14 @@ else
     
   % !TODO zoltuz 1/10/12 intersect for speed up  
   % Return an array of data of same size as input
+  % 
   [nrows, len] = size(namelist);
   indexlist = zeros(1, len);
   for i=1:len
     for j =1:length(Mobj.Species)
       if strcmp(namelist(i), Mobj.Species(j).Name)
+          % !TODO vipul 2/18/13 i think this is an error, namelist is a
+          % cell array. 
 	indexlist(i) = j;
       end
     end

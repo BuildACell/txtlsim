@@ -51,14 +51,14 @@ if strcmp(mode, 'Setup Species')
     
     coreSpecies = {[protein.Name]};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
 
     % Set up the maturation reaction
     txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...
-     'MassAction',{'TXTL_PROT_DEGFP_MATURATION',paramObj.Protein_Maturation});
+     'MassAction',{'TXTL_PROT_CLPX_MATURATION',paramObj.Protein_Maturation});
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else

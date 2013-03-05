@@ -49,7 +49,7 @@ if strcmp(mode, 'Setup Species')
     RiboBound = ['Ribo:' rna.Name];
     coreSpecies = {'Ribo',RiboBound};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
    
     %TODO! 12/8/12 zoltuz - find out why we need the RiboBound here!

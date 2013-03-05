@@ -54,7 +54,7 @@ if strcmp(mode, 'Setup Species')
         defaultBasePairs);
     
     varargout{1} = geneData;
-    txtl_addspecies(tube, 'protein parEdimerparDdimer', 0);
+    txtl_addspecies(tube, 'protein parEdimerparDdimer', 0, 'Internal');
    
  
     % call other functions in 'Setup Species' mode

@@ -7,34 +7,21 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E7');
-tube2 = txtl_buffer('E7');
+tube1 = txtl_extract('E9_1');
+tube2 = txtl_buffer('E9_1');
 
 % Now set up a tube that will contain our DNA
-tube3 = txtl_newtube('protein_deg');
+tube3 = txtl_newtube('gene_expression');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_clpx = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'ClpX(1269)', ...	% promoter, rbs, gene
- 1*4.2, ...					% concentration (nM)
-  'plasmid');					% type
-
-dna_clpx = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'ClpP(1269)', ...	% promoter, rbs, gene
- 0, ...					% concentration (nM)
-  'plasmid');					% type
-
 dna_deGFP = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'deGFP-lva(1000)', ...	% promoter, rbs, gene
- 0, ...					% concentration (nM)
+  'p70(50)', 'att(1)-rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
+ 4.2, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
-
-txtl_addspecies(Mobj,'protein deGFP-lva*',3300, 'Internal');
-txtl_addspecies(Mobj,'protein ClpX*',130, 'Internal');
-
+asRNA = txtl_addspecies(Mobj, 'asRNA', 1000);
 %
 % Run a simulaton
 %
@@ -45,15 +32,15 @@ txtl_addspecies(Mobj,'protein ClpX*',130, 'Internal');
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-simulationTime = 12*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
+simulationTime = 14*60*60;
+%set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
 [t_ode,x_ode] = txtl_runsim(Mobj,configsetObj);
 
 %% plot the result
-close all
+
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
 dataGroups{1,2} = {'ALL_DNA'}; 
@@ -61,8 +48,8 @@ dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
 
 % Gene Expression Plot
 dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein ClpX*','protein ClpP*'};
-dataGroups{2,3} = {'g','g--','r-','g--','b-.','k'};
+dataGroups{2,2} = {'protein deGFP*','[protein deGFP]_tot'};
+dataGroups{2,3} = {'g','g--','r-','g--','b-.'};
 
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';

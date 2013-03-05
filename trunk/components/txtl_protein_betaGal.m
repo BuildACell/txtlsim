@@ -54,7 +54,7 @@ if strcmp(mode, 'Setup Species')
         'protein lacItetramer','alloLactose:protien lacItetramer',...
         'Lactose_ext'};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%

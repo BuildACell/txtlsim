@@ -53,7 +53,7 @@ if strcmp(mode, 'Setup Species')
     
     coreSpecies = {'IPTG',['IPTG:' protein.Name]};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
     
     % call additional functions to setup any other relevant species (like

@@ -1,11 +1,6 @@
-% txtl_protein_sigma28.m - protein information for sigma28 factor
-% Zoltan A Tuza,  Sep 2012
-%
-% This file contains a description of the protein produced by sigma28.
-% Calling the function txtl_protein_sigma28() will set up the reactions for
-% sequestration by the inducer aTc.
+% txtl_protein_RFP.m - protein information for RFP
+% VS, 4 March 2013
 
-%
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
 %
@@ -35,39 +30,38 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_protein_sigma28(mode, tube, protein, varargin)
+function varargout = txtl_protein_RFP(mode, tube, protein, varargin)
 
-% importing the corresponding parameters
-paramObj = txtl_component_config('sigma28');
+paramObj = txtl_component_config('RFP');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode, 'Setup Species')
     
     geneData = varargin{1};
-    defaultBasePairs = {'simga28','lva','terminator';...
+    
+    defaultBasePairs = {'RFP','lva','terminator';...
         paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
     
     varargout{1} = geneData;
-
-    coreSpecies = {'RNAP','RNAP28'};
+    
+    coreSpecies = {[protein.Name '*']};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode, 'Setup Reactions')
+
+    % Set up the maturation reaction
+    txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...
+     'MassAction',{'TXTL_PROT_RFP_MATURATION',paramObj.Protein_Maturation});
     
-    %sequestration of RNAP by sigma28 factor
-        txtl_addreaction(tube,['RNAP + [' protein.Name '] <-> RNAP28'],...
-         'MassAction',{'Sigma28_RNAP_F',paramObj.Protein_Protein_Forward;...
-                       'Sigma28_RNAP_R',paramObj.Protein_Protein_Reverse});
-                   
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else
-    error('txtltoolbox:txtl_protein_sigma28:undefinedmode', ...
+    error('txtltoolbox:txtl_protein_RFP:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end     
+end
 
 
 

@@ -49,7 +49,7 @@ if strcmp(mode, 'Setup Species')
     
     coreSpecies = {'RecBCD',[dna.Name ':RecBCD']};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode,'Setup Reactions')

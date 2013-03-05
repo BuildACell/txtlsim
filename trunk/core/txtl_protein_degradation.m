@@ -56,9 +56,9 @@ if strcmp(mode, 'Setup Species')
     %}
     
     
-    coreSpecies = {'protein ClpX*','protein ClpP*',[protein.Name '*:protein ClpX*']};
+    coreSpecies = {'protein ClpX', 'protein ClpP', 'protein ClpX*','protein ClpP*',[protein.Name '*:protein ClpX*']};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
