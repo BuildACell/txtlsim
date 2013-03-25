@@ -262,9 +262,9 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
 
     % Add in mRNA degradation reactions
 
-%    kon = 0.01
+%    kon = 0.035
 %     koff = 0.1;
-%     kcat = 10;%10*log(2)/(12*60);
+%     kcat = 1000;%10*log(2)/(12*60);
 %      txtl_addreaction(tube,[rna.Name ' + RNase <-> ' rna.Name ':RNase'],...
 %         'MassAction',{'TXTL_RNAdeg_F',kon;
 %                       'r',koff});
@@ -283,7 +283,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
 %                       'r',koff});
 %      txtl_addreaction(tube,[ rna.Name ':RNase -> RNase'],...
 %         'MassAction',{'TXTL_RNAdeg_F',kcat});
-    
+% %     
 
     
      txtl_addreaction(tube,[rna.Name ' + RNase -> RNase'],...

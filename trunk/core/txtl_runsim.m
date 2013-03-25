@@ -42,16 +42,17 @@
 % POSSIBILITY OF SUCH DAMAGE.
 
 
-function [t_ode, x_ode, modelObj, varargout] = txtl_runsim(varargin)
 
-% check what proteins are present, but no corresponding DNA. this will mean
-% that the protein must have been added. So now set up the reactions for
-% that protein. and you are done! So basically, you are comparing two
-% lists.
-
-
-
+function [varargout] = txtl_runsim(varargin)
+%%
 switch nargin
+    case 1
+        % parameter estimation mode, runsim just assemble the
+        % reactions, but won't run it
+        modelObj = varargin{1};
+        configsetObj = [];
+        time_vector = [];
+        data =  [];
     case 2
         modelObj = varargin{1};
         configsetObj = varargin{2};
@@ -71,7 +72,12 @@ switch nargin
     otherwise
         error('txtl_runsim should be called either with 4 or 5 arguments.');
 end
+% check what proteins are present, but no corresponding DNA. this will mean
+% that the protein must have been added. So now set up the reactions for
+% that protein. and you are done! So basically, you are comparing two
+% lists.
 setupReactionsForNewProteinAdded(modelObj)
+
 %! TODO zoltuz 2/4/13 review this part
 m = get(modelObj, 'UserData');
 datalen = size(m,1);
@@ -98,7 +104,17 @@ if ~strcmp(m{datalen},'notFirstRun')
     
     newUserData = cat(1, m, 'notFirstRun');
     set(modelObj, 'UserData', newUserData)
-end
+    
+%
+% ATP degration is a first order reaction.    
+ntp_deg = 0.00093;
+txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
+        'MassAction',{'NTPdeg_F',ntp_deg});
+    
+
+    
+end % end of first run
+
 
 %% SUBSEQUENT RUNS
 if ~isempty(time_vector) && size(time_vector,1) > 1
@@ -111,7 +127,7 @@ if iscell(data)
     for k=1:size(data,1)
         if size(data{k,2},1) == 1
             %first run initial amount provided
-            modelObj.Species(k).InitialAmount = normalizeSmallAmount(data{k,2});
+            modelObj.Species(SpName(k)).InitialAmount = normalizeSmallAmount(data{k,2});
         elseif size(data{k,2},1) > 1
             %setting up the initial amount to the latest simulation result
             modelObj.Species(k).InitialAmount = normalizeSmallAmount(data{k,2}(end));
@@ -125,6 +141,7 @@ if iscell(data)
     end
     % we have as many colums of species in the model as in data, we set the
     % inital amount to that (here the order of data matters!)
+
 elseif size(modelObj.Species,1) == size(data,2) && size(data,1) == 1
     for k=1:size(data,2)
         modelObj.Species(k).InitialAmount = normalizeSmallAmount(data(1,k));
@@ -139,46 +156,51 @@ else
     % no data was provided, no action needed
 end
 
-%
-% After 3hours because of the ATP regeneration stops the remaining NTP
-% becomes unusable c.f. V Noireaux 2003.
-% for solver specific reason the we need some amount of "NTP_GOES_BAD",
-% otherwise the rapid transition of 0->1nM at 3hours stops the solver.
-ntp_deg = 0.00008;
-txtl_addspecies(modelObj, 'NTP_REGEN_SUP',1, 'Internal');
-txtl_addreaction(modelObj,'NTP_REGEN_SUP -> null',...
-    'MassAction',{'NTP_F',0.00035});
-txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP_UNUSE',...
-    'MassAction',{'NTP_F',0.00035});
-
-txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
-    'MassAction',{'NTPdeg_F',ntp_deg});
-
-txtl_addreaction(modelObj,'NTP_UNUSE + NTP_REGEN_SUP <-> NTP_UNUSE:NTP_REGEN_SUP',...
-    'MassAction',{'NTPdeg_F',50; 'R',0.001});
-
-txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP + NTP_REGEN_SUP',...
-    'MassAction',{'NTPdeg_F',30});
-
 % initial amounts set in modelObj.Species(k).InitialAmount.
 % previousdata, if any, stored in prevData.
-simData = sbiosimulate(modelObj, configsetObj);
+if ~isempty(configsetObj)
+    
+    simData = sbiosimulate(modelObj, configsetObj);
+    
+    if isempty(time_vector)
+        x_ode = simData.Data;
+        t_ode = simData.Time;
+    else
+        t_ode = [time_vector; simData.Time+time_vector(end)];
+        x_ode = [prevData;simData.Data];
+    end
+    
+    % TODO zoltuz 03/05/13 we need a new copyobject for simData -> merge
+    % two simData object.
+    varargout{1} = simData;
 
-if isempty(time_vector)
-    x_ode = simData.Data;
-    t_ode = simData.Time;
 else
-    t_ode = [time_vector; simData.Time+time_vector(end)];
-    x_ode = [prevData;simData.Data];
+
+    % parameter estimation mode, no simulation
+    x_ode = [];
+    t_ode = [];
+    simData = [];
 end
 
-varargout{1} = simData;
+switch nargout
+    case 0
+        varargout{1} = [];
+    case 1
+        varargout{1} = simData;
+    case 2
+        varargout{1} = t_ode;
+        varargout{2} = x_ode;
+    otherwise
+        error('not supported operation mode');
+        
+end
 
 end
 
 % InitialAmount cannot be smaller than certain amount, therefore small
 % amounts are converted to zero
 function retValue = normalizeSmallAmount(inValue)
+
 if (abs(inValue) < eps) || inValue<0 % treats values below eps as zero.
     retValue = 0;
 else

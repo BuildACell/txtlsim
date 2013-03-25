@@ -24,8 +24,8 @@ RNA_deg,Expression,log(2)/(60*12), mRNA degradation: 12 min half life
 Ribosome_Binding_F, Expression, log(2)/0.1, 100 ms bind rate
 Ribosome_Binding_R, Expression, 0.05 * log(2)/0.1, Km of ~0.05 (from VN model)
 
-NTP_Forward,Expression, log(2) / 0.001, binding rate of 1 ms
-NTP_Reverse,Expression, 5000 * log(2) / 0.001, Km of 100 for NTP usage 500uM
+NTP_Forward,Expression, log(2) / 0.1, binding rate of 100 ms
+NTP_Reverse,Expression, 5000 * log(2) / 0.1, Km of 100 for NTP usage 500uM
 
 NTP_Concentration, Expression, 4*(12000)*0.079, 4 types of NTPs, 7.9% usability
 AA_Concentration, Expression, 20*15000*0.2, 20 tyes of AAs, 20% usability
