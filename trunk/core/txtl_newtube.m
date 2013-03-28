@@ -34,3 +34,4 @@
 function Mobj = txtl_newtube(name)
 Mobj = sbiomodel(name);
 Cobj = addcompartment(Mobj, 'contents');
+Mobj.UserData = struct('ReactionConfig', {[]}, 'DNAinfo',{[]},'FirstRun',{[]});

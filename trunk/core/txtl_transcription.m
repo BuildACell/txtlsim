@@ -80,16 +80,16 @@ elseif strcmp(mode,'Setup Reactions')
     
     %replace the string for RNA_length variable in the expression with the
     %string for the actual rna length. 
-    ktxExpression =  strrep(tube.Userdata{1}.Transcription_Rate,...
+    ktxExpression =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
         'RNA_Length','rna.UserData');
     ktx = eval(ktxExpression);
     
     % parameter values
-    NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData{1}.NTP_Forward;
-        'TXTL_NTP_RNAP_R', tube.UserData{1}.NTP_Reverse};
+    NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward;
+        'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse};
     
     % NTP consumption models
-    if tube.UserData{1}.NTPmodel == 1
+    if tube.UserData.ReactionConfig.NTPmodel == 1
         % Compute the number of NTPs required, in 100 NTP blocks
         ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
         if (ntpcnt == 0)

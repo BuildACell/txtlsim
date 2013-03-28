@@ -80,10 +80,13 @@ function dna = txtl_add_dna(tube, prom_spec, rbs_spec, gene_spec, dna_amount, ty
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if isempty(varargin)
     mode = 'Setup Species';
-    dnaInfo = get(tube, 'UserData');
-    dnaInfo{end+1} = {prom_spec, rbs_spec, gene_spec, dna_amount, type};
-    set(tube, 'UserData', dnaInfo)
-    clear dnaInfo
+    tubeUser = get(tube, 'UserData');
+    dnaList = tubeUser.DNAinfo;
+    dnaList{end+1} = {prom_spec, rbs_spec, gene_spec, dna_amount, type, 'rxns_not_set_up'};
+    tubeUser.DNAinfo = dnaList;
+    set(tube, 'UserData', tubeUser)
+    clear dnaList
+    clear tubeUser
 
     % set up protein reactions and data, followed by utr followed by promoter
     % (promoter reactions require the lengths of the rna, therefore need to be
@@ -247,16 +250,16 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
             junkLength = promData{2,junkIndex};
             kDNA_complex_deg = log(2)/(1+junkLength/100);
         else
-            kDNA_complex_deg = tube.UserData{1}.DNA_RecBCD_complex_deg;
+            kDNA_complex_deg = tube.UserData.ReactionConfig.DNA_RecBCD_complex_deg;
         end
         if thioDNAFlag
             kDNA_complex_deg = 0.5*kDNA_complex_deg;
         end
 
         % forward rr for DNA + RecBCD <-> DNA:RecBCD
-        kDNA_recbcd_f = tube.UserData{1}.DNA_RecBCD_Forward;
+        kDNA_recbcd_f = tube.UserData.ReactionConfig.DNA_RecBCD_Forward;
         % backward rr for DNA + RecBCD <-> DNA:RecBCD
-        kDNA_recbcd_r = tube.UserData{1}.DNA_RecBCD_Reverse;
+        kDNA_recbcd_r = tube.UserData.ReactionConfig.DNA_RecBCD_Reverse;
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]); 
     end
 
@@ -287,24 +290,24 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
 
     
      txtl_addreaction(tube,[rna.Name ' + RNase -> RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     
      txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase -> Ribo + RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     if utrATTflag
            
     txtl_addreaction(tube,['asRNA:' rna.Name ' + RNase -> asRNA + RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     end
     
      txtl_addreaction(tube,['AA:Ribo:' rna.Name ' + RNase -> AA + Ribo + RNase'],...
-        'MassAction',{'TXTL_RNAdeg_F',tube.UserData{1}.RNA_deg});
+        'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
 
     % Protein degradation (if tagged)
     if protDEGflag
       degradationRate = ...
-          [tube.UserData{1}.Protein_ClpXP_Forward tube.UserData{1}.Protein_ClpXP_Reverse...
-          tube.UserData{1}.Protein_ClpXP_complex_deg]; 
+          [tube.UserData.ReactionConfig.Protein_ClpXP_Forward tube.UserData.ReactionConfig.Protein_ClpXP_Reverse...
+          tube.UserData.ReactionConfig.Protein_ClpXP_complex_deg]; 
       txtl_protein_degradation(mode, tube, protein,degradationRate);
     end
     

@@ -213,7 +213,7 @@ if scalarIndices == 0
         % Run the protein specific setup
         protData = txtl_parsespec(proteinName);
         eval(['txtl_protein_' justProtein '(''Setup Species'', tube, proteinOriginal, protData)']);
-    else
+    elseif ~strcmp(justProtein, 'gamS') && ~strcmp(justProtein, 'sigma70')
         warning('Warning:ProteinFileNotFound','Protein %s file not defined.', justProtein)
     end
 end

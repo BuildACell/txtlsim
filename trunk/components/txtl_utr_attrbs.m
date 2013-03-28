@@ -71,20 +71,20 @@ elseif strcmp(mode,'Setup Reactions')
     % Set up the binding reaction
     if ~isempty(asRNAindex)
         txtl_addreaction(tube,['[' rna.Name '] + asRNA <-> [asRNA:' rna.Name ']'],...
-            'MassAction',{'TXTL_UTR_ATTRBS_ASRNA_F',tube.UserData{1}.asRNA_Binding_F;
-            'TXTL_UTR_ATTRBS_ASRNA_R',tube.UserData{1}.asRNA_Binding_R});
+            'MassAction',{'TXTL_UTR_ATTRBS_ASRNA_F',tube.UserData.ReactionConfig.asRNA_Binding_F;
+            'TXTL_UTR_ATTRBS_ASRNA_R',tube.UserData.ReactionConfig.asRNA_Binding_R});
         
         % this still needs to happen because what it asRNA concentration
         % is low. (or 0). then asRNA is not empty, but the asRNA mediated
         % repression is very insignificant. 
         txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
-            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData{1}.Ribosome_Binding_F;
-            'TXTL_UTR_RBS_R',tube.UserData{1}.Ribosome_Binding_R});
+            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
+            'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
         
     else
         txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
-            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData{1}.Ribosome_Binding_F;
-            'TXTL_UTR_RBS_R',tube.UserData{1}.Ribosome_Binding_R});
+            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
+            'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
     end
     
 

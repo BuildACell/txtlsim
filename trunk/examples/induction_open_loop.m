@@ -63,7 +63,7 @@ for atc = levels
   % Run a simulation
   configsetObj = getconfigset(Mobj, 'active');
   set(configsetObj, 'StopTime', 18*60*60);
-   
+  set(configsetObj, 'SolverType', 'ode23s'); 
   [t_ode{count}, x_ode{count}, mObj, simData] = txtl_runsim(Mobj, configsetObj,[], []);
   
 

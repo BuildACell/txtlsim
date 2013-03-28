@@ -44,16 +44,16 @@ if strcmp(mode, 'Setup Species')
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode, 'Setup Reactions')
     
-    AAparameters = {'TXTL_AA_F',tube.UserData{1}.AA_Forward;
-                  'TXTL_AA_R',tube.UserData{1}.AA_Reverse};
+    AAparameters = {'TXTL_AA_F',tube.UserData.ReactionConfig.AA_Forward;
+                  'TXTL_AA_R',tube.UserData.ReactionConfig.AA_Reverse};
     
     % translation rate             
-    ktlExpression =  strrep(tube.Userdata{1}.Translation_Rate,...
+    ktlExpression =  strrep(tube.UserData.ReactionConfig.Translation_Rate,...
             'Protein_Length','protein.UserData');             
     ktl_rbs = eval(ktlExpression);              
               
     % AA consumption models              
-    if tube.UserData{1}.AAmodel == 1
+    if tube.UserData.ReactionConfig.AAmodel == 1
 
         aacnt = floor(protein.UserData/100);  % get number of K amino acids
         if (aacnt == 0) 

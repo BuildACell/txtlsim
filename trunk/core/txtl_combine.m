@@ -82,21 +82,48 @@ for m = 1:length(tubelist)
   copyobjlist(tube.Rules, Mobj);
   
   mobjUser = get(Mobj, 'UserData');
-  tubeUser = get(tube, 'UserData');
-  if ~isempty(tubeUser)
-      if isempty(mobjUser)
-         set(Mobj, 'UserData', tubeUser);
+  tubeUser = get(tube, 'UserData');  
+  if ~isempty(tubeUser.ReactionConfig)%, 'class'
+      if  ~isempty(mobjUser.ReactionConfig)%, 'class'
+          warning('Warning:ReactionConfigAlreadyPresent','Reaction Config field already populated, will be overwritten.')
+          mobjUser.ReactionConfig = tubeUser.ReactionConfig;
       else
-         outCell = {mobjUser(:); tubeUser(:)};
-         set(Mobj, 'UserData', outCell);
+          mobjUser.ReactionConfig = tubeUser.ReactionConfig;
       end
   end
-  
+  if ~isempty(tubeUser.DNAinfo)
+      tubeDNA = tubeUser.DNAinfo;
+      mobjDNA = mobjUser.DNAinfo;
+      if ~isempty(mobjDNA)
+        outDNA = {mobjDNA(:); tubeDNA(:)};
+      else
+          outDNA = tubeDNA;
+      end
+      mobjUser.DNAinfo = outDNA;
+  end
+  mobjUser.FirstRun = true;
+  set(Mobj,'UserData', mobjUser);
+%   if ~isempty(tubeUser)
+%       if isempty(mobjUser)
+%           set(Mobj, 'UserData', tubeUser);
+%       else
+%           if isa(mobjUser, 'txtl_reaction_config')
+%               outCell = {mobjUser(:); tubeUser(:)};
+%               set(Mobj, 'UserData', outCell);
+% %           elseif iscell(mobjUser)
+% %               outCell = mobjUser{1};
+% %               for k = 1:length(mobjUser)
+% %                   outCell = {outcell mobjUser{:}; tubeUser(:)};
+% %                   set(Mobj, 'UserData', outCell);
+% %               end
+%           end
+%       end
+%   end
 end
 
 Mobj.Name = Mobj.Name(1:end-1); % deleting the last '_' character
 % Go through and normalize species concentration
-totalvol = sum(vollist, 'double');
+totalvol = sum(vollist(1:length(tubelist)), 'double');
 for i = 1:length(Mobj.Species)
   Mobj.Species(i).InitialAmount = Mobj.Species(i).InitialAmount / totalvol;
 end

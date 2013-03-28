@@ -35,7 +35,6 @@ configsetObj = getconfigset(Mobj, 'active');
 simulationTime = 14*60*60;
 set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
-txtl_addspecies(Mobj, 'protein tetR', 10)
 % 1st run
 
 

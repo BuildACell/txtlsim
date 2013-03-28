@@ -34,7 +34,6 @@
 
 function tube = txtl_buffer(name)
 tube = txtl_newtube(name);
-
 TXTLconfig = txtl_reaction_config(name);
 
 % Add in NTPs and amino acids

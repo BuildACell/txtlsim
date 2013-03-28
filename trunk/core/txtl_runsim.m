@@ -80,30 +80,25 @@ setupReactionsForNewProteinAdded(modelObj)
 
 %! TODO zoltuz 2/4/13 review this part
 m = get(modelObj, 'UserData');
-datalen = size(m,1);
 
 %% FIRST RUN
-% set up reaction using txtl_add_dna if this is the first run of runsim.
-% However, what about the case when we add dna after the first run?
-if ~strcmp(m{datalen},'notFirstRun')
-    % if it is first run, userdata only has dna spec data
-    % if it is second run, the last element in the userdata is a string
-    % 'notFirstRun'
-    for i = 1:length(m)
-        if ~isa(m{i},'txtl_reaction_config')
-            for j= 1:length(m{i})
-                txtl_add_dna(modelObj, m{i}{j}{1}, m{i}{j}{2}, m{i}{j}{3}, m{i}{j}{4}, m{i}{j}{5}, 'Setup Reactions');
-            end
-        end
+% if m.FirstRun
+%     for i = 1:length(m.DNAinfo) % should we not set up reactions again if they have already been set up
+%         %(we reset the firstRun flag if more dna is added, and then the reactions for ALL the DNA are resetup.)
+%         txtl_add_dna(modelObj, m.DNAinfo{i}{1}, m.DNAinfo{i}{2}, ...
+%             m.DNAinfo{i}{3}, m.DNAinfo{i}{4}, m.DNAinfo{i}{5}, 'Setup Reactions');
+%     end
+%     m.FirstRun = False;
+% end
+    
+
+for i = 1:length(m.DNAinfo) % should we not set up reactions again if they have already been set up
+    %(we reset the firstRun flag if more dna is added, and then the reactions for ALL the DNA are resetup.)
+    if strcmp(m.DNAinfo{i}{6}, 'rxns_not_set_up')
+        txtl_add_dna(modelObj, m.DNAinfo{i}{1}, m.DNAinfo{i}{2}, ...
+            m.DNAinfo{i}{3}, m.DNAinfo{i}{4}, m.DNAinfo{i}{5}, 'Setup Reactions');
+        m.DNAinfo{i}{6} = 'rxns_already_set_up';
     end
-    
-    
-    % ADD: compare DNA protein list and protein list. If there are proteins
-    % for which there is no dna, call that protein s setup reaction fine.
-   
-    
-    newUserData = cat(1, m, 'notFirstRun');
-    set(modelObj, 'UserData', newUserData)
     
 %
 % ATP degration is a first order reaction.    
@@ -111,6 +106,8 @@ ntp_deg = 0.00093;
 txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
         'MassAction',{'NTPdeg_F',ntp_deg});
     
+%is the line below necessary? in general is m a pointer or a struct?
+set(modelObj, 'UserData', m)
 
     
 end % end of first run
@@ -156,6 +153,27 @@ else
     % no data was provided, no action needed
 end
 
+%
+% After 3hours because of the ATP regeneration stops the remaining NTP
+% becomes unusable c.f. V Noireaux 2003.
+% for solver specific reason the we need some amount of "NTP_GOES_BAD",
+% otherwise the rapid transition of 0->1nM at 3hours stops the solver.
+ntp_deg = 0.00008;
+% txtl_addspecies(modelObj, 'NTP_REGEN_SUP',1, 'Internal');
+% txtl_addreaction(modelObj,'NTP_REGEN_SUP -> null',...
+%     'MassAction',{'NTP_F',0.00035});
+% txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP_UNUSE',...
+%     'MassAction',{'NTP_F',0.00035});
+
+txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
+    'MassAction',{'NTPdeg_F',ntp_deg});
+% 
+% txtl_addreaction(modelObj,'NTP_UNUSE + NTP_REGEN_SUP <-> NTP_UNUSE:NTP_REGEN_SUP',...
+%     'MassAction',{'NTPdeg_F',50; 'R',0.001});
+% 
+% txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP + NTP_REGEN_SUP',...
+%     'MassAction',{'NTPdeg_F',30});
+
 % initial amounts set in modelObj.Species(k).InitialAmount.
 % previousdata, if any, stored in prevData.
 if ~isempty(configsetObj)
@@ -190,6 +208,15 @@ switch nargout
     case 2
         varargout{1} = t_ode;
         varargout{2} = x_ode;
+    case 3
+        varargout{1} = t_ode;
+        varargout{2} = x_ode;
+        varargout{3} = modelObj;        
+    case 4
+        varargout{1} = t_ode;
+        varargout{2} = x_ode;
+        varargout{3} = modelObj;
+        varargout{4} = simData;         
     otherwise
         error('not supported operation mode');
         
@@ -252,7 +279,7 @@ for k = 1:size(listOfprotein, 1)
                 % Run the protein specific setup
                 protData = txtl_parsespec(proteinName);
                 eval(['txtl_protein_' justProtein '(''Setup Reactions'', tube, protein, protData)']);
-            else
+            elseif ~strcmp(justProtein, 'gamS') && ~strcmp(justProtein, 'sigma70')
                 warning('Warning:ProteinFileNotFound','Protein %s file not defined.', justProtein)
             end
         end

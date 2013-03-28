@@ -41,7 +41,7 @@ stockMulti = 10/(10/3);
 %% building configuration object for the current experiment
 
 TXTLconfig = txtl_reaction_config(name);
-tube.UserData = TXTLconfig;
+tube.UserData.ReactionConfig = TXTLconfig;
 
 
 %% setting up species and concentrations in the extract 
@@ -55,14 +55,14 @@ addspecies(tube, 'Ribo', stockMulti*1000);	% 2300 nM based on VN's paper
 % Add RNAP+Sigma70 <-> RNAP70 reaction
 % Set up the reaction
  txtl_addreaction(tube,['RNAP + ' sigma70.Name ' <-> RNAP70'],...
-     'MassAction',{'TXTL_RNAP_S70_F',tube.UserData.RNAP_S70_F;
-                   'TXTL_RNAP_S70_R',tube.UserData.RNAP_S70_R});
+     'MassAction',{'TXTL_RNAP_S70_F',tube.UserData.ReactionConfig.RNAP_S70_F;
+                   'TXTL_RNAP_S70_R',tube.UserData.ReactionConfig.RNAP_S70_R});
 
 % Add in exonuclease + protection reactions (if [protein gamS] > 0)
 addspecies(tube, 'RecBCD', stockMulti*0.3);	% % 0.3 from Clare Chen (Jongmin will provide ref)
 
 txtl_addreaction(tube,'RecBCD + [protein gamS] -> RecBCD:gamS',...
-     'MassAction',{'GamS_RecBCD_f',tube.UserData.GamS_RecBCD_F});
+     'MassAction',{'GamS_RecBCD_f',tube.UserData.ReactionConfig.GamS_RecBCD_F});
 
 % Add in RNA degradation
 addspecies(tube, 'RNase', stockMulti*1);	% 1 nM

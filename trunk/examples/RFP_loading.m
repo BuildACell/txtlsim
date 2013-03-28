@@ -22,7 +22,7 @@ for RFPconc = RFPlevels
 tube3 = txtl_newtube('circuit');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'tetR-lva', 1*(10/2.25),  'linear');
+dna_tetR = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'tetR-lva', 0.1*(10/2.25),  'linear');
 dna_deGFP = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'deGFP-lva', 1*(10/2.25), 'linear');
 dna_RFP = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'RFP(647)-lva', RFPconc*(10/2.25), 'linear');
 %dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 0, 'plasmid');
@@ -45,7 +45,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,1); hold on;
   idx = findspecies(Mobj, 'protein deGFP-lva*');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('protein deGFP-lva*')
 end
 %title('Time Responses');
@@ -59,7 +59,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,2); hold on;
   idx = findspecies(Mobj, 'protein RFP-lva*');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('protein RFP-lva*')
 end
 %title('Time Responses');
@@ -73,7 +73,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,3); hold on;
   idx = findspecies(Mobj, 'aTc');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('aTc')
 end
 %title('Time Responses');
@@ -88,7 +88,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,4); hold on;
   idx = findspecies(Mobj, 'AA');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('AA')
 end
 %title('Time Responses');
@@ -105,7 +105,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,1); hold on;
   idx = findspecies(Mobj, 'NTP');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('NTP')
 end
 %title('Time Responses');
@@ -119,7 +119,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,2); hold on;
   idx = findspecies(Mobj, 'protein tetR-lvadimer');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('protein tetR-lvadimer')
 end
 %title('Time Responses');
@@ -133,7 +133,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,3); hold on;
   idx = findspecies(Mobj, 'DNA ptet--rbs--RFP-lva:protein tetR-lvadimer');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('DNA ptet--rbs--RFP-lva:protein tetR-lvadimer')
 end
 %title('Time Responses');
@@ -147,7 +147,7 @@ for count = 1:size(RFPlevels,2)
  subplot(2,2,4); hold on;
   idx = findspecies(Mobj, 'DNA ptet--rbs--deGFP-lva:protein tetR-lvadimer');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('DNA ptet--rbs--deGFP-lva:protein tetR-lvadimer')
 end
 %title('Time Responses');
@@ -163,7 +163,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,1); hold on;
   idx = findspecies(Mobj, 'Ribo');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('Ribo')
 end
 %title('Time Responses');
@@ -177,7 +177,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,2); hold on;
   idx = findspecies(Mobj, 'protein gamS');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('protein gamS')
 end
 %title('Time Responses');
@@ -191,7 +191,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,2,3); hold on;
   idx = findspecies(Mobj, 'RNA rbs--deGFP-lva');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('RNA rbs--deGFP-lva')
 end
 %title('Time Responses');
@@ -205,7 +205,7 @@ for count = 1:size(RFPlevels,2)
  subplot(2,2,4); hold on;
   idx = findspecies(Mobj, 'RNA rbs--RFP-lva');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('RNA rbs--RFP-lva')
 end
 %title('Time Responses');
@@ -221,7 +221,7 @@ for count = 1:size(RFPlevels,2)
   subplot(2,1,1); hold on;
   idx = findspecies(Mobj, 'Ribo:RNA rbs--deGFP-lva');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('Ribo:RNA rbs--deGFP-lva')
 end
 %title('Time Responses');
@@ -235,7 +235,7 @@ for count = 1:size(RFPlevels,2)
  subplot(2,1,2); hold on;
   idx = findspecies(Mobj, 'Ribo:RNA rbs--RFP-lva');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
-  labels{count} = [int2str(RFPlevels(count)) ' nM RFP plasmid'];
+  labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
   title('Ribo:RNA rbs--RFP-lva')
 end
 %title('Time Responses');

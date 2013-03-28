@@ -1,5 +1,5 @@
 % txtl_runsim_events.m - template file for MATLAB functions
-% Vipul Singhal Nov 2012
+
 %
 % This file is a template that includes the boilerplate for creating a 
 % MATLAB function with all of the BSD licensing information at the top.

@@ -45,7 +45,6 @@ if strcmp(mode, 'Setup Species')
     defaultBasePairs = {'rbs','spacer';20,200};
     utrRbsData = txtl_setup_default_basepair_length(tube,utrRbsData,defaultBasePairs);
     
-
     RiboBound = ['Ribo:' rna.Name];
     coreSpecies = {'Ribo',RiboBound};
     % empty cellarray for amount => zero amount
@@ -61,8 +60,8 @@ elseif strcmp(mode,'Setup Reactions')
 
     % Set up the binding reaction
      txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
-     'MassAction',{'TXTL_UTR_RBS_F',tube.UserData{1}.Ribosome_Binding_F;
-                   'TXTL_UTR_RBS_R',tube.UserData{1}.Ribosome_Binding_R});
+     'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
+                   'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
