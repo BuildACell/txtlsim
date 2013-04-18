@@ -45,12 +45,12 @@ function txtl_dimerize(mode, tube,protein,varargin)
 %
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     txtl_addspecies(tube, [protein.Name 'dimer'], 0, 'Internal');
       
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%       
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     reactionRate = varargin{1};
 

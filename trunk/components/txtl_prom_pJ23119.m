@@ -1,8 +1,8 @@
-% txtl_prom_ptet.m - promoter information for ptet promoter
+% txtl_prom_p70.m - promoter information for p70 promoter
 % RMM, 8 Sep 2012
 %
-% This file contains a description of the ptet promoter.
-% Calling the function txtl_prom_ptet() will set up the reactions for
+% This file contains a description of the standard p70 promoter.
+% Calling the function txtl_prom_p70() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
 
 % Written by Richard Murray, Sep 2012
@@ -36,22 +36,22 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_prom_ptet(mode, tube, dna, rna,varargin)
+function varargout = txtl_prom_pJ23119(mode, tube, dna, rna, varargin)
 
     % Create strings for reactants and products
     DNA = ['[' dna.Name ']'];		% DNA species name for reactions
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP70:' dna.Name];
+    RNAPbound = ['RNAP70:' dna.Name];	% Name of bound complex
+    
     % importing the corresponding parameters
-    paramObj = txtl_component_config('tetRGT'); 
-
+    paramObj = txtl_component_config('pJ23119');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
     
     promoterData = varargin{1};
-    defaultBasePairs = {'ptet','junk','thio';...
+    defaultBasePairs = {'pJ23119','junk','thio';...
         paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
@@ -65,48 +65,29 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     %
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
-   
+    % 
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-    
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode.add_dna_driver,'Setup Reactions')
-    listOfSpecies = varargin{1};
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     % Parameters that describe this promoter
-    parameters = {'TXTL_PTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
-                  'TXTL_PTET_RNAPbound_R',paramObj.RNAPbound_Reverse};
+    parameters = {'TXTL_PJ23119_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                  'TXTL_PJ23119_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
     %
-    % nominal transcription
+    % Now put in the reactions for the utilization of NTPs
+    % Use an enzymatic reaction to proper rate limiting
+    % 
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-    
-    matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
-    listOftetRdimer = vertcat(matchStr{:});
-    
 
-    %! TODO make all these reactions conditional on specie availability
-    %! TODO has this todo been accomplished? Vipul 2/10/13
-    
-    % repression of ptet by tetR dimer
-    if ~isempty(listOftetRdimer)
-        for k = 1:size(listOftetRdimer,1)
-            txtl_addreaction(tube,...
-                [DNA ' + ' listOftetRdimer{k} ' <-> [' dna.name ':' listOftetRdimer{k} ']'],...
-            'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
-                          'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
-            
-        end
-    end
-   
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
-else
-    error('txtltoolbox:txtl_prom_ptet:undefinedmode', ...
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
+else 
+    error('txtltoolbox:txtl_prom_pJ23119:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end
-end
-
+end 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

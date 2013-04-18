@@ -49,7 +49,7 @@ function varargout = txtl_prom_ptrc2(mode, tube, dna, rna, varargin)
     paramObj = txtl_component_config('lacI');    
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     
     promoterData = varargin{1};
@@ -69,7 +69,7 @@ if strcmp(mode, 'Setup Species')
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     listOfSpecies = varargin{1};
     

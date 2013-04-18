@@ -44,10 +44,10 @@ function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
     % importing the corresponding parameters
-    paramObj = txtl_component_config('lacI');
+    paramObj = txtl_component_config('lacIGT'); 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     promoterData = varargin{1};
     defaultBasePairs = {'placI','junk','thio';...
@@ -65,7 +65,7 @@ if strcmp(mode, 'Setup Species')
     
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     listOfSpecies = varargin{1};
 
@@ -91,7 +91,6 @@ elseif strcmp(mode,'Setup Reactions')
         end
     end
     
-
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

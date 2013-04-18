@@ -47,7 +47,7 @@ function varargout = txtl_prom_plambda(mode, tube, dna, rna,varargin)
     paramObj = txtl_component_config('lambda');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     
     promoterData = varargin{1};
@@ -69,7 +69,7 @@ if strcmp(mode, 'Setup Species')
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     listOfSpecies = varargin{1};
     
     % Parameters that describe this promoter

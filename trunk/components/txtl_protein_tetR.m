@@ -41,11 +41,11 @@ function varargout = txtl_protein_tetR(mode, tube, protein, varargin)
 % added defaults in places where the lengths are missing. 
 
 % importing the corresponding parameters
-paramObj = txtl_component_config('tetR');
+paramObj = txtl_component_config('tetRGT'); 
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     geneData = varargin{1};
     defaultBasePairs = {'tetR','lva','terminator';
@@ -66,10 +66,10 @@ if strcmp(mode, 'Setup Species')
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
     % call other functions in 'Setup Species' mode
-    txtl_dimerize('Setup Species', tube,protein);
+    txtl_dimerize(mode, tube,protein);
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     [~,listOfSpecies] = getstoichmatrix(tube);
   
     % Set up the binding reaction for all protein variants
@@ -84,8 +84,8 @@ elseif strcmp(mode, 'Setup Reactions')
     end
 
     % degrade the aTc inducer
-%     txtl_addreaction(tube,'aTc -> null',...
-%      'MassAction',{'TXTL_INDUCER_DEGRADATION_ATC',paramObj.Inducer_Degradation});
+     txtl_addreaction(tube,'aTc -> null',...
+      'MassAction',{'TXTL_INDUCER_DEGRADATION_ATC',paramObj.Inducer_Degradation});
 
     % set up a reaction for protein dimerization
     txtl_dimerize(mode, tube,protein, ...

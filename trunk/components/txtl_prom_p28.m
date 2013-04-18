@@ -47,7 +47,7 @@ function varargout = txtl_prom_p28(mode, tube, dna, rna, varargin)
     paramObj = txtl_component_config('sigma28');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     promoterData = varargin{1};
     defaultBasePairs = {'p28','junk','thio';...
@@ -68,7 +68,7 @@ if strcmp(mode, 'Setup Species')
 
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     % Parameters that describe this promoter
     parameters = {'TXTL_S28_RNAPbound_F',paramObj.RNAPbound_Forward;...

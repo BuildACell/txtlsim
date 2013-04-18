@@ -45,14 +45,14 @@ function txtl_dna_degradation(mode, tube,dna,varargin)
 % reacctionRate: degradation rate
 %
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     coreSpecies = {'RecBCD',[dna.Name ':RecBCD']};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     reactionRates = varargin{1};    
     

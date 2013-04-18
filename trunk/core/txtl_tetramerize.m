@@ -45,14 +45,14 @@ function txtl_tetramerize(mode, tube,protein, varargin)
 % Return: SimBiology Reaction Array
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     coreSpecies = {[protein.Name 'dimer'],[protein.Name 'tetramer']};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
 %     DONT NEED ALL THIS, The reason is, the parent function is called
 %     based on a single protein. it is that very protein we dimerize, and

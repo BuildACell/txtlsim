@@ -53,7 +53,7 @@ function varargout= txtl_prom_p28_ptet(mode, tube, dna, rna, varargin)
     paramObj = txtl_component_config('p28_tetR');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     
     promoterData = varargin{1};
@@ -72,7 +72,7 @@ if strcmp(mode, 'Setup Species')
     txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2});
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     % Parameters that describe this promoter
     parameters = {'TXTL_PTET_RNAPbound_F',paramObj.RNAPbound_Forward;...

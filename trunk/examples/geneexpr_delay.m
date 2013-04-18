@@ -21,7 +21,7 @@ tube2 = txtl_buffer('E9');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('gene_expression');
-tube4 = txtl_newtube('gene_expression_delay');
+% tube4 = txtl_newtube('gene_expression_delay');
 % % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
@@ -46,24 +46,24 @@ labels{count} = '0 Hrs delay';
 %plots = p1;
 count = 2;
 
-dna_deGFP = txtl_add_dna(tube4, ...
-  'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
- 0*10/2.25, ...					% concentration (nM)
-  'plasmid');					% type
+% dna_deGFP = txtl_add_dna(tube4, ...
+%   'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
+%  0*10/2.25, ...					% concentration (nM)
+%   'plasmid');					% type
 
 for startTime = delayedTimeList
-    Mobj{count} = txtl_combine([tube1,tube2 tube4]);
+    Mobj{count} = txtl_combine([tube1,tube2], [10/3 4.41666]);
     configsetObj{count} = getconfigset(Mobj{count}, 'active');
     simulationTime = startTime*60*60;
     set(configsetObj{count}, 'SolverType', 'ode23s');
     set(configsetObj{count}, 'StopTime', simulationTime);
     [t_ode{count},x_ode{count}] = txtl_runsim(Mobj{count},configsetObj{count});
-    %Mobj = txtl_combine([Mobj tube3],[7.75 2.25]);
+    Mobj{count} = txtl_combine([Mobj{count} tube3],[7.75 2.25]);
     % this doesnt work since run sim takes the last value in x_ode
     %! TODO vs do something about the addspecies and runsim thing. 
-    txtl_addspecies(Mobj{count}, 'DNA p70--rbs--deGFP', 1);
-    idx = findspecies(Mobj{count}, 'DNA p70--rbs--deGFP');
-    x_ode{count}(end,idx) = 1;
+    %txtl_addspecies(Mobj{count}, 'DNA p70--rbs--deGFP', 1);
+    %idx = findspecies(Mobj{count}, 'DNA p70--rbs--deGFP');
+    %x_ode{count}(end,idx) = 1;
     configsetObj{count} = getconfigset(Mobj{count}, 'active');
     simulationTime = (14-startTime)*60*60;
     set(configsetObj{count}, 'SolverType', 'ode23s');

@@ -25,8 +25,10 @@ classdef txtl_reaction_config
         NTP_Reverse;
         NTP_Concentration;
         AA_Concentration;
-        asRNA_Binding_F;
-        asRNA_Binding_R;
+        att_anti_termination_rate;
+        complex1_F_rate;
+        complex1_R_rate;
+        auto_termination_rate;
     end
     
     methods

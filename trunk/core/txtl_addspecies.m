@@ -37,6 +37,7 @@ function simBioSpecies = txtl_addspecies(tube, name, amount, varargin)
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
+add_dna_mode = struct('add_dna_driver', {'Setup Species'});
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: USER %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if isempty(varargin)
     mode = 'User';
@@ -48,6 +49,7 @@ if isempty(varargin)
     end
     
     index = findspecies(tube, name);
+    
     
 %     % get all proteins already set up in txtl_add_dna:
 %     speciesNames = get(tube.species, 'name');
@@ -64,14 +66,14 @@ if isempty(varargin)
         for k =1:size(index,2)
             if size(name{k},2) > 6 && strcmp(name{k}(1:7), 'protein') %is a protein and does not yet exist
                 % the protein processing function
-                setupProteins(tube, name{k}, amount{k}, index(k))
+                setupProteins(tube, name{k}, amount{k}, index(k), add_dna_mode)
             else
                 addOneSpecie(tube,name{k},amount{k},index(k));
             end
         end
     else
         if size(name,2) > 6 && strcmp(name(1:7), 'protein')
-            setupProteins(tube, name, amount, index)
+            setupProteins(tube, name, amount, index, add_dna_mode)
         else
             addOneSpecie(tube,name,amount,index); % not a protien. may or may not exist in the tube!
         end
@@ -172,7 +174,7 @@ end
 
 end
 
-function setupProteins(tube, name, amount, index)
+function setupProteins(tube, name, amount, index, add_dna_mode)
 
 % get all proteins already set up in txtl_add_dna:
 speciesNames = get(tube.species, 'name');
@@ -212,7 +214,7 @@ if scalarIndices == 0
     if exist(['txtl_protein_' justProtein], 'file') == 2
         % Run the protein specific setup
         protData = txtl_parsespec(proteinName);
-        eval(['txtl_protein_' justProtein '(''Setup Species'', tube, proteinOriginal, protData)']);
+        eval(['txtl_protein_' justProtein '(add_dna_mode, tube, proteinOriginal, protData)']);
     elseif ~strcmp(justProtein, 'gamS') && ~strcmp(justProtein, 'sigma70')
         warning('Warning:ProteinFileNotFound','Protein %s file not defined.', justProtein)
     end

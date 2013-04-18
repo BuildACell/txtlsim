@@ -39,7 +39,7 @@
 function varargout = txtl_utr_attrbs(mode, tube, rna, protein, varargin)
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     utrRbsData = varargin{1};
     defaultBasePairs = {'att', 'rbs','spacer';10, 20,200};
@@ -57,36 +57,14 @@ if strcmp(mode, 'Setup Species')
     varargout{2} = utrRbsData;
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
 
-    %check if antisense RNA is present
-    asRNAindex = [];
     [~,listOfSpecies] = getstoichmatrix(tube);
-    for i = 1:length(listOfSpecies)
-        if strcmp(listOfSpecies{i}, 'asRNA')
-            asRNAindex = i;
-        end
-    end
-               
-    % Set up the binding reaction
-    if ~isempty(asRNAindex)
-        txtl_addreaction(tube,['[' rna.Name '] + asRNA <-> [asRNA:' rna.Name ']'],...
-            'MassAction',{'TXTL_UTR_ATTRBS_ASRNA_F',tube.UserData.ReactionConfig.asRNA_Binding_F;
-            'TXTL_UTR_ATTRBS_ASRNA_R',tube.UserData.ReactionConfig.asRNA_Binding_R});
-        
-        % this still needs to happen because what it asRNA concentration
-        % is low. (or 0). then asRNA is not empty, but the asRNA mediated
-        % repression is very insignificant. 
-        txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
-            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
-            'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
-        
-    else
-        txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
-            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
-            'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
-    end
     
+    % Set up the binding reaction
+        txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
+            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
+            'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

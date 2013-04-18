@@ -44,7 +44,7 @@ function varargout = txtl_protein_lambda(mode, tube, protein, varargin)
 paramObj = txtl_component_config('lambda');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     geneData = varargin{1};
     defaultBasePairs = {'lambda','lva','terminator';...
@@ -59,7 +59,7 @@ if strcmp(mode, 'Setup Species')
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
   
    % set up a reaction for protein dimerization
     txtl_dimerize('Setup Reactions', tube,protein, ...

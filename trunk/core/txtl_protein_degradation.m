@@ -44,7 +44,7 @@ function txtl_protein_degradation(mode, tube,protein,varargin)
 % reacctionRate: degration rate
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     %{
     a so-called LVA tag seemed to be the most efficient tag to make GFP unstable.
     This tag consists of a short peptide sequence (AANDENYALVA) and is attached
@@ -62,7 +62,7 @@ if strcmp(mode, 'Setup Species')
     
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     % Protein monomer binds with protein ClpX*P protease
     reactionRate = varargin{1};

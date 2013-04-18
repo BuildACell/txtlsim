@@ -41,7 +41,7 @@ function varargout = txtl_protein_betaGal(mode, tube, protein, varargin)
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     geneData = varargin{1};
     defaultBasePairs = {'betaGal','lva','terminator';1000,40,100};
@@ -58,7 +58,7 @@ if strcmp(mode, 'Setup Species')
     
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     % Parameters that describe this RBS
 % kf_aTc = 1; kr_aTc = 0.1; 

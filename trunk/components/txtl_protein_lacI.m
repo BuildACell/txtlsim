@@ -38,10 +38,10 @@
 function varargout = txtl_protein_lacI(mode, tube, protein, varargin)
 
 % importing the corresponding parameters
-paramObj = txtl_component_config('lacI');
+paramObj = txtl_component_config('lacIGT'); 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     geneData = varargin{1};
     defaultBasePairs = {'lacI','lva','terminator';...
@@ -51,7 +51,8 @@ if strcmp(mode, 'Setup Species')
     
     varargout{1} = geneData;
     
-    coreSpecies = {'IPTG',['IPTG:' protein.Name]};
+    coreSpecies = {'IPTG'}; %,['IPTG:' protein.Name] 
+    % !TODO: VS 3 April 13. Not sure, but i think IPTG does NOT bind with the multimerized protein. 
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
@@ -62,12 +63,12 @@ if strcmp(mode, 'Setup Species')
     txtl_tetramerize(mode, tube, protein);
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
    
     [~,listOfSpecies] = getstoichmatrix(tube);
     
     % Set up the binding reaction for all protein variants
-    matchStr = regexp(listOfSpecies,'(^protein LacI.*tetramer$)','tokens','once'); 
+    matchStr = regexp(listOfSpecies,'(^protein lacI.*tetramer$)','tokens','once'); 
     listOftetramers = vertcat(matchStr{:});
 
     for k = 1:size(listOftetramers,1)

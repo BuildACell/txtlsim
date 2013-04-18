@@ -38,7 +38,7 @@ function varargout = txtl_protein_ClpX(mode, tube, protein, varargin)
 paramObj = txtl_component_config('ClpX');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     geneData = varargin{1};
     
@@ -54,7 +54,7 @@ if strcmp(mode, 'Setup Species')
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
 
     % Set up the maturation reaction
     txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...

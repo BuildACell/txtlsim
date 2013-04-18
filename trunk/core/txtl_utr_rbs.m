@@ -39,29 +39,43 @@
 function varargout = txtl_utr_rbs(mode, tube, rna, protein, varargin)
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     utrRbsData = varargin{1};
-    defaultBasePairs = {'rbs','spacer';20,200};
+    defaultBasePairs = {'att', 'anti', 'rbs','spacer';10, 10, 20,200};
     utrRbsData = txtl_setup_default_basepair_length(tube,utrRbsData,defaultBasePairs);
     
-    RiboBound = ['Ribo:' rna.Name];
-    coreSpecies = {'Ribo',RiboBound};
+    if mode.utr_rbs_flag % ribosome only binds to the RNA if the rbs is present
+        RiboBound = ['Ribo:' rna.Name];
+        coreSpecies = {'Ribo',RiboBound};
+    else
+        coreSpecies = {'Ribo'};
+    end
+    
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
    
     %TODO! 12/8/12 zoltuz - find out why we need the RiboBound here!
-    varargout{1} = sbioselect(tube, 'Name', RiboBound);
-    varargout{2} = utrRbsData;
+    if mode.utr_rbs_flag
+        varargout{1} = sbioselect(tube, 'Name', RiboBound);
+        varargout{2} = utrRbsData;
+    else
+    varargout{1} = utrRbsData;    
+    end
+    
+    
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
-elseif strcmp(mode,'Setup Reactions')
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
 
-    % Set up the binding reaction
-     txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
-     'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
-                   'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
+    if mode.utr_rbs_flag
+        % Set up the binding reaction
+        txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
+            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
+            'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
+    end
+    
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

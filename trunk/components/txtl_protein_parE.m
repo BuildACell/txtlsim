@@ -45,7 +45,7 @@ paramObj = txtl_component_config('parE');
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
     geneData = varargin{1};
     defaultBasePairs = {'parE','lva','terminator';
@@ -61,7 +61,7 @@ if strcmp(mode, 'Setup Species')
     txtl_dimerize('Setup Species', tube,protein);
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     [~,listOfSpecies] = getstoichmatrix(tube);
   
 

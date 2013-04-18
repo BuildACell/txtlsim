@@ -41,7 +41,7 @@ function varargout = txtl_protein_sigma28(mode, tube, protein, varargin)
 paramObj = txtl_component_config('sigma28');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if strcmp(mode, 'Setup Species')
+if strcmp(mode.add_dna_driver, 'Setup Species')
     
     geneData = varargin{1};
     defaultBasePairs = {'simga28','lva','terminator';...
@@ -56,7 +56,7 @@ if strcmp(mode, 'Setup Species')
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode, 'Setup Reactions')
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     %sequestration of RNAP by sigma28 factor
         txtl_addreaction(tube,['RNAP + [' protein.Name '] <-> RNAP28'],...
