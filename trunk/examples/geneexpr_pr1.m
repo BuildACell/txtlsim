@@ -7,8 +7,8 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E7');
-tube2 = txtl_buffer('E7');
+tube1 = txtl_extract('E9');
+tube2 = txtl_buffer('E9');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('gene_expression_pr1');
@@ -32,7 +32,7 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
-simulationTime = 25*60*60;
+simulationTime = 14*60*60;
 %set(configsetObj, 'SolverType', 'ode23s');
 set(configsetObj, 'StopTime', simulationTime);
 

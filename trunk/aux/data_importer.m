@@ -1,7 +1,10 @@
-% txtl_extract.m - function to create a tube of TX-TL buffer
-%! TODO: add documentation
-
-% Written by Richard Murray, Sep 2012
+%% data importer
+% Zoltan A Tuza Feb 2013
+%
+% This function handles plate reader data in csv format. The delimiter in
+% the file has to be ';'. Please, save your file accordingly. 
+%
+% Victor plate reader data should be ordered by valves before import
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -32,26 +35,43 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_buffer(name)
-tube = txtl_newtube(name);
-TXTLconfig = txtl_reaction_config(name);
+function experim =  data_importer(filename,plate_reader,varargin)
 
-% Add in NTPs and amino acids
-% Buffer contents
-%    NTP: ATP 1.2mM, GTP 1.2mM, CTP 1.2mM, UTP 1.2mM
-%    AA: 1.5nM (for each amino acid)
-% due to limiting factors only 20% percent can be utilized, c.f. V Noireaux
-% 2003.
-%
-% Buffer is 41% of the 10ul reaction volume
-stockMulti = 10/4.1666; 
- addspecies(tube, 'NTP', stockMulti*TXTLconfig.NTP_Concentration);		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
- addspecies(tube, 'ATP', stockMulti*(TXTLconfig.NTP_Concentration/4));		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
- addspecies(tube, 'AA',  stockMulti*TXTLconfig.AA_Concentration);		% 100 aa's/unit (20 amino acid)
+if ~exist(filename,'file')
+    error('%s not exist!',filename)
+end
+
+% If not define the 2nd valve is treated as negative control valve.
+if ~isempty(varargin)
+   noBgValve =  varargin{1};
+else 
+   noBgValve = 2;
+end
+
+experim = importdata(filename,';',1);
+
+if strcmp(plate_reader,'victor')
+    repeats = str2num(experim.textdata{end,2});
+    numOfValves = size(experim.data,1)/repeats;
+    experim.t_vec = cellfun(@(x) [3600 60 1 0]*sscanf(x,'%d:%d:%d.%d'),experim.textdata(2:repeats+1,5));
+    
+    experim.valves = reshape(experim.data,repeats,numOfValves);
+    
+    experim.noBg = experim.valves - repmat(experim.valves(:,noBgValve),1,numOfValves);
+    
+elseif strcmp(plate_reader,'biotek')
+    experim.t_vec = cellfun(@(x) [3600 60 1]*sscanf(x,'%d:%d:%d'),experim.textdata(2:end,1));
+    
+    experim.noBg = experim.data - repmat(experim.data(:,noBgValve),1,size(experim.data,2));
+else
+    error('currently only ''victor '' and ''biotek'' options are supported ')
+    
+end
+
+
+end
 
 
 
-% Automatically use MATLAB mode in Emacs (keep at end of file)
-% Local variables:
-% mode: matlab
-% End:
+
+

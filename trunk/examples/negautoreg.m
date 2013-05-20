@@ -10,17 +10,17 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E9');
-tube2 = txtl_buffer('E9');
+tube1 = txtl_extract('E9_tetr');
+tube2 = txtl_buffer('E9_tetr');
 
 % Now set up a tube that will contain our DNA
-tube3 = txtl_newtube('circuit');
+tube3 = txtl_newtube('negautoreg');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', 1*4.2, 'plasmid');%
-dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', ...
- 'deGFP(1000)', 1*4.2, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', 1*4.2, 'plasmid');%
+% dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)',
+% 'deGFP(1000)', dna_amount, 'plasmid');
 
 %
 % Next we have to set up the reactions that describe how the circuit
@@ -42,7 +42,7 @@ dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', ...
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
- %txtl_addspecies(Mobj, 'aTc', atc_conc);
+ txtl_addspecies(Mobj, 'aTc', 600);
 
 
 % Run a simulaton
@@ -55,9 +55,16 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', 14*60*60)
-set(configsetObj, 'SolverType', 'ode23s');
-[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
+set(configsetObj, 'SolverType', 'ode15s');
 
+tic
+[simData] = txtl_runsim(Mobj,configsetObj);
+toc
+t_ode = simData.Time;
+x_ode = simData.Data;
+
+
+ plot(t_ode/60,sum(x_ode(:,[15 22 23]),2),'g')
 
 %% plot the result
 % close all
@@ -68,7 +75,7 @@ dataGroups{1,3} = {'b-','r-','g--','r--','y-','c-','g-','g--','m-','k-','y--'};
 
 % Gene Expression Plot
 dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein tetR-lva-terminatordimer'};% 'protein deGFP*',
+dataGroups{2,2} = {'protein tetRdimer'};% 'protein deGFP*',
 %dataGroups{2,3} = {'g-','b-','g--','b--','r--','b-.','c-','y--','m-','k-','r-'};
 
 % Resource Plot

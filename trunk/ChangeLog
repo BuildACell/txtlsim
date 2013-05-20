@@ -1,3 +1,8 @@
+3013-05-20  Zoltan Tuza <zolta@zoltuz-laptop>
+	* core/txtl_runsim.m: RNAP degradation has been added, no NTP degradation in the model. Distinguished ATP specie added used only in TL. 
+	* components/*: deCFP protein/param files added, component parameters have been changed.
+	* examples/*: genetic_switch: buxfix, code clean up.
+	* aux/*: new directory for auxiliary functions.
 2013-02-21  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* component/txtl_protein_tetR.m: aTc degradation is no longer used (no

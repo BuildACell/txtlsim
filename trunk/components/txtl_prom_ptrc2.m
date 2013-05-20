@@ -96,19 +96,19 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         end
     end
 
-       % Un-repression of lacIdimer repressed ptrc2 in the presence of IPTG inducer.
-    if ~isempty(listOflacIdimers)
-        for k = 1:size(listOflacIdimers,1)
-            txtl_addreaction(tube,...
-                [DNA ' + IPTG:' listOflacIdimers{k} ' <-> [' dna.name ':IPTG:' listOflacIdimers{k} ']'],...
-            'MassAction',{'ptet_IPTG_dna_F',0.2;...
-                          'ptet_IPTG_dna_R',1}); 
-            dnaIPTGlacI = sbioselect(tube, 'Type', 'species', 'Name', [dna.name ':IPTG:' listOflacIdimers{k}]);   
-            txtl_addreaction(tube,[dnaIPTGlacI.name ' + ' RNAP ' <-> [' RNAP ':' dnaIPTGlacI.name ']'],...
-        'MassAction',parameters);     
-            txtl_transcription(mode, tube, dnaIPTGlacI, rna, RNAP, [RNAP ':' dnaIPTGlacI.name]);          
-        end
-    end
+%        % Un-repression of lacIdimer repressed ptrc2 in the presence of IPTG inducer.
+%     if ~isempty(listOflacIdimers)
+%         for k = 1:size(listOflacIdimers,1)
+%             txtl_addreaction(tube,...
+%                 [DNA ' + IPTG:' listOflacIdimers{k} ' <-> [' dna.name ':IPTG:' listOflacIdimers{k} ']'],...
+%             'MassAction',{'ptet_IPTG_dna_F',0.2;...
+%                           'ptet_IPTG_dna_R',1}); 
+%             dnaIPTGlacI = sbioselect(tube, 'Type', 'species', 'Name', [dna.name ':IPTG:' listOflacIdimers{k}]);   
+%             txtl_addreaction(tube,[dnaIPTGlacI.name ' + ' RNAP ' <-> [' RNAP ':' dnaIPTGlacI.name ']'],...
+%         'MassAction',parameters);     
+%             txtl_transcription(mode, tube, dnaIPTGlacI, rna, RNAP, [RNAP ':' dnaIPTGlacI.name]);          
+%         end
+%     end
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

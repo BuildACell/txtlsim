@@ -1,4 +1,4 @@
-% txtl_protein_RFP.m - protein information for RFP
+% txtl_protein_deGFP.m - protein information for deGFP
 % VS, 4 March 2013
 
 
@@ -33,16 +33,16 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_protein_RFP(mode, tube, protein, varargin)
+function varargout = txtl_protein_deGFP(mode, tube, protein, varargin)
 
-paramObj = txtl_component_config('RFP');
+paramObj = txtl_component_config('deGFP');
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
     
     geneData = varargin{1};
     
-    defaultBasePairs = {'RFP','lva','terminator';...
+    defaultBasePairs = {'deGFP','lva','terminator';...
         paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
@@ -58,7 +58,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
 
     % Set up the maturation reaction
     txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...
-     'MassAction',{'TXTL_PROT_RFP_MATURATION',paramObj.Protein_Maturation});
+     'MassAction',{'TXTL_PROT_deGFP_MATURATION',paramObj.Protein_Maturation});
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else

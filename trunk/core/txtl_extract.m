@@ -57,6 +57,12 @@ addspecies(tube, 'Ribo', stockMulti*1000);	% 2300 nM based on VN's paper
  txtl_addreaction(tube,['RNAP + ' sigma70.Name ' <-> RNAP70'],...
      'MassAction',{'TXTL_RNAP_S70_F',tube.UserData.ReactionConfig.RNAP_S70_F;
                    'TXTL_RNAP_S70_R',tube.UserData.ReactionConfig.RNAP_S70_R});
+% Add RNAP+Sigma28 <-> RNAP28 reacation
+txtl_addreaction(tube,['RNAP + [' sigma28.Name '] <-> RNAP28'],...
+         'MassAction',{'Sigma28_RNAP_F',10;...
+                       'Sigma28_RNAP_R',0.1});
+               
+               
 
 % Add in exonuclease + protection reactions (if [protein gamS] > 0)
 addspecies(tube, 'RecBCD', stockMulti*0.3);	% % 0.3 from Clare Chen (Jongmin will provide ref)

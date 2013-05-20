@@ -1,4 +1,5 @@
 
+
 % Written by Zoltan A Tuza, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
@@ -115,7 +116,7 @@ if strcmp(mode,'default')
         otherwise
             error('txtl_runsim should be called either with 4 or 5 arguments.');
     end
-    %! TODO zoltuz 2/4/13 review this part
+
     m = get(modelObj, 'UserData');
     
     % check what proteins are present, but no corresponding DNA. this will mean
@@ -147,11 +148,6 @@ if strcmp(mode,'default')
             m.DNAinfo{i}{6} = 'rxns_already_set_up';
         end
         
-        %
-        % ATP degration is a first order reaction.
-        ntp_deg = 0.00093;
-        txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
-            'MassAction',{'NTPdeg_F',ntp_deg});
         
         %is the line below necessary? in general is m a pointer or a struct?
         set(modelObj, 'UserData', m)
@@ -200,26 +196,55 @@ if strcmp(mode,'default')
         % no data was provided, no action needed
     end
     
-    %
-    % After 3hours because of the ATP regeneration stops the remaining NTP
-    % becomes unusable c.f. V Noireaux 2003.
-    % for solver specific reason the we need some amount of "NTP_GOES_BAD",
-    % otherwise the rapid transition of 0->1nM at 3hours stops the solver.
-    ntp_deg = 0.00008;
-    % txtl_addspecies(modelObj, 'NTP_REGEN_SUP',1, 'Internal');
-    % txtl_addreaction(modelObj,'NTP_REGEN_SUP -> null',...
-    %     'MassAction',{'NTP_F',0.00035});
-    % txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP_UNUSE',...
-    %     'MassAction',{'NTP_F',0.00035});
-    
-    txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
-        'MassAction',{'NTPdeg_F',ntp_deg});
-    %
-    % txtl_addreaction(modelObj,'NTP_UNUSE + NTP_REGEN_SUP <-> NTP_UNUSE:NTP_REGEN_SUP',...
-    %     'MassAction',{'NTPdeg_F',50; 'R',0.001});
-    %
-    % txtl_addreaction(modelObj,'NTP_UNUSE:NTP_REGEN_SUP -> NTP + NTP_REGEN_SUP',...
-    %     'MassAction',{'NTPdeg_F',30});
+%
+% RNAP degration as a first order reaction
+RNAP_deg = 0.0011;
+%
+% After 3hours because of the ATP regeneration stops the remaining NTP
+% becomes unusable c.f. V Noireaux 2003.
+atp_deg = 0.00003;
+
+% % RNAP degradation
+txtl_addreaction(modelObj,'RNAP -> null',...
+        'MassAction',{'RNAPdeg_F',RNAP_deg});
+txtl_addreaction(modelObj,'RNAP70 -> protein sigma70',...
+        'MassAction',{'RNAPdeg_F',RNAP_deg});
+txtl_addreaction(modelObj,'RNAP28 -> protein sigma28',...
+        'MassAction',{'RNAPdeg_F',RNAP_deg});
+
+  %  
+  % After 3hours because of the ATP regeneration stops the remaining NTP
+% becomes unusable c.f. V Noireaux 2003.
+atp_deg = 0.00003;
+
+txtl_addreaction(modelObj,'ATP -> ATP_UNUSE',...
+    'MassAction',{'ATPdeg_F',atp_deg});
+% txtl_addreaction(modelObj,'AA:ATP:Ribo:RNA rbs--deGFP -> ATP_UNUSE + AA + Ribo:RNA rbs--deGFP',...
+%     'MassAction',{'ATPdeg_F',atp_deg});
+% txtl_addspecies(modelObj, 'ATP_REGEN_SUP',1);
+% 
+% txtl_addreaction(modelObj,'ATP_REGEN_SUP -> null',...
+%     'MassAction',{'ATP_F',0.00035});
+% 
+% reactionObj = addreaction(modelObj, 'ATP_UNUSE -> ATP_REGEN_SUP + ATP');
+% kineticlawObj = addkineticlaw(reactionObj, 'Henri-Michaelis-Menten');
+% 
+% 
+% parameterObj1 = addparameter(kineticlawObj, 'Vm_d','Value',4);
+% parameterObj2 = addparameter(kineticlawObj, 'Km_d','Value',1.25);
+% 
+% set(kineticlawObj,'ParameterVariableNames', {'Vm_d' 'Km_d'});
+% set(kineticlawObj,'SpeciesVariableNames', {'ATP_UNUSE'});
+
+% txtl_addreaction(modelObj,'ATP_UNUSE:ATP_REGEN_SUP -> ATP_UNUSE',...
+%     'MassAction',{'ATP_F',0.00035});
+% 
+% txtl_addreaction(modelObj,'ATP_UNUSE + ATP_REGEN_SUP <-> ATP_UNUSE:ATP_REGEN_SUP',...
+%     'MassAction',{'ATPregen_F',50; 'ATPregen_R',0.001});
+% 
+% txtl_addreaction(modelObj,'ATP_UNUSE:ATP_REGEN_SUP -> ATP + ATP_REGEN_SUP',...
+%     'MassAction',{'ATPregen_cat',30});
+
     
     % initial amounts set in modelObj.Species(k).InitialAmount.
     % previousdata, if any, stored in prevData.
@@ -307,7 +332,6 @@ elseif strcmp(mode, 'events')
     add_dna_mode = struct('add_dna_driver', {'Setup Reactions'});
     setupReactionsForNewProteinAdded(modelObj, add_dna_mode)
     
-    %! TODO zoltuz 2/4/13 review this part
     m = get(modelObj, 'UserData');
     
     %% FIRST RUN
@@ -329,11 +353,7 @@ elseif strcmp(mode, 'events')
             m.DNAinfo{i}{6} = 'rxns_already_set_up';
         end
         
-        %
-        % ATP degration is a first order reaction.
-        ntp_deg = 0.00002;
-        txtl_addreaction(modelObj,'NTP -> NTP_UNUSE',...
-            'MassAction',{'NTPdeg_F',ntp_deg});
+       
         
         %is the line below necessary? in general is m a pointer or a struct?
         set(modelObj, 'UserData', m)

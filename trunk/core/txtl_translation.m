@@ -8,11 +8,11 @@
 %   1. Redistributions of source code must retain the above copyright
 %      notice, this list of conditions and the following disclaimer.
 %
-%   2. Redistributions in binary form must reproduce the above copyright
-%      notice, this list of conditions and the following disclaimer in the
+%   2. Redistributions in binary form must reproduce the above copyright 
+%      notice, this list of conditions and the following disclaimer in the 
 %      documentation and/or other materials provided with the distribution.
 %
-%   3. The name of the author may not be used to endorse or promote products
+%   3. The name of the author may not be used to endorse or promote products 
 %      derived from this software without specific prior written permission.
 %
 % THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
@@ -35,61 +35,60 @@ function txtl_translation(mode, tube, dna, rna, protein, Ribobound)
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
+     % Set up the species for translation 
+    coreSpecies = {'AA',['AA:ATP:' Ribobound.Name],'Ribo'};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
-        % Set up the species for translation
-        coreSpecies = {'AA',['AA:' Ribobound.Name],'Ribo'};
-        % empty cellarray for amount => zero amount
-        txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
-    
-    %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
+    
+    AAparameters = {'TXTL_AA_F',tube.UserData.ReactionConfig.AA_Forward;
+                  'TXTL_AA_R',tube.UserData.ReactionConfig.AA_Reverse};
+    
+    % translation rate             
+    ktlExpression =  strrep(tube.UserData.ReactionConfig.Translation_Rate,...
+            'Protein_Length','protein.UserData');             
+    ktl_rbs = eval(ktlExpression);              
+              
+    % AA consumption models              
+    if tube.UserData.ReactionConfig.AAmodel == 1
 
-        AAparameters = {'TXTL_AA_F',tube.UserData.ReactionConfig.AA_Forward;
-            'TXTL_AA_R',tube.UserData.ReactionConfig.AA_Reverse};
-        
-        % translation rate
-        ktlExpression =  strrep(tube.UserData.ReactionConfig.Translation_Rate,...
-            'Protein_Length','protein.UserData');
-        ktl_rbs = eval(ktlExpression);
-        
-        % AA consumption models
-        if tube.UserData.ReactionConfig.AAmodel == 1
-            
-            aacnt = floor(protein.UserData/100);  % get number of K amino acids
-            if (aacnt == 0)
-                aastr = '';
-            else
-                aastr = int2str(aacnt);
-            end
-            
-            txtl_addreaction(tube,...
-                ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']'],...
-                'MassAction',AAparameters);
+        aacnt = floor(protein.UserData/100);  % get number of K amino acids
+        if (aacnt == 0) 
+          aastr = '';
         else
-            
-            txtl_addreaction(tube, ...
-                ['[' Ribobound.Name '] + AA <-> [AA:' Ribobound.Name ']'],...
-                'MassAction',AAparameters);
-            
-            aacnt = floor(protein.UserData/100);
-            aa_consump_rate = (aacnt-1)*ktl_rbs;
-            
-            txtl_addreaction(tube, ...
-                ['[AA:' Ribobound.Name '] -> ' rna.Name ' +  Ribo'],...
-                'MassAction',{'TXTL_TL_AA_consumption',aa_consump_rate});
+          aastr = int2str(aacnt);
         end
         
-        % Translation
+        txtl_addreaction(tube,...
+            ['[' Ribobound.Name '] + ' aastr ' AA <-> [AA:' Ribobound.Name ']'],...
+            'MassAction',AAparameters);
+    else
+        
         txtl_addreaction(tube, ...
-            ['[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo'],...
-            'MassAction',{'TXTL_TL_rate',ktl_rbs});
-
-    %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
+            ['[' Ribobound.Name '] + AA + ATP <-> [AA:ATP:' Ribobound.Name ']'],...
+            'MassAction',AAparameters);
+        
+        aacnt = floor(protein.UserData/100);
+        aa_consump_rate = (aacnt-1)*ktl_rbs;
+        
+        txtl_addreaction(tube, ...
+            ['[AA:ATP:' Ribobound.Name '] -> ' rna.Name ' +  Ribo + ATP'],...
+            'MassAction',{'TXTL_TL_AA_consumption',aa_consump_rate});
+    end
+    
+    % Translation
+    txtl_addreaction(tube, ...
+     ['[AA:ATP:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo'],...
+     'MassAction',{'TXTL_TL_rate',ktl_rbs});
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else
     error('txtltoolbox:txtl_translation:undefinedmode', ...
-        'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end
-
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end    
+    
 
 end

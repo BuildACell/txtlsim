@@ -1,12 +1,4 @@
-% negautoreg.m - negative autoregulation example
-% R. M. Murray, 8 Sep 2012
-%
-% This file contains a simple example of setting up a TXTL simulation
-% for a negatively autoregulated gene.  The constants for this example
-% come from the Simbiology toolbox example page:
-%
-%    http://www.mathworks.com/help/toolbox/simbio/gs/fp58748.html
-%
+
 function [t_ode, x_ode, Mobj] =  negautoreg_function(extract,dna_amount,tspan,atc_amount)
 
 % Set up the standard TXTL tubes
@@ -19,7 +11,9 @@ tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', dna_amount*4.2, 'plasmid');
+%dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', dna_amount*4.2, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', dna_amount*4.2, 'plasmid');
+
 
 
 %
@@ -57,7 +51,7 @@ end
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', tspan*60*60)
-set(configsetObj, 'SolverType', 'ode23s');
+set(configsetObj, 'SolverType', 'ode15s');
 [t_ode, x_ode] = txtl_runsim(Mobj, configsetObj);
 
 

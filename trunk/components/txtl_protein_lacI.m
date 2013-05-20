@@ -82,21 +82,6 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     txtl_addreaction(tube,'IPTG -> null',...
      'MassAction',{'TXTL_INDUCER_DEGRADATION_IPTG',paramObj.Inducer_Degradation});
     
-%      kf_IPTG = 0.1; kr_IPTG = 0.01; 
-% 
-%     % Set up the binding reaction
-%     Robj1 = addreaction(tube, [protein.Name ' + IPTG <-> IPTG:' protein.Name]);
-%     Kobj1 = addkineticlaw(Robj1, 'MassAction');
-%     Pobj1f = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_F', kf_IPTG);
-%     Pobj1r = addparameter(Kobj1, 'TXTL_INDUCER_LACI_IPTG_R', kr_IPTG);
-%     set(Kobj1, 'ParameterVariableNames', {'TXTL_INDUCER_LACI_IPTG_F', 'TXTL_INDUCER_LACI_IPTG_R'});
-% 
-%     % degrade the IPTG inducer
-%     kf_IPTGdeg = 0.0001;
-%     Robj2 = addreaction(tube, 'IPTG -> null');
-%     Kobj2 = addkineticlaw(Robj2, 'MassAction');
-%     Pobj2 = addparameter(Kobj2, 'TXTL_INDUCER_DEGRADATION_IPTG', kf_IPTGdeg);
-%     set(Kobj2, 'ParameterVariableNames', {'TXTL_INDUCER_DEGRADATION_IPTG'});
 
     % set up a reaction for protein dimerization
     txtl_dimerize(mode, tube,protein, ...

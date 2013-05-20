@@ -33,7 +33,7 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 simulationTime = 14*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
+set(configsetObj, 'SolverType', 'ode15s');
 set(configsetObj, 'StopTime', simulationTime);
 % 1st run
 
@@ -41,8 +41,9 @@ set(configsetObj, 'StopTime', simulationTime);
  
 % txtl_runsim(Mobj);
 % set(Mobj.Reactions(6).KineticLaw.Parameters(2),'Value',54261*log(2)/0.1) 
- 
+tic
 [simData] = txtl_runsim(Mobj,configsetObj);
+
 t_ode = simData.Time;
 x_ode = simData.Data;
 

@@ -1,7 +1,8 @@
-% txtl_extract.m - function to create a tube of TX-TL buffer
-%! TODO: add documentation
+% txtl_protein_deCFP.m - protein information for deCFP
+% VS, 4 March 2013
 
-% Written by Richard Murray, Sep 2012
+
+% Written by Richard Murray, 9 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -32,22 +33,38 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_buffer(name)
-tube = txtl_newtube(name);
-TXTLconfig = txtl_reaction_config(name);
+function varargout = txtl_protein_deCFP(mode, tube, protein, varargin)
 
-% Add in NTPs and amino acids
-% Buffer contents
-%    NTP: ATP 1.2mM, GTP 1.2mM, CTP 1.2mM, UTP 1.2mM
-%    AA: 1.5nM (for each amino acid)
-% due to limiting factors only 20% percent can be utilized, c.f. V Noireaux
-% 2003.
-%
-% Buffer is 41% of the 10ul reaction volume
-stockMulti = 10/4.1666; 
- addspecies(tube, 'NTP', stockMulti*TXTLconfig.NTP_Concentration);		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
- addspecies(tube, 'ATP', stockMulti*(TXTLconfig.NTP_Concentration/4));		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
- addspecies(tube, 'AA',  stockMulti*TXTLconfig.AA_Concentration);		% 100 aa's/unit (20 amino acid)
+paramObj = txtl_component_config('deCFP');
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(mode, 'Setup Species')
+    
+    geneData = varargin{1};
+    
+    defaultBasePairs = {'deCFP','lva','terminator';...
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
+    
+    varargout{1} = geneData;
+    
+    coreSpecies = {[protein.Name '*']};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
+ 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
+elseif strcmp(mode, 'Setup Reactions')
+
+    % Set up the maturation reaction
+    txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...
+     'MassAction',{'TXTL_PROT_deCFP_MATURATION',paramObj.Protein_Maturation});
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
+else
+    error('txtltoolbox:txtl_protein_deCFP:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end
 
 
 

@@ -255,43 +255,20 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         kDNA_recbcd_r = tube.UserData.ReactionConfig.DNA_RecBCD_Reverse;
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]);
     end
-    %{
+   
     % Add in mRNA degradation reactions
+ 
     
-    %    kon = 0.035
-    %     koff = 0.1;
-    %     kcat = 1000;%10*log(2)/(12*60);
-    %      txtl_addreaction(tube,[rna.Name ' + RNase <-> ' rna.Name ':RNase'],...
-    %         'MassAction',{'TXTL_RNAdeg_F',kon;
-    %                       'r',koff});
-    %      txtl_addreaction(tube,[ rna.Name ':RNase -> RNase'],...
-    %         'MassAction',{'TXTL_RNAdeg_F',kcat});
-    %
-    %
-    %          txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase <-> ' rna.Name ':RNase + Ribo'],...
-    %         'MassAction',{'TXTL_RNAdeg_F',kon;
-    %                       'r',koff});
-    %      txtl_addreaction(tube,[ rna.Name ':RNase -> RNase'],...
-    %         'MassAction',{'TXTL_RNAdeg_F',kcat});
-    %
-    %          txtl_addreaction(tube,['AA:Ribo:' rna.Name ' + RNase <-> ' rna.Name ':RNase + Ribo + AA'],...
-    %         'MassAction',{'TXTL_RNAdeg_F',kon;
-    %                       'r',koff});
-    %      txtl_addreaction(tube,[ rna.Name ':RNase -> RNase'],...
-    %         'MassAction',{'TXTL_RNAdeg_F',kcat});
-    % %
-    %}
-    
-    txtl_addreaction(tube,[rna.Name ' + RNase -> RNase'],...
+    txtl_addreaction(tube,[rna.Name ' -> null'],...
         'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     if mode.utr_attenuator_flag
-        txtl_addreaction(tube,['RNA att + RNase -> RNase'],...
+        txtl_addreaction(tube,['RNA att -> null'],...
             'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     end
     if mode.utr_rbs_flag
-        txtl_addreaction(tube,['AA:Ribo:' rna.Name ' + RNase -> AA + Ribo + RNase'],...
+        txtl_addreaction(tube,['AA:ATP:Ribo:' rna.Name ' -> AA + ATP + Ribo'],...
             'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
-        txtl_addreaction(tube,['Ribo:' rna.Name ' + RNase -> Ribo + RNase'],...
+        txtl_addreaction(tube,['Ribo:' rna.Name ' -> Ribo'],...
             'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     end
     % Protein degradation (if tagged)

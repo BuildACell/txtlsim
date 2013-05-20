@@ -56,7 +56,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     %}
     
     
-    coreSpecies = {'protein ClpX', 'protein ClpP', 'protein ClpX*','protein ClpP*',[protein.Name '*:protein ClpX*']};
+    coreSpecies = {'protein ClpX', 'protein ClpX*',[protein.Name '*:protein ClpX*']};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
@@ -67,51 +67,19 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     % Protein monomer binds with protein ClpX*P protease
     reactionRate = varargin{1};
     
+    
     Robj = addreaction(tube, [ protein.Name '* + protein ClpX* <-> [' protein.Name '*:protein ClpX*]']);
     Kobj = addkineticlaw(Robj,'MassAction');
-    Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',0.000018); % 0.0000012);
-    Pobjr = addparameter(Kobj, 'TXTL_PROT_DEGRAD_R',0.00006); %0.00006);
+    Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',2.5863e-05); % 0.0000012);
+    Pobjr = addparameter(Kobj, 'TXTL_PROT_DEGRAD_R',5.0118e-05); %0.00006);
     set(Kobj, 'ParameterVariableNames', {'TXTL_PROT_DEGRAD_F', 'TXTL_PROT_DEGRAD_F'});
     
-    
 
-    txtl_addreaction(tube,['[' protein.Name '*:protein ClpX*] + NTP -> [' protein.Name '**]  +  protein ClpX*'],...
-        'MassAction',{'TXTL_prot_unfold',0.0009});
+    txtl_addreaction(tube,['[' protein.Name '*:protein ClpX*] + ATP -> [' protein.Name '**]  +  protein ClpX*'],...
+        'MassAction',{'TXTL_prot_unfold',9.2611e-07});
   
-%     txtl_addreaction(tube,['[' protein.Name '**] + protein ClpP* + NTP <-> ' protein.Name '**:protein ClpP*'],...
-%         'MassAction',{'TXTL_prot_P_complex_F',0.01;
-%                       'complex_R',0.001});
-%     
-%     txtl_addreaction(tube,['[' protein.Name '**:protein ClpP*] -> protein ClpP* + killed'],...
-%         'MassAction',{'TXTL_prot_unfold',0.08}); % 0.1 ok
-    
-%     
-%     txtl_addreaction(tube,[ protein.Name '** -> ' protein.Name '*'],...
-%         'MassAction',{'TXTL_prot_urefold',0.00001});
-      
     txtl_addreaction(tube,['protein ClpX* -> null'],...
-        'MassAction',{'TXTL_prot_unfold',0.0007}); % 0.001
-    
- 
-    
-    
-    %     Robj = addreaction(tube, ['[' protein.Name '] + protein ClpX*P <-> [' protein.Name ':protein ClpX*P]']);
-    %     Kobj = addkineticlaw(Robj,'MassAction');
-    %     rN = regexprep(protein.Name, {'( )'}, {''});
-    %     uniqueNameF = sprintf('TXTL_PROT_DEGRAD_COMPLEX_%s_F',rN);
-    %     uniqueNameR = sprintf('TXTL_PROT_DEGRAD_COMPLEX_%s_R',rN);
-    %     Pobjf = addparameter(Kobj, uniqueNameF, reactionRate(1));
-    %     Pobjr = addparameter(Kobj, uniqueNameR, reactionRate(2));
-    %     set(Kobj, 'ParameterVariableNames', {uniqueNameF, uniqueNameR});
-    %
-    %
-    %     % Degradation
-    %        Robj2 = addreaction(tube, ['[' protein.Name ':protein ClpX*P] -> protein ClpX*P']);
-    %        Kobj2 = addkineticlaw(Robj2,'MassAction');
-    %        rN = regexprep(protein.Name, {'( )'}, {''});
-    %        uniqueName = sprintf('TXTL_PROT_DEGRAD_%s',rN);
-    %        Pobj2 = addparameter(Kobj2, uniqueName, reactionRate(3));
-    %        set(Kobj2, 'ParameterVariableNames', {uniqueName});
+        'MassAction',{'TXTL_clpx_deg',4.7022e-04}); % 0.001
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

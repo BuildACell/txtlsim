@@ -44,8 +44,8 @@ if isempty(varargin)
     
     
     % check
-    if (size(amount,2) > 1)
-        assert(size(name,2) == size(amount,2));
+    if (size(amount,1) > 1)
+        assert(size(name,1) == size(amount,1));
     end
     
     index = findspecies(tube, name);
@@ -88,8 +88,8 @@ elseif strcmp(varargin{1}, 'Internal')
     mode = varargin{1};
     
     % check
-    if (size(amount,2) > 1)
-        assert(size(name,2) == size(amount,2));
+    if (size(amount,1) > 1)
+        assert(size(name,1) == size(amount,1));
     end
     
     index = findspecies(tube, name);
