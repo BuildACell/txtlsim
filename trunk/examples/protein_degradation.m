@@ -16,7 +16,7 @@ tube3 = txtl_newtube('protein_deg');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_clpx = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'ClpX(1269)', ...	% promoter, rbs, gene
- 1*4.2, ...					% concentration (nM)
+ 1, ...					% concentration (nM)
   'plasmid');					% type
 
 dna_clpx = txtl_add_dna(tube3, ...
@@ -44,13 +44,11 @@ txtl_addspecies(Mobj,'protein ClpX*',130, 'Internal');
 %
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
+
 simulationTime = 12*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
-set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
-[t_ode,x_ode] = txtl_runsim(Mobj,configsetObj);
+[t_ode,x_ode] = txtl_runsim(Mobj,simulationTime);
 
 %% plot the result
 close all

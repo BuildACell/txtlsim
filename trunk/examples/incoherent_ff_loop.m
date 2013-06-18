@@ -29,7 +29,7 @@ txtl_add_dna(tube4,'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)',1*4.5, 'plasmid');
 
 
 % Mix the contents of the individual tubes
- well_a1 = txtl_combine([tube1, tube2, tube3]);
+well_a1 = txtl_combine([tube1, tube2, tube3]);
 
 % set up well_b1
 well_b1 = txtl_combine([tube1, tube2, tube4]);
@@ -39,23 +39,16 @@ well_b1 = txtl_combine([tube1, tube2, tube4]);
 
 
 
- 
+
 %% Run a simulation
-configsetObj = getconfigset(well_a1, 'active');
- simulationTime = 12*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
-set(configsetObj, 'StopTime', simulationTime);
+
+simulationTime = 12*60*60;
+
 
 % 1st run
- [t_ode,x_ode] = txtl_runsim(well_a1,configsetObj);
+[t_ode,x_ode] = txtl_runsim(well_a1,simulationTime);
 
-configsetObj_b1 = getconfigset(well_b1, 'active');
-
-set(configsetObj_b1, 'SolverType', 'ode23s');
-set(configsetObj_b1, 'StopTime', simulationTime);
-
-
-[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,configsetObj_b1);
+[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,simulationTime);
 
 
 %% plot the result
@@ -73,9 +66,9 @@ dataGroups{2,2} = {'protein deGFP*','protein tetRdimer'};
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';
 %
- txtl_plot(t_ode,x_ode,well_a1,dataGroups);
+txtl_plot(t_ode,x_ode,well_a1,dataGroups);
 
- txtl_plot(t_ode_b1,x_ode_b1,well_b1,dataGroups);
+txtl_plot(t_ode_b1,x_ode_b1,well_b1,dataGroups);
 
 % figure(3)
 % hold on

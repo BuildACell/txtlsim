@@ -43,20 +43,17 @@ well_b1 = txtl_combine([tube1, tube2, tube4]);
 
  
 %% Run a simulation
-configsetObj = getconfigset(well_a1, 'active');
-simulationTime = 10*60*60;
+tic
+[simData] = txtl_runsim(well_a1,10*60*60);
+toc
+t_ode = simData.Time;
+x_ode = simData.Data;
 
-set(configsetObj, 'StopTime', simulationTime);
-
-% 1st run
-[t_ode,x_ode] = txtl_runsim(well_a1,configsetObj);
-
-
-configsetObj_b1 = getconfigset(well_b1, 'active');
-set(configsetObj_b1, 'StopTime', simulationTime);
+simData_b1= txtl_runsim(well_b1,10*60*60);
+t_ode_b1 = simData_b1.Time;
+x_ode_b1 = simData_b1.Data;
 
 
-[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,configsetObj_b1);
 
 
 %% plot the result

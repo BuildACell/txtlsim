@@ -38,7 +38,7 @@
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('e1');
+tube2 = txtl_buffer('E6');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -55,13 +55,10 @@ dna_gamS = txtl_add_dna(tube3, ...
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 5*60*60)
-if ~strcmp(version('-release'),'2012a')
- set(configsetObj, 'SolverType', 'ode23s');
-end
 
-[t_ode,x_ode] = txtl_runsim(Mobj,configsetObj,[],[]);
+simulationTime =  5*60*60;
+
+[t_ode,x_ode] = txtl_runsim(Mobj,simulationTime);
 
 
 % Top row: protein and RNA levels
@@ -140,7 +137,7 @@ txtl_plot(t_ode,x_ode,Mobj,dataGroups);
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('e1');
+tube2 = txtl_buffer('E6');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -157,12 +154,10 @@ dna_gamS = txtl_add_dna(tube3, ...
 Mobj = txtl_combine([tube1, tube2, tube3], [6, 2, 2]);
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 5*60*60)
-if ~strcmp(version('-release'),'2012a')
- set(configsetObj, 'SolverType', 'ode23s');
-end
-[t_ode,x_ode] = txtl_runsim(Mobj,configsetObj,[],[]);
+
+simulationTime = 5*60*60;
+
+[t_ode,x_ode] = txtl_runsim(Mobj,simulationTime);
 
 
 txtl_plot(t_ode,x_ode,Mobj,dataGroups);

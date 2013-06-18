@@ -1,5 +1,4 @@
-% geneexpr.m - basic gene expression reaction
-% R. M. Murray, 9 Sep 2012
+
 %
 % This file contains a simple example of setting up a TXTL simulation
 % for gene expression using the standard TXTL control plasmid.
@@ -16,26 +15,25 @@ tube3 = txtl_newtube('RNA_repression');
 % DNA with attenuator and deGFP
 dna_att_deGFP = txtl_add_dna(tube3, ...
   'pJ23119(50)', 'att(1)-rbs(20)', 'deGFP(1000)', ...	% promoter, utr, gene
-1*4.2, ...					% concentration (nM)
+1, ...					% concentration (nM)
   'plasmid');					% type
 
 
 % DNA with antisense RNA and dummy protein
 dna_anti_dummyprotein = txtl_add_dna(tube3, ...
   'pJ23119(50)', 'anti(10)', 'dummy', ...	% promoter, utr, gene
-0.01*4.2, ...					% concentration (nM)
+0.01, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
-simulationTime = 14*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
-set(configsetObj, 'StopTime', simulationTime);
 
-[simData] = txtl_runsim(Mobj,configsetObj);
+simulationTime = 14*60*60;
+
+
+[simData] = txtl_runsim(Mobj,simulationTime);
 t_ode = simData.Time;
 x_ode = simData.Data;
 

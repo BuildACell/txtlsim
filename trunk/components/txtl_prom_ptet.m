@@ -44,7 +44,7 @@ function varargout = txtl_prom_ptet(mode, tube, dna, rna,varargin)
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
     % importing the corresponding parameters
-    paramObj = txtl_component_config('tetRGT'); 
+    paramObj = txtl_component_config('tetR'); 
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%

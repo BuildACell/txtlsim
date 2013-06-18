@@ -1,7 +1,12 @@
-3013-05-20  Zoltan Tuza <zolta@zoltuz-laptop>
+2013-06-17 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* examples/*: configobj migrated to run_sim, simulation time has to be given, option for configobj.
+	* core/txtl_plot.m: default dataGroups cellarray for easier plotting
+	* aux/expression_endtime.m: new aux function for calculating expression and time and rate (expression_rate.m)
+
+2013-05-20  Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* core/txtl_runsim.m: RNAP degradation has been added, no NTP degradation in the model. Distinguished ATP specie added used only in TL. 
 	* components/*: deCFP protein/param files added, component parameters have been changed.
-	* examples/*: genetic_switch: buxfix, code clean up.
+	* examples/*: genetic_switch: bugfix, code clean up.
 	* aux/*: new directory for auxiliary functions.
 2013-02-21  Zoltan Tuza <zoltuz@zoltuz-laptop>
 

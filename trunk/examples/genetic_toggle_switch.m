@@ -28,12 +28,9 @@ txtl_addspecies(tube3, 'IPTG',0);
 Mobj = txtl_combine([tube1, tube2, tube3]);
 % sobj_aTc = sbioselect(Mobj, 'Type', 'species', 'Name', 'aTc');
 % sobj_IPTG = sbioselect(Mobj, 'Type', 'species', 'Name', 'IPTG');
-configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'SolverType', 'ode15s');
-set(configsetObj, 'StopTime', 14*60*60);
-
+simulationTime = 14*60*60;
 tic
-simData = txtl_runsim(Mobj,configsetObj);
+simData = txtl_runsim(Mobj,simulationTime);
 toc
 
 t_ode = simData.Time;

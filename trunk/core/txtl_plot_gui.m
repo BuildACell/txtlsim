@@ -59,7 +59,43 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 
-processedData = txtl_plot(varargin{1},varargin{2},varargin{3},varargin{4},'GUI',handles);
+% DNA and mRNA plot
+defaultdataGroups{1,1} = 'DNA and mRNA';
+defaultdataGroups{1,2} = {'ALL_DNA'}; 
+defaultdataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
+
+% Gene Expression Plot
+defaultdataGroups{2,1} = 'Gene Expression';
+defaultdataGroups{2,2} = {'ALL_PROTEIN'}; 
+defaultdataGroups{2,3} = {'g','g--','r-','g--','b-.'};
+
+% Resource Plot
+defaultdataGroups{3,1} = 'Resource usage';
+
+switch nargin
+    
+    case 5
+        simData = varargin{1}; 
+        modelObj = varargin{2};
+        t_ode = simData.Time;
+        x_ode = simData.Data;
+        dataGroups = defaultdataGroups;
+    case 6
+        t_ode = varargin{1};
+        x_ode = varargin{2};
+        modelObj = varargin{3};
+        dataGroups = defaultdataGroups;
+    case 7
+        t_ode = varargin{1};
+        x_ode = varargin{2};
+        modelObj = varargin{3};
+        dataGroups = varargin{4};
+    otherwise
+        error('');
+end
+
+
+processedData = txtl_plot(t_ode,x_ode,modelObj,dataGroups,handles);
 % set up the checkboxes
 numberOfProteins = size(processedData{1}{1},2)-1; % first column is time
 numOfcheckBoxes = 10;

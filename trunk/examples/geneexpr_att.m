@@ -16,7 +16,7 @@ tube3 = txtl_newtube('gene_expression');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
   'p70(50)', 'att(1)-rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
- 4.2, ...					% concentration (nM)
+ 1, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
@@ -31,13 +31,10 @@ asRNA = txtl_addspecies(Mobj, 'asRNA', 1000);
 %
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
 simulationTime = 14*60*60;
-%set(configsetObj, 'SolverType', 'ode23s');
-set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
-[t_ode,x_ode] = txtl_runsim(Mobj,configsetObj);
+[t_ode,x_ode] = txtl_runsim(Mobj,simulationTime);
 
 %% plot the result
 

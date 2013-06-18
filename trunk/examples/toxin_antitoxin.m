@@ -65,13 +65,10 @@ txtl_addspecies(Mobj,'protein parE',0); % parE Toxin 68 uM
 %
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
 simulationTime = 10*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
-set(configsetObj, 'StopTime', simulationTime);
 
 % 1st run
-[t_ode,x_ode,~,simData] = txtl_runsim(Mobj,configsetObj);
+[t_ode,x_ode,~,simData] = txtl_runsim(Mobj,simulationTime);
 
 %% plot the result
 

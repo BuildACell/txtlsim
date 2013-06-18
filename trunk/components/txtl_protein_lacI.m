@@ -38,7 +38,7 @@
 function varargout = txtl_protein_lacI(mode, tube, protein, varargin)
 
 % importing the corresponding parameters
-paramObj = txtl_component_config('lacIGT'); 
+paramObj = txtl_component_config('lacI'); 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')

@@ -12,40 +12,40 @@ tube2 = txtl_buffer('E7');
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit_open_loop');
 txtl_add_dna(tube3, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)', 0.2*4.2, 'plasmid');
+    'p70(50)', 'rbs(20)', 'sigma28(600)', 0.2, 'plasmid');
 txtl_add_dna(tube3, ...
-    'p28_ptet(150)', 'rbs(20)', 'deGFP-lva(1000)', 3*4.2, 'plasmid');
+    'p28_ptet(150)', 'rbs(20)', 'deGFP-lva(1000)', 3, 'plasmid');
 dna_clpx = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'ClpX(1269)', ...	% promoter, rbs, gene
- 4.2*1, ...					% concentration (nM)
-  'plasmid');					% type
+    'p70(50)', 'rbs(20)', 'ClpX(1269)', ...	% promoter, rbs, gene
+    1, ...					% concentration (nM)
+    'plasmid');					% type
 
 
 
 tube4 = txtl_newtube('circuit_closed_loop');
 txtl_add_dna(tube4, ...
-    'p28(50)', 'rbs(20)', 'tetR(600)', 0.01*4.2, 'plasmid');
+    'p28(50)', 'rbs(20)', 'tetR(600)', 0.01, 'plasmid');
 txtl_add_dna(tube4, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)',0.2*4.2, 'plasmid');
-txtl_add_dna(tube4,'p28_ptet(150)', 'rbs(20)', 'deGFP-lva(1000)',3*4.2, 'plasmid');
+    'p70(50)', 'rbs(20)', 'sigma28(600)',0.2, 'plasmid');
+txtl_add_dna(tube4,'p28_ptet(150)', 'rbs(20)', 'deGFP-lva(1000)',3, 'plasmid');
 dna_clpx = txtl_add_dna(tube4, ...
-  'p70(50)', 'rbs(20)', 'ClpX(1269)', ...	% promoter, rbs, gene
- 4.2*1, ...					% concentration (nM)
-  'plasmid');					% type
+    'p70(50)', 'rbs(20)', 'ClpX(1269)', ...	% promoter, rbs, gene
+    1, ...					% concentration (nM)
+    'plasmid');					% type
 
 % txtl_add_dna(tube3, ...
-%     'p70(50)', 'rbs(20)', 'ClpX(1269)', 1*4.2, 'plasmid');
+%     'p70(50)', 'rbs(20)', 'ClpX(1269)', 1, 'plasmid');
 
 
 
 
 % Mix the contents of the individual tubes
- well_a1 = txtl_combine([tube1, tube2, tube3]);
+well_a1 = txtl_combine([tube1, tube2, tube3]);
 
 
 
 
- 
+
 % set up well_b1
 well_b1 = txtl_combine([tube1, tube2, tube4]);
 
@@ -53,30 +53,25 @@ well_b1 = txtl_combine([tube1, tube2, tube4]);
 
 txtl_addspecies(well_b1,'protein ClpX*',5);
 txtl_addspecies(well_b1,'protein ClpP*',1);
- 
+
 
 txtl_addspecies(well_a1,'protein ClpX*',5);
 txtl_addspecies(well_a1,'protein ClpP*',1);
 
 
 
- 
+
 %% Run a simulation
-configsetObj = getconfigset(well_a1, 'active');
- simulationTime = 12*60*60;
- set(configsetObj, 'SolverType', 'ode23s');
-set(configsetObj, 'StopTime', simulationTime);
+
+simulationTime = 12*60*60;
+
 
 % % 1st run
- [t_ode,x_ode] = txtl_runsim(well_a1,configsetObj);
-
-configsetObj_b1 = getconfigset(well_b1, 'active');
-
-set(configsetObj_b1, 'SolverType', 'ode23s');
-set(configsetObj_b1, 'StopTime', simulationTime);
+[t_ode,x_ode] = txtl_runsim(well_a1,simulationTime);
 
 
-[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,configsetObj_b1);
+
+[t_ode_b1,x_ode_b1] = txtl_runsim(well_b1,simulationTime);
 
 
 %% plot the result
@@ -94,11 +89,11 @@ dataGroups{2,2} = {'protein deGFP-lva*','protein tetRdimer'};
 % Resource Plot
 dataGroups{3,1} = 'Resource usage';
 %
-  txtl_plot(t_ode,x_ode,well_a1,dataGroups);
+txtl_plot(t_ode,x_ode,well_a1,dataGroups);
 
- txtl_plot(t_ode_b1,x_ode_b1,well_b1,dataGroups);
+txtl_plot(t_ode_b1,x_ode_b1,well_b1,dataGroups);
 
- %%
+%%
 % figure(3)
 % hold on
 % plot(t_ode_b1/60,x_ode_b1(:,findspecies(well_b1,'protein tetR')),'b')
@@ -118,8 +113,8 @@ dataGroups{3,1} = 'Resource usage';
 % ylabel('Concentration [nM]');
 % hold off
 % legend('DNA:RNAP28','DNA:tetR','DNA:RNAP28:tetR','Location','Best')
-% 
-% 
+%
+%
 % figure(5)
 % hold on
 % plot(t_ode_b1/60,x_ode_b1(:,findspecies(well_b1,'RNAP')),'b')
@@ -129,8 +124,8 @@ dataGroups{3,1} = 'Resource usage';
 % ylabel('Concentration [nM]');
 % hold off
 % legend('RNAP','RNAP28','RNAP70')
-% 
-% 
+%
+%
 figure(6)
 hold on
 plot(t_ode/60,x_ode(:,findspecies(well_a1,'protein deGFP-lva*')),'b')

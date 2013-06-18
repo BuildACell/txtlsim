@@ -345,6 +345,33 @@ fprintf(fileID, '\n\t%% initial values\n');
 % and case where an initial concentration is set but is incosistent with a
 % later rule
 
+
+for i = 1:NumberSpecies
+
+    if (Species(i).ChangedByAssignmentRule == 0)
+
+        % not set by rule - use value given
+        if (isnan(Species(i).initialValue))                      
+            error('WriteODEFunction(SBMLModel)\n%s', 'species concentration not provided or assigned by rule');
+         else
+          if (Species(i).isConcentration == 1)
+            fprintf(fileID, '\t %% x0(%u) = %g;\n', i, Species(i).initialValue);
+          elseif (Species(i).hasAmountOnly == 1)
+            fprintf(fileID, '\t %% x0(%u) = %g;\n', i, Species(i).initialValue);
+          else
+            fprintf(fileID, '\t %% x0(%u) = %g;\n', i, Species(i).initialValue);
+          end;
+%            fprintf(fileID, '\txdot(%u) = %g;\n', i, Species(i).initialValue);
+        end;
+
+    else
+
+        % initial concentration set by rule
+        fprintf(fileID, '\txdot(%u) = %s;\n', i, char(Species(i).Name));
+
+   end;
+end; % for NumSpecies
+
 for i = 1:NumberSpecies
 
     if (Species(i).ChangedByAssignmentRule == 0)

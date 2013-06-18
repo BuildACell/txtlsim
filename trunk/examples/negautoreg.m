@@ -18,7 +18,7 @@ tube3 = txtl_newtube('negautoreg');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', 1*4.2, 'plasmid');%
+dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', 1, 'plasmid');%
 % dna_deGFP = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)',
 % 'deGFP(1000)', dna_amount, 'plasmid');
 
@@ -53,18 +53,16 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 %
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 14*60*60)
-set(configsetObj, 'SolverType', 'ode15s');
+
+simulationTime = 14*60*60;
+
 
 tic
-[simData] = txtl_runsim(Mobj,configsetObj);
+[simData] = txtl_runsim(Mobj,simulationTime);
 toc
 t_ode = simData.Time;
 x_ode = simData.Data;
 
-
- plot(t_ode/60,sum(x_ode(:,[15 22 23]),2),'g')
 
 %% plot the result
 % close all

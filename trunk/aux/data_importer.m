@@ -41,15 +41,27 @@ if ~exist(filename,'file')
     error('%s not exist!',filename)
 end
 
+experim = importdata(filename,';',1);
+
+
+% check in the biotek case temparature column is included, or not
+temp = strfind(experim.textdata(1,2),'T°');
+   if ~isempty(temp{1})
+    noBgValve = 3;
+    startValve = 2;
+   else 
+    noBgValve = 2;
+    startValve = 1;
+   end 
+
+
 % If not define the 2nd valve is treated as negative control valve.
 if ~isempty(varargin)
    noBgValve =  varargin{1};
-else 
-   noBgValve = 2;
+   startValve = 1;
 end
 
-experim = importdata(filename,';',1);
-
+%%%%%%%%%%%%%%%%%%% Import Victor data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(plate_reader,'victor')
     repeats = str2num(experim.textdata{end,2});
     numOfValves = size(experim.data,1)/repeats;
@@ -58,11 +70,15 @@ if strcmp(plate_reader,'victor')
     experim.valves = reshape(experim.data,repeats,numOfValves);
     
     experim.noBg = experim.valves - repmat(experim.valves(:,noBgValve),1,numOfValves);
-    
+ 
+%%%%%%%%%%%%%%%%%%% biotek data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(plate_reader,'biotek')
     experim.t_vec = cellfun(@(x) [3600 60 1]*sscanf(x,'%d:%d:%d'),experim.textdata(2:end,1));
     
-    experim.noBg = experim.data - repmat(experim.data(:,noBgValve),1,size(experim.data,2));
+    experim.noBg = experim.data(:,startValve:end) - repmat(experim.data(:,noBgValve),1,size(experim.data(:,startValve:end),2));
+%%%%%%%%%%%%%%%%%%% specs data %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+elseif strcmp(plate_reader,'specs')
+    
 else
     error('currently only ''victor '' and ''biotek'' options are supported ')
     

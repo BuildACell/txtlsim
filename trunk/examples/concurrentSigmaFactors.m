@@ -12,20 +12,20 @@ tube2 = txtl_buffer('E6');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
-dna_sigma28 = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 4*4.2, 'linear');
-dna_deGFP =   txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 4*4.2, 'linear');
-dna_gamS =    txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1*4.2, 'plasmid');
+dna_sigma28 = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'sigma28(600)', 4, 'linear');
+dna_deGFP =   txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 4, 'linear');
+dna_gamS =    txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 
 tube4 = txtl_newtube('no_s28_circuit');
-dna_sigma28 = txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'sigma28(600)', 0.4*4.2, 'linear');
-dna_deGFP =   txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 4*4.2, 'linear');
-dna_gamS =    txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1*4.2, 'plasmid');
+dna_sigma28 = txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'sigma28(600)', 0.4, 'linear');
+dna_deGFP =   txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 4, 'linear');
+dna_gamS =    txtl_add_dna(tube4, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 tube5 = txtl_newtube('no_s28_circuit');
-dna_sigma28 = txtl_add_dna(tube5, 'p70(50)', 'rbs(20)', 'sigma28(600)', 1*4.2, 'linear');
-dna_deGFP =   txtl_add_dna(tube5, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 4*4.2, 'linear');
-dna_gamS =    txtl_add_dna(tube5, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1*4.2, 'plasmid');
+dna_sigma28 = txtl_add_dna(tube5, 'p70(50)', 'rbs(20)', 'sigma28(600)', 1, 'linear');
+dna_deGFP =   txtl_add_dna(tube5, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 4, 'linear');
+dna_gamS =    txtl_add_dna(tube5, 'p70(50)', 'rbs(20)', 'gamS(1000)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes and add some inducer
 well_a1 = txtl_combine([tube1, tube2, tube3]);
@@ -33,29 +33,25 @@ well_b1 = txtl_combine([tube1, tube2, tube4]);
 well_c1 = txtl_combine([tube1, tube2, tube5]);
 
 %% Run a simulation
-configsetObj_a1 = getconfigset(well_a1, 'active');
-simulationTime = 9*60*60;
-set(configsetObj_a1, 'SolverType', 'ode23s');
-set(configsetObj_a1, 'StopTime', simulationTime);
-
-
 
 % 1st run
-[t_ode, x_ode, mObj, simData] = txtl_runsim(well_a1, configsetObj_a1);
+tic
+simData = txtl_runsim(well_a1, 9*60*60);
+toc
+t_ode = simData.Time;
+x_ode = simData.Data;
 
-configsetObj_b1 = getconfigset(well_b1, 'active');
-set(configsetObj_b1, 'StopTime', simulationTime);
-set(configsetObj_b1, 'SolverType', 'ode23s');
+tic
+simData_nos28 = txtl_runsim(well_b1, 9*60*60);
+toc
+t_ode_b1 = simData_nos28.Time;
+x_ode_b1 = simData_nos28.Data;
 
-[t_ode_b1, x_ode_b1, mObj_nos28, simData_nos28] = txtl_runsim(well_b1, configsetObj_b1);
-
-configsetObj_c1 = getconfigset(well_c1, 'active');
-set(configsetObj_c1, 'StopTime', simulationTime);
-set(configsetObj_c1, 'SolverType', 'ode23s');
-
-
-[t_ode_c1, x_ode_c1, mObj_nos28, simData_nos28] = txtl_runsim(well_c1, configsetObj_c1);
-
+tic
+simData_c1 = txtl_runsim(well_c1, 9*60*60);
+toc
+t_ode_c1 = simData_c1.Time;
+x_ode_c1 = simData_c1.Data;
 
 %% plot the result
 

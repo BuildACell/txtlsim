@@ -11,8 +11,8 @@ tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-%dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', dna_amount*4.2, 'plasmid');
-dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', dna_amount*4.2, 'plasmid');
+%dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', dna_amount, 'plasmid');
+dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', dna_amount, 'plasmid');
 
 
 
@@ -49,10 +49,8 @@ end
 %
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', tspan*60*60)
-set(configsetObj, 'SolverType', 'ode15s');
-[t_ode, x_ode] = txtl_runsim(Mobj, configsetObj);
+simulationTime = tspan*60*60;
+[t_ode, x_ode] = txtl_runsim(Mobj, simulationTime);
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

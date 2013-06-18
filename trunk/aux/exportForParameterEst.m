@@ -39,6 +39,7 @@ sbmlexport(modelObj, 'pre_rep.xml')
 sbmlModel = TranslateSBML('pre_rep.xml');
 WriteODEFunction_externalParameters(sbmlModel);
 convertIDsToNames(sbmlModel,sprintf('%s.m',sbmlModel.id))
+convertIDsToNames(sbmlModel,'pre_rep.xml','replaced_pre_rep.xml');
 delete(sprintf('%s.m',sbmlModel.id))
 
 end

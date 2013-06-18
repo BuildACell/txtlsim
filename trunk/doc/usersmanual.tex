@@ -98,17 +98,10 @@ We then simply combine the extract, buffer, and DNA:
 						\texttt{Mobj = txtl\_combine([tube1, tube2, tube3]);} \\	
 				\end{flushleft}
 							
-We now have to set the amount of time we want our simulation to run for, and run it. We can do this by setting the \texttt{'StopTime'} property of the Configuration Set Object as follows:
+We now have to set the amount of time we want our simulation to run for and calling the \texttt{txtl\_runsim} command as follows:	
 
 				\begin{flushleft}
-						\texttt{configsetObj = getconfigset(Mobj, 'active');\\
-simulationTime = 25*60*60;\\
-set(configsetObj, 'StopTime', simulationTime);} \\	
-				\end{flushleft}		
-and calling the \texttt{txtl\_runsim} command as follows:	
-
-				\begin{flushleft}
-						\texttt{[t\_ode,x\_ode, Mobj] = txtl\_runsim(Mobj,configsetObj);} \\	
+						\texttt{[t\_ode,x\_ode] = txtl\_runsim(Mobj,14*60*60);} \\	
 				\end{flushleft}	
 This call to \texttt{txtl\_runsim} takes the Simbiology model object and the associated configuration set object, and runs the simulation from time zero to time \texttt{simulationTime}. It returns a vector of time points in that range (\texttt{t\_ode}) and a matrix \texttt{x\_ode}, where each column is the concentrations of a species in the model at time points corresponding to \texttt{t\_ode}. For more information, please refer to \textsc{Chapter 3: Overview of the Core Processes}. 
 

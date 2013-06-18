@@ -41,7 +41,7 @@ function varargout = txtl_protein_tetR(mode, tube, protein, varargin)
 % added defaults in places where the lengths are missing. 
 
 % importing the corresponding parameters
-paramObj = txtl_component_config('tetRGT'); 
+paramObj = txtl_component_config('tetR'); 
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%

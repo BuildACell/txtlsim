@@ -70,8 +70,8 @@ addspecies(tube, 'RecBCD', stockMulti*0.3);	% % 0.3 from Clare Chen (Jongmin wil
 txtl_addreaction(tube,'RecBCD + [protein gamS] -> RecBCD:gamS',...
      'MassAction',{'GamS_RecBCD_f',tube.UserData.ReactionConfig.GamS_RecBCD_F});
 
-% Add in RNA degradation
-addspecies(tube, 'RNase', stockMulti*1);	% 1 nM
+% % Add in RNA degradation
+% addspecies(tube, 'RNase', stockMulti*1);	% 1 nM
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

@@ -12,17 +12,15 @@ tube3 = txtl_newtube('gene_expression');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
   promoter, 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
- dna_amount*4.2, ...					% concentration (nM)
+ dna_amount, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
 simulationTime = tspan*60*60;
-set(configsetObj, 'SolverType', 'ode23s');
-set(configsetObj, 'StopTime', simulationTime);
+
 
 %run
 if nargin > 4
@@ -39,11 +37,11 @@ if nargin > 4
         set(Mobj.Reactions(paramLoc{k,1}).KineticLaw.Parameters(paramLoc{k,2}),'Value',paramLoc{k,3})
     end
 %     sbioaccelerate(Mobj, configsetObj)
-    [simData] = txtl_runsim(Mobj,configsetObj);
+    [simData] = txtl_runsim(Mobj,simulationTime);
     
 else
     % normal operation mode
-    [simData] = txtl_runsim(Mobj,configsetObj);
+    [simData] = txtl_runsim(Mobj,simulationTime);
 end
 
 
