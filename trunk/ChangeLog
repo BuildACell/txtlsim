@@ -1,3 +1,5 @@
+2013-06-24 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* aux/: this folder is renamed to auxiliary due to compatibility issues with Windows
 2013-06-17 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* examples/*: configobj migrated to run_sim, simulation time has to be given, option for configobj.
 	* core/txtl_plot.m: default dataGroups cellarray for easier plotting

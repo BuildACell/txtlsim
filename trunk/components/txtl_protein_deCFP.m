@@ -2,7 +2,7 @@
 % VS, 4 March 2013
 
 
-% Written by Richard Murray, 9 Sep 2012
+
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
