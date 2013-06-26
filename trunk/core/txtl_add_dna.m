@@ -51,7 +51,7 @@
 % POSSIBILITY OF SUCH DAMAGE.
 %%
 function dna = txtl_add_dna(tube, prom_spec, rbs_spec, gene_spec, dna_amount, type, varargin)
-mode = struct('add_dna_driver', {[]}, 'prot_deg_flag',{false},'prot_term_flag', ...
+mode = struct('add_dna_driver', {[]}, 'prot_deg_flag',{false}, 'no_protein_flag',{false}, 'prot_term_flag', ...
     {false},'utr_attenuator_flag',{false},'utr_antisense_flag',{false},'utr_rbs_flag',{false}, ...
     'prom_junk_flag',{false},'prom_thio_flag',{false});
 % Extract out the names and lengths
@@ -64,8 +64,9 @@ mode = struct('add_dna_driver', {[]}, 'prot_deg_flag',{false},'prot_term_flag', 
 % check for variations in DNA, used to select specific code
 mode.prot_deg_flag = checkForStringInACellList(geneData(1,:),'lva');
 mode.prot_term_flag = checkForStringInACellList(geneData(1,:),'terminator');
-mode.utr_attenuator_flag = checkForStringInACellList(utrData(1,:),'att');
-mode.utr_antisense_flag = checkForStringInACellList(utrData(1,:),'anti');
+mode.no_protein_flag = checkForStringInACellList(geneData(1,:),'no_protein');
+mode.utr_attenuator_flag = checkForStringInACellList(utrData(1,:),{'att', 'att2'});
+mode.utr_antisense_flag = checkForStringInACellList(utrData(1,:),{'anti', 'anti2'});
 mode.utr_rbs_flag = checkForStringInACellList(utrData(1,:),'rbs');
 [mode.prom_junk_flag, junkIndex] = checkForStringInACellList(promData(1,:),'junk');
 mode.prom_thio_flag = checkForStringInACellList(promData(1,:),'thio');
@@ -76,12 +77,12 @@ geneName = geneData{1,1}; %assuming the format is gene-lva-...-terminator
 %! TODO: VS 4/17/13 Is rbs always the last entry of utr? what about
 %spacer?
 rbsName = utrData{1,end}; % format is att-...-rbs.
-if mode.utr_antisense_flag
+if mode.utr_antisense_flag || mode.no_protein_flag 
     protstr = ['protein ' geneStr];
     rnastr = ['RNA ' utrStr]; 
     dnastr = ['DNA ' promStr '--' utrStr];
     % dont care what else is after the antisense. the sole purpose of 
-    % antisense is to requester the RNA att
+    % antisense is to sequester the RNA att
 else
     protstr = ['protein ' geneStr]; % protstr looks something like 'protein tetR-lva-terminator'
     rnastr = ['RNA ' utrStr '--' geneStr];
@@ -139,12 +140,12 @@ if isempty(varargin)
         end
     end
     utrlenTot = sum(cell2mat(utrlen(2,:)));
-    if mode.utr_antisense_flag
-        rna.UserData = utrlenTot;
-    else
-        rna.UserData = utrlenTot + genelenTot;
-    end
-    
+%     if mode.utr_antisense_flag
+%         rna.UserData = utrlenTot;
+%     else
+%         rna.UserData = utrlenTot + genelenTot;
+%     end
+    rna.UserData = utrlenTot + genelenTot;
     
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
     % DNA solution is 22.5% of the 10ul reaction volume
@@ -160,12 +161,12 @@ if isempty(varargin)
         promData = txtl_prom_p70(mode, tube, dna, rna, promData);
     end
     promlenTot = sum(cell2mat(promData(2,:)));
-    if mode.utr_antisense_flag
-        dna.UserData = promlenTot + utrlenTot;
-    else
-        dna.UserData = promlenTot + utrlenTot + genelenTot;
-    end    
-    
+%     if mode.utr_antisense_flag
+%         dna.UserData = promlenTot + utrlenTot;
+%     else
+%         dna.UserData = promlenTot + utrlenTot + genelenTot;
+%     end    
+        dna.UserData = promlenTot + utrlenTot + genelenTot;   
     
     %% Translation %%
     if mode.utr_rbs_flag % no translation if there is no ribosome binding site present

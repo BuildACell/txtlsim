@@ -1,8 +1,21 @@
+function [t_ode, x_ode, Mobj] = RNA_repression(varargin)
 
+% RNA_repression.m 
+% Vipul Singhal, April 2013
 %
-% This file contains a simple example of setting up a TXTL simulation
-% for gene expression using the standard TXTL control plasmid.
 %
+if nargin == 0
+    ATT_DEGFP_conc = 1;
+    ANTI_conc = 0.1;
+    CONTROL_DNA_conc = 0;
+elseif nargin == 3
+    ATT_DEGFP_conc = varargin{1};
+    ANTI_conc = varargin{2};
+    CONTROL_DNA_conc = varargin{3};
+end
+
+
+
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
@@ -14,16 +27,24 @@ tube3 = txtl_newtube('RNA_repression');
 
 % DNA with attenuator and deGFP
 dna_att_deGFP = txtl_add_dna(tube3, ...
-  'pJ23119(50)', 'att(1)-rbs(20)', 'deGFP(1000)', ...	% promoter, utr, gene
-1, ...					% concentration (nM)
-  'plasmid');					% type
+  'pJ23119(35)', 'att(287)-rbs(20)', 'deGFP(1080)', ATT_DEGFP_conc*4.2, 'linear');					
 
+dna_gamS = txtl_add_dna(tube3, ...
+  'p70(35)', 'rbs(20)', 'gamS(1000)', 0*4.2, 'plasmid'); 
 
 % DNA with antisense RNA and dummy protein
 dna_anti_dummyprotein = txtl_add_dna(tube3, ...
-  'pJ23119(50)', 'anti(10)', 'dummy', ...	% promoter, utr, gene
-0.01, ...					% concentration (nM)
-  'plasmid');					% type
+  'pJ23119(35)', 'anti(91)', 'no_protein', ...	% promoter, utr, gene
+ANTI_conc*4.2, ...					% concentration (nM)
+  'linear');					% type
+
+dna_control_dummyprotein = txtl_add_dna(tube3, ...
+  'pJ23119(35)', 'control(91)', 'no_protein', ...	% promoter, utr, gene
+CONTROL_DNA_conc*4.2, ...					% concentration (nM)
+  'linear');					% type
+
+txtl_addspecies(tube3, 'protein gamS', 10, 'Internal');
+% DNA with control RNA and dummy protein (not translated)
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
@@ -36,49 +57,7 @@ simulationTime = 14*60*60;
 [simData] = txtl_runsim(Mobj,simulationTime);
 t_ode = simData.Time;
 x_ode = simData.Data;
-
-iGFP = findspecies(Mobj, 'protein deGFP*');
-%
-iRNA = findspecies(Mobj, 'RNA att-rbs--deGFP');
-iRIBOBOUND = findspecies(Mobj, 'Ribo:RNA att-rbs--deGFP'); 
-iAA_RIBOBOUND = findspecies(Mobj, 'AA:Ribo:RNA att-rbs--deGFP'); 
-%
-iATT = findspecies(Mobj, 'RNA att');
-iCOMPLEX1 = findspecies(Mobj, 'RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att');
-iNTP_COMPLEX1 = findspecies(Mobj, 'NTP:RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att');
-iCOMPLEX2 =  findspecies(Mobj, 'RNA att:RNA anti');
-iRNAPBOUND_COMPLEX2 =  findspecies(Mobj, 'RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att:RNA anti');
-% 
-iANTI = findspecies(Mobj, 'RNA anti');
-
-close all
-figure(1)
-plot(t_ode, x_ode(:,iGFP), 'r', ...
-    t_ode, x_ode(:,iRIBOBOUND)+x_ode(:,iAA_RIBOBOUND)+x_ode(:,iRNA), 'b', ...
-    t_ode, x_ode(:,iATT)+x_ode(:,iCOMPLEX1)+x_ode(:,iNTP_COMPLEX1)+x_ode(:,iCOMPLEX2)+x_ode(:,iRNAPBOUND_COMPLEX2), 'g', ...
-    t_ode, x_ode(:,iANTI)+x_ode(:,iCOMPLEX2)+x_ode(:,iRNAPBOUND_COMPLEX2), 'k')
-legend('protein deGFP*', 'TOTAL RNA att-rbs--deGFP', 'TOTAL RNA att', 'TOTAL RNA anti')
-
-figure(2)
-plot(t_ode, x_ode(:,iRIBOBOUND), 'b', ...
-    t_ode, x_ode(:,iAA_RIBOBOUND), 'g', ...
-    t_ode, x_ode(:,iRNA), 'k')
-legend('Ribo:RNA att-rbs--deGFP', 'AA:Ribo:RNA att-rbs--deGFP', 'RNA att-rbs--deGFP')
-
-figure(3)
-plot(t_ode, x_ode(:,iATT), 'b', ...
-    t_ode, x_ode(:,iCOMPLEX1), 'g', ...
-    t_ode, x_ode(:,iNTP_COMPLEX1), 'g.-', ...
-    t_ode, x_ode(:,iCOMPLEX2), 'k', ...
-    t_ode, x_ode(:,iRNAPBOUND_COMPLEX2), 'k.-')
-legend('RNA att', 'RNAPbound:RNA att', 'NTP:RNAPbound:RNA att', 'RNA att:RNA anti', 'RNAPbound:RNA att:RNA anti')
-
-figure(6)
-plot(t_ode, x_ode(:,iANTI), 'b', ...
-    t_ode, x_ode(:,iCOMPLEX2), 'k', ...
-    t_ode, x_ode(:,iRNAPBOUND_COMPLEX2), 'k.-')
-legend('RNA anti', 'RNA att:RNA anti', 'RNAPbound:RNA att:RNA anti')
-
+end
 
 
 % Automatically use matlab mode in emacs (keep at end of file)

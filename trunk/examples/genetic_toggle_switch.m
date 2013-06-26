@@ -37,13 +37,19 @@ t_ode = simData.Time;
 x_ode = simData.Data;
 
 %% Plot results
+% 
+% figure(1)
+% plot(t_ode/60,x_ode(:,[34 42]))
+% xlabel('Time [min]')
+% ylabel('GFP/CFP [nM]')
+% legend('GFP','CFP')
 
-figure(1)
-plot(t_ode/60,x_ode(:,[34 42]))
-xlabel('Time [min]')
-ylabel('GFP/CFP [nM]')
-legend('GFP','CFP')
-
+iCFP = findspecies(Mobj, 'protein deCFP*')
+iGFP = findspecies(Mobj, 'protein deGFP')
+figure
+ plot(t_ode, x_ode(:,iCFP), 'b', t_ode, x_ode(:,iGFP), 'r')
+figure
+plot(x_ode(:,iCFP), x_ode(:,iGFP), 'r')
 
 
 
