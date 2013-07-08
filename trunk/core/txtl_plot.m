@@ -153,7 +153,7 @@ for k = 1:numOfGroups
             
             
             % collect the data
-            listOfDNAsRNAs = horzcat(listOfDNAs,listOfRNAs);
+            listOfDNAsRNAs = vertcat(listOfDNAs,listOfRNAs);
             dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs);
             dataDNAs = getDataForSpecies(modelObj,x_ode,listOfDNAs);
             dataRNAs = getDataForSpecies(modelObj,x_ode,listOfRNAs);
@@ -201,7 +201,7 @@ for k = 1:numOfGroups
         title(currentHandler,dataGroups{k,1});
         
         % add the processed data to the output structure
-        processedData{2} = {['Time' listOfDNAsRNAs],[t_ode dataX]};
+        processedData{2} = {['Time' listOfDNAsRNAs'],[t_ode dataX]};
         
         %%%%%%% Gene Expression plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     elseif(strcmp(dataGroups{k,1},'Gene Expression'))
@@ -246,7 +246,7 @@ for k = 1:numOfGroups
             end
             
             % finally, add the manually listed species
-            listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
+            listOfProteins =  vertcat(listOfProteins,dataGroups{k,2}');
             
         end
         dataX = getDataForSpecies(modelObj,x_ode,listOfProteins);
@@ -286,7 +286,7 @@ for k = 1:numOfGroups
         title(currentHandler,dataGroups{k,1});
         
         % add the processed data to the output structure
-        processedData{1} = {['Time' listOfProteins],[t_ode dataX]};
+        processedData{1} = {['Time' listOfProteins'],[t_ode dataX]};
         
         %%%%%%%%%%% Resource usage plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     elseif(strcmp(dataGroups{k,1},'Resource usage'))
