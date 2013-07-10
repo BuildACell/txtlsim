@@ -1,3 +1,6 @@
+2013-07-09 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* core/txtl_mrna_degradation.m: separate file for mRNA degrations reactions, mainly to keep the code maintainable
+	* core/txtl_plot_gui.m: bugfix
 2013-06-24 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* aux/: this folder is renamed to auxiliary due to compatibility issues with Windows
 2013-06-17 Zoltan Tuza <zoltuz@zoltuz-laptop>

@@ -62,12 +62,12 @@ guidata(hObject, handles);
 % DNA and mRNA plot
 defaultdataGroups{1,1} = 'DNA and mRNA';
 defaultdataGroups{1,2} = {'ALL_DNA'}; 
-defaultdataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
+defaultdataGroups{1,3} = {'b','r','g','b--','r--','g--','c','y','w','k'};
 
 % Gene Expression Plot
 defaultdataGroups{2,1} = 'Gene Expression';
-defaultdataGroups{2,2} = {'ALL_PROTEIN'}; 
-defaultdataGroups{2,3} = {'g','g--','r-','g--','b-.'};
+defaultdataGroups{2,2} = {'ALL_PROTEIN'};
+defaultdataGroups{2,3} = {'b','r','g','b--','r--','g--','c','y','w','k'};
 
 % Resource Plot
 defaultdataGroups{3,1} = 'Resource usage';
@@ -107,7 +107,7 @@ for k=1:numOfcheckBoxes
         eval(sprintf('set(handles.checkbox%d,''Visible'',''on'')',k));
     else
         eval(sprintf('set(handles.checkbox%d,''Visible'',''off'')',k));
-    end
+    end 
 end
 
 % UIWAIT makes txtl_plot_gui wait for user response (see UIRESUME)
@@ -221,6 +221,7 @@ setLineVisibility(10,get(hObject,'Value'),handles)
 
 function setLineVisibility(numOfLine,status,handles)
     lines = get(handles.genePlot,'Children');
+    lines = flipud(lines);
     if status 
         set(lines(numOfLine),'Visible','on');
     else

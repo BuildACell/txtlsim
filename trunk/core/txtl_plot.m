@@ -56,12 +56,12 @@ function processedData = txtl_plot(varargin)
 % DNA and mRNA plot
 defaultdataGroups{1,1} = 'DNA and mRNA';
 defaultdataGroups{1,2} = {'ALL_DNA'}; 
-defaultdataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
+defaultdataGroups{1,3} = {'b','r','g','b--','r--','g--','c','y','w','k'};
 
 % Gene Expression Plot
 defaultdataGroups{2,1} = 'Gene Expression';
 defaultdataGroups{2,2} = {'ALL_PROTEIN'};
-defaultdataGroups{2,3} = {'g','g--','r-','g--','b-.'};
+defaultdataGroups{2,3} = {'b','r','g','b--','r--','g--','c','y','w','k'};
 
 % Resource Plot
 defaultdataGroups{3,1} = 'Resource usage';
@@ -246,7 +246,7 @@ for k = 1:numOfGroups
             end
             
             % finally, add the manually listed species
-            listOfProteins =  vertcat(listOfProteins,dataGroups{k,2}');
+            listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
             
         end
         dataX = getDataForSpecies(modelObj,x_ode,listOfProteins);
@@ -272,7 +272,14 @@ for k = 1:numOfGroups
             
             hold(currentHandler);
             for l=1:size(dataX,2)
-                plot(currentHandler,t_ode/60,dataX(:,l),dataGroups{k,3}{l});
+                % if we have more data column than color, we start over the
+                % the colors
+                if l < size(dataGroups{k,3},2)
+                    colorCode = dataGroups{k,3}{l};
+                else
+                    colorCode = dataGroups{k,3}{mod(l,size(dataGroups{k,3},2))+1};
+                end
+                plot(currentHandler,t_ode/60,dataX(:,l),colorCode);
             end
         else
             plot(currentHandler,t_ode/60,dataX);
@@ -286,7 +293,7 @@ for k = 1:numOfGroups
         title(currentHandler,dataGroups{k,1});
         
         % add the processed data to the output structure
-        processedData{1} = {['Time' listOfProteins'],[t_ode dataX]};
+        processedData{1} = {['Time' listOfProteins],[t_ode dataX]};
         
         %%%%%%%%%%% Resource usage plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     elseif(strcmp(dataGroups{k,1},'Resource usage'))
