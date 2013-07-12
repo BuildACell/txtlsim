@@ -50,33 +50,23 @@ if isempty(varargin)
     
     index = findspecies(tube, name);
     
-    
-    %     % get all proteins already set up in txtl_add_dna:
-    %     speciesNames = get(tube.species, 'name');
-    %     matchStr = regexp(speciesNames,'(^DNA.*)','tokens','once');
-    %     listOfDNA = vertcat(matchStr{:});
-    %     DNAparts = regexp(listOfDNA, '--','split');
-    %     proteinsAlreadySetUp = cell(length(DNAparts),1);
-    %     for i = 1:length(DNAparts)
-    %         proteinsAlreadySetUp{i} = DNAparts{i}{3};
-    %     end
-    
-    
     if iscell(name) % if more than one species are to be added
         for k =1:size(index,2)
-            if size(name{k},2) > 6 && strcmp(name{k}(1:7), 'protein') %is a protein and does not yet exist
-                % the protein processing function
-                setupProteins(tube, name{k}, amount{k}, index(k), add_dna_mode)
+            % protein has been added
+            if ~isempty(strfind(name{k},'protein'))
+                addOneSpecie(tube,name{k},amount{k},index(k));
+                txtl_setup_new_protein_added(tube,add_dna_mode);
             else
                 addOneSpecie(tube,name{k},amount{k},index(k));
-            end
+            end          
         end
     else
-        if size(name,2) > 6 && strcmp(name(1:7), 'protein')
-            setupProteins(tube, name, amount, index, add_dna_mode)
-        else
-            addOneSpecie(tube,name,amount,index); % not a protien. may or may not exist in the tube!
-        end
+            if ~isempty(strfind(name,'protein'))
+                addOneSpecie(tube,name,amount,index);
+                txtl_setup_new_protein_added(tube,add_dna_mode);
+            else
+                addOneSpecie(tube,name,amount,index);
+            end
     end
     
     indexPost = findspecies(tube, name);
@@ -124,66 +114,6 @@ else
     tube.Species(index);
     varargout{1} = tube.Species(index) ;
 end
-end
-
-
-
-function setupProteins(tube, name, amount, index, add_dna_mode)
-
-% get all proteins already set up in txtl_add_dna:
-speciesNames = get(tube.species, 'name');
-matchStr = regexp(speciesNames,'(^DNA.*)','tokens','once');
-listOfDNA = vertcat(matchStr{:});
-DNAparts = regexp(listOfDNA, '--','split');
-proteinsAlreadySetUp = cell(length(DNAparts),1);
-for i = 1:length(DNAparts)
-    proteinsAlreadySetUp{i} = DNAparts{i}{3};
-end
-% here we want to add the protein, be it the dimer,
-% tetramer, whatever:
-proteinSpecie = addOneSpecie(tube,name,amount,index);
-proteinName = name(9:end);
-if  size(proteinName,2) > 1 && strcmp(proteinName(end), '*')
-    proteinName = proteinName(1:end-1);
-end
-
-if size(proteinName,2) > 4 && strcmp(proteinName(end-4:end), 'dimer')
-    proteinName = proteinName(1:end-5);
-elseif  size(proteinName,2) > 7 && strcmp(proteinName(end-7:end), 'tetramer')
-    proteinName = proteinName(1:end-8);
-end
-index2 = findspecies(tube, ['protein ' proteinName]);
-%add the soecie without the *, dimer or tetramer.
-proteinOriginal = addOneSpecie(tube, ['protein ' proteinName], 0, index2);
-temp = strfind(proteinsAlreadySetUp, proteinName);
-temp2 = vertcat(temp{:});
-clear temp
-scalarIndices = isscalar(temp2);
-clear temp2
-%            temp = strfind(proteinsAlreadySetUp, proteinName);
-%            scalarIndices = cellfun(@isscalar, temp);
-if scalarIndices == 0
-    proteinParts = regexp(proteinName, '-','split');
-    justProtein = proteinParts{1};
-    if exist(['txtl_protein_' justProtein], 'file') == 2
-        % Run the protein specific setup
-        protData = txtl_parsespec(proteinName);
-        eval(['txtl_protein_' justProtein '(add_dna_mode, tube, proteinOriginal, protData)']);
-    elseif ~strcmp(justProtein, 'gamS') && ~strcmp(justProtein, 'sigma70')
-        warning('Warning:ProteinFileNotFound','Protein %s file not defined.', justProtein)
-    end
-end
-
-% NOTES
-% lets say a protein dimer is added. even in that case, we should just set
-% the that protein's reactions, since that dimer will dissociate to give
-% that protein, and all of the proteins reactions will follow.
-
-% no complexes should be allowed. so aTc:protein , and protein:ClpXP should
-% not be allowed to be added. This is important since the current code does
-% not have the capability to handle it. This is ok in practice
-% since we cant add complexes in lab anyway. (I think)
-
 end
 
 

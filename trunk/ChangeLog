@@ -1,3 +1,6 @@
+2013-07-11 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* components/txtl_protein_lacI.m: inducer degradation has been removed
+	* core/txtl_setup_new_protein_added.m: cross check function, this function maintains integrity of reactions if a protein manually added to the TXTL reaction. 
 2013-07-09 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* core/txtl_mrna_degradation.m: separate file for mRNA degrations reactions, mainly to keep the code maintainable
 	* core/txtl_plot_gui.m: bugfix

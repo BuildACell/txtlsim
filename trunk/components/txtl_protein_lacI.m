@@ -78,9 +78,9 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
                        'TXTL_INDUCER_LacI_IPTG_R',paramObj.Protein_Inducer_Reverse});
     end
     
-     % degrade the IPTG inducer
-    txtl_addreaction(tube,'IPTG -> null',...
-     'MassAction',{'TXTL_INDUCER_DEGRADATION_IPTG',paramObj.Inducer_Degradation});
+%      % degrade the IPTG inducer
+%     txtl_addreaction(tube,'IPTG -> null',...
+%      'MassAction',{'TXTL_INDUCER_DEGRADATION_IPTG',paramObj.Inducer_Degradation});
     
 
     % set up a reaction for protein dimerization
