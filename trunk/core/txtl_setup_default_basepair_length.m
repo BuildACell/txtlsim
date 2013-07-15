@@ -42,12 +42,13 @@ function ObjectData = txtl_setup_default_basepair_length(tube,ObjectData,default
     %TODO! 12/08/12 zoltuz - later on deafaultBasePairs should come from
     %TODO the config files - that's way tube is provided 
     noLength = cellfun('isempty', ObjectData(2,:));
-    elementInd = find(noLength>0);
-    [~,Aind,Bind] = intersect(defaultBasePairs(1,:),ObjectData(1,elementInd));
+    elementInd = find(noLength>0); % indexes where is no length
+    % find the elements with missing length
+    [~,Aind,Bind] = intersect(defaultBasePairs(1,:),ObjectData(1,elementInd)); 
     
     % multiple lhs - multiple rhs -> no way to avoid for cycle
     for k = 1:size(Aind,2)
-        ObjectData{2,Bind(k)} = defaultBasePairs{2,Aind(k)};
+        ObjectData{2,elementInd(Bind(k))} = defaultBasePairs{2,Aind(k)};
     end
 
 

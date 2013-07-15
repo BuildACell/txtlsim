@@ -208,10 +208,6 @@ end
 % RNAP degration as a first order reaction
 RNAP_deg = 0.0011;
 %
-% After 3hours because of the ATP regeneration stops the remaining NTP
-% becomes unusable c.f. V Noireaux 2003.
-atp_deg = 0.00003;
-
 % % RNAP degradation
 txtl_addreaction(modelObj,'RNAP -> null',...
     'MassAction',{'RNAPdeg_F',RNAP_deg});
@@ -221,7 +217,7 @@ txtl_addreaction(modelObj,'RNAP28 -> protein sigma28',...
     'MassAction',{'RNAPdeg_F',RNAP_deg});
 
 %
-% After 3hours because of the ATP regeneration stops the remaining NTP
+% After 3hours because of the ATP regeneration stops the remaining ATP
 % becomes unusable c.f. V Noireaux 2003.
 atp_deg = 0.00003;
 

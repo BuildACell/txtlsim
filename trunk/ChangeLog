@@ -1,3 +1,5 @@
+2013-07-15 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* core/txtl_setup_default_basepair_length.m: buxfig in indexing
 2013-07-11 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* components/txtl_protein_lacI.m: inducer degradation has been removed
 	* core/txtl_setup_new_protein_added.m: cross check function, this function maintains integrity of reactions if a protein manually added to the TXTL reaction. 
