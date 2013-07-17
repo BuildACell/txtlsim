@@ -12,6 +12,10 @@ matchStr = regexp(speciesNames,'(^DNA (\w*(--|-)?)*)','tokens','once');
 listOfDNA = vertcat(matchStr{:});
 listOfDNA = unique(listOfDNA);
 DNAparts = regexp(listOfDNA, '--','split');
+% If a DNA constract has gene on it, it will have 3 parts, let's select
+% those
+DNAwithGene = cellfun(@(x) size(x,2)>2, DNAparts);
+DNAparts = DNAparts(DNAwithGene > 0);
 DNAparts = vertcat(DNAparts{:});
 proteinsAlreadySetUp = DNAparts(:,3);
 
