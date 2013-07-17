@@ -58,7 +58,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
    
  
     % call other functions in 'Setup Species' mode
-    txtl_dimerize('Setup Species', tube,protein);
+    txtl_dimerize(mode, tube,protein);
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')

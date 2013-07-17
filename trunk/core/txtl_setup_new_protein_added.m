@@ -8,8 +8,9 @@ function txtl_setup_new_protein_added(tube, add_dna_mode)
 
 % Step 1: Make a list of all the proteins added by DNA strings:
 speciesNames = get(tube.species, 'name');
-matchStr = regexp(speciesNames,'(^DNA.*)','tokens','once');
+matchStr = regexp(speciesNames,'(^DNA (\w*(--|-)?)*)','tokens','once');
 listOfDNA = vertcat(matchStr{:});
+listOfDNA = unique(listOfDNA);
 DNAparts = regexp(listOfDNA, '--','split');
 DNAparts = vertcat(DNAparts{:});
 proteinsAlreadySetUp = DNAparts(:,3);
@@ -20,7 +21,7 @@ listOfprotein = vertcat(matchStr{:});
 
 % Step3: Compare the list of proteins and the list of genes from the DNA
 % string
-matchStr = regexp(listOfprotein,'^protein (\w*(-lva)?)','tokens','once');
+matchStr = regexp(listOfprotein,'^protein (\w*(-lva)?(-terminator)?)','tokens','once');
 matchStr = vertcat(matchStr{:});
 proteinList = regexprep(matchStr,'tetramer|dimer','');
 proteinList = unique(proteinList);

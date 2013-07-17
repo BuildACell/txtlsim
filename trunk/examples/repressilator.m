@@ -60,27 +60,12 @@ configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', 5*60*60)
 
 
-[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
-names = simData.DataNames;
-
-[t_ode1, x_ode1, mObj, simData] = txtl_runsim(Mobj, configsetObj,t_ode, x_ode);
+[t_ode, x_ode] = txtl_runsim(Mobj, configsetObj);
+[t_ode1, x_ode1] = txtl_runsim(Mobj, configsetObj,t_ode, x_ode);
 
 %% plot the result
 close all
-% DNA and mRNA plot
-dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'ALL_DNA'};
-dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--','m-','k-','y--'};
-
-% Gene Expression Plot
-dataGroups{2,1} = 'Gene Expression';
-%dataGroups{2,2} = {'protein deGFP-lva-terminator*'};
-dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.','c-','y--','m-','k-','r-'};
-
-% Resource Plot
-dataGroups{3,1} = 'Resource usage';
-%
- txtl_plot(t_ode,x_ode,mObj,dataGroups);
+txtl_plot(t_ode1,x_ode1,Mobj);
 
 
 

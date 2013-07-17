@@ -66,7 +66,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     coreSpecies = {RNAP,RNAPbound,P1,P2, AraCbound, P3};
     % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)));
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)),'Internal');
     
     txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
     

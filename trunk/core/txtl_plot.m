@@ -55,7 +55,7 @@ function processedData = txtl_plot(varargin)
 
 % DNA and mRNA plot
 defaultdataGroups{1,1} = 'DNA and mRNA';
-defaultdataGroups{1,2} = {'ALL_DNA'}; 
+defaultdataGroups{1,2} = {'ALL_DNA'};
 defaultdataGroups{1,3} = {'b','r','g','b--','r--','g--','c','y','w','k'};
 
 % Gene Expression Plot
@@ -71,7 +71,7 @@ operationMode = 'standalone';
 switch nargin
     
     case 2
-        simData = varargin{1}; 
+        simData = varargin{1};
         modelObj = varargin{2};
         t_ode = simData.Time;
         x_ode = simData.Data;
@@ -104,7 +104,7 @@ listOfDNAs = {};
 [~,listOfSpecies] = getstoichmatrix(modelObj);
 
 
-    
+
 
 if strcmp(operationMode,'standalone')
     figure('Name',modelObj.Name); clf();
@@ -115,7 +115,7 @@ processedData = cell(1,3);
 
 % Keywords lookup table
 
-keywords = {'ALL_DNA','#(^DNA (\w+[-=]*)*)'; 'ALL_PROTEIN','#(^protein (\w+[-=]*)*\*?)'};
+keywords = {'ALL_DNA','#(^DNA (\w+[-=]*)*)'; 'ALL_PROTEIN','#(^protein (\w+[-=]*\*{0,2})*)'};
 
 for k = 1:numOfGroups
     
@@ -149,14 +149,14 @@ for k = 1:numOfGroups
             totRNAs = vertcat(totRNAs{:});
             % get each proteins
             proteins = cellfun(@(x) strcat('protein',{' '}, x(3)), r); % adding protein string for each element
-            listOfProteins = horzcat(listOfProteins,proteins);
+            listOfProteins = horzcat(listOfProteins,proteins');
             
             
             % collect the data
             listOfDNAsRNAs = vertcat(listOfDNAs,listOfRNAs);
-            dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs);
-            dataDNAs = getDataForSpecies(modelObj,x_ode,listOfDNAs);
-            dataRNAs = getDataForSpecies(modelObj,x_ode,listOfRNAs);
+            dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs');
+            dataDNAs = getDataForSpecies(modelObj,x_ode,listOfDNAs');
+            dataRNAs = getDataForSpecies(modelObj,x_ode,listOfRNAs');
             
             % replace free RNA concentration with total RNA concentration
             [~, ia, ib] = intersect(listOfRNAs, totRNAs(:,1));
@@ -366,16 +366,16 @@ autoSpecies = {};
 for z=1:size(regexp_ind,1)
     r_str = strrep(dataSource(z),'#','');
     specie_match = regexp(listOfSpecies,r_str,'tokens','once');
-    autoSpecies{z} = vertcat(specie_match{:}); 
+    autoSpecies{z} = vertcat(specie_match{:});
     
-%     for l=1:size(modelObj.Species,1)
-%         specie_match = regexp(modelObj.Species(l).Name,r_str,'tokens');
-%         if(~cellfun(@(x) isempty(x),specie_match))
-%             autoSpecies(end+1) = specie_match{1}{1};
-%         end
-%     end
+    %     for l=1:size(modelObj.Species,1)
+    %         specie_match = regexp(modelObj.Species(l).Name,r_str,'tokens');
+    %         if(~cellfun(@(x) isempty(x),specie_match))
+    %             autoSpecies(end+1) = specie_match{1}{1};
+    %         end
+    %     end
 end
-    autoSpecies = vertcat(autoSpecies{:});
+autoSpecies = vertcat(autoSpecies{:});
 end
 
 
@@ -398,14 +398,19 @@ rgbVector = rem(floor((strfind('kbgcrmyw', label) - 1) * [0.25 0.5 1]), 2);
 
 end
 
-%! TODO handle only color expressions
+
 function [ColorMtx,LineStyle] = getColorAndLineOrderByUserData(listOfItems)
-styleOptions = regexp(listOfItems,'(.)(.*)','tokens');
+styleOptions = regexp(listOfItems,'(.)(.*)','tokens','once');
 ColorMtx = [];
 LineStyle = {};
 
 for l=1:size(styleOptions,2)
-    ColorMtx(l,:) = convertLabelToRGBValue(styleOptions{1,l}{1,1}{1});
-    LineStyle{l} = styleOptions{1,l}{1,1}{2};
+    ColorMtx(l,:) = convertLabelToRGBValue(styleOptions{1,l}{1});
+    if isempty(styleOptions{1,l}{2})
+        LineStyle{l} = '-';
+    else
+        LineStyle{l} = styleOptions{1,l}{2};
+    end
+    
 end
 end

@@ -61,11 +61,11 @@ x_ode_b1 = simData_b1.Data;
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
 dataGroups{1,2} = {'ALL_DNA'};
-dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
+dataGroups{1,3} = {'b','r','y--','k--','y','c','g','g--'};
 
 % Gene Expression Plot
 dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein deGFP-lva-terminator*'};%,'protein tetRtetramer'};
+dataGroups{2,2} = {'protein deGFP-lva-terminator*'};
 %dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'};
 
 % Resource Plot

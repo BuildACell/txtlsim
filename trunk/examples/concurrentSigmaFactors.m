@@ -58,7 +58,7 @@ x_ode_c1 = simData_c1.Data;
 % DNA and mRNA plot
 dataGroups{1,1} = 'DNA and mRNA';
 dataGroups{1,2} = {'ALL_DNA'};
-dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','m-','k-'};
+dataGroups{1,3} = {'b-','r-','k--','m--','y-','c-','m-','k-'};
 
 
 

@@ -12,18 +12,18 @@ tube2 = txtl_buffer('E7');
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit_open_loop');
 txtl_add_dna(tube3, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)', 0.2*4.5, 'plasmid');
+    'p70(50)', 'rbs(20)', 'sigma28(600)', 0.2, 'plasmid');
 txtl_add_dna(tube3, ...
-    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)', 1*4.5, 'plasmid');
+    'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)', 1, 'plasmid');
 
 
 
 tube4 = txtl_newtube('circuit_closed_loop');
 txtl_add_dna(tube4, ...
-    'p28(50)', 'rbs(20)', 'tetR(600)', 0.01*4.5, 'plasmid');
+    'p28(50)', 'rbs(20)', 'tetR(600)', 0.01, 'plasmid');
 txtl_add_dna(tube4, ...
-    'p70(50)', 'rbs(20)', 'sigma28(600)',0.2*4.5, 'plasmid');
-txtl_add_dna(tube4,'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)',1*4.5, 'plasmid');
+    'p70(50)', 'rbs(20)', 'sigma28(600)',0.2, 'plasmid');
+txtl_add_dna(tube4,'p28_ptet(150)', 'rbs(20)', 'deGFP(1000)',1, 'plasmid');
 
 
 

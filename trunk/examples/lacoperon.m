@@ -10,7 +10,7 @@ close all
 
 % Set up the standard TXTL tubes
 tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('b1');
+tube2 = txtl_buffer('E6');
 
 
 % Set up a tube that will contain our DNA
@@ -22,7 +22,7 @@ dna_gamS = txtl_add_dna(tube3, ...
 
 
 % Mix the contents of the individual tubes and add some inducer
-well_a1 = txtl_combine([tube1, tube2, tube3], [20, 8, 2]);
+well_a1 = txtl_combine([tube1, tube2, tube3]);
 
 
 % The concentration of lacI is constant
@@ -47,10 +47,10 @@ txtl_addspecies(well_a1, 'Lactose_ext', 5);
 configsetObj = getconfigset(well_a1, 'active');
 simulationTime = 6*60*60;
 set(configsetObj, 'StopTime', simulationTime);
-set(configsetObj, 'SolverType', 'ode23s');
+set(configsetObj, 'SolverType', 'ode15s');
 
 % 1st run
-[t_ode, x_ode, mObj, simData] = txtl_runsim(well_a1, configsetObj,[], []);
+[t_ode, x_ode, mObj, simData] = txtl_runsim(well_a1, configsetObj);
 
 
 

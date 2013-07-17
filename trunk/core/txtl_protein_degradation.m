@@ -43,6 +43,13 @@ function txtl_protein_degradation(mode, tube,protein,varargin)
 % protein: simBiology object
 % reacctionRate: degration rate
 
+% check for mature protein, then setup the reaction for the matured version
+% of it (e.g. instead of protein deGFP-lva, using protein deGFP-lva*)
+maturedVersion = findspecies(tube,[protein.name '*']);
+if maturedVersion ~=0
+    protein = tube.Species(maturedVersion);
+end
+
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
     %{
@@ -56,7 +63,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     %}
     
     
-    coreSpecies = {'protein ClpX', 'protein ClpX*',[protein.Name '*:protein ClpX*']};
+    coreSpecies = {'protein ClpX', 'protein ClpX*',[protein.Name ':protein ClpX*']};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
@@ -68,14 +75,14 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     reactionRate = varargin{1};
     
     
-    Robj = addreaction(tube, [ protein.Name '* + protein ClpX* <-> [' protein.Name '*:protein ClpX*]']);
+    Robj = addreaction(tube, [ protein.Name ' + protein ClpX* <-> [' protein.Name ':protein ClpX*]']);
     Kobj = addkineticlaw(Robj,'MassAction');
     Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',2.5863e-05); % 0.0000012);
     Pobjr = addparameter(Kobj, 'TXTL_PROT_DEGRAD_R',5.0118e-05); %0.00006);
     set(Kobj, 'ParameterVariableNames', {'TXTL_PROT_DEGRAD_F', 'TXTL_PROT_DEGRAD_F'});
     
 
-    txtl_addreaction(tube,['[' protein.Name '*:protein ClpX*] + ATP -> [' protein.Name '**]  +  protein ClpX*'],...
+    txtl_addreaction(tube,['[' protein.Name ':protein ClpX*] + ATP -> [' protein.Name '**]  +  protein ClpX*'],...
         'MassAction',{'TXTL_prot_unfold',9.2611e-07});
   
     txtl_addreaction(tube,['protein ClpX* -> null'],...
