@@ -600,9 +600,22 @@ Figure \ref{fig:reactionconfig} shows a screenshot of the configuration file \te
 		\subsection*{txtl\_component\_config (class)}	
 		The txtl\_component\_config class enables users to input custom reaction parameters for the components they are using in their model. Components are found in the \textsf{components} directory in the main directory, and contain files that define proteins and promoters. The parameters present in the class and the corresponding configuration files are dependent on the components being used, but are highly analogous to the previous section. Editing of the configuration files is also carried out as above. 
 
-\begin{comment}
+
 	\section{List of Core Reactions}
 	These reactions are currently those of Dan, and refer to the Toxin-Antitoxin System. We will modify them so that they correspond to the reactions in the TXTL toolbox. 
+	
+	
+	\subsection{Basic}
+
+\begin{align}
+& \mathrm{RNAP} + \sigma^{70} \rightleftharpoons \mathrm{RNAP^{70}} \\
+& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
+& \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
+& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
+& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \rightarrow \nonumber \\ 
+& \qquad \qquad \qquad \qquad P_{parDE}\textrm{--}rbs\textrm{--}deGFP +  (rbs\textrm{--}deGFP)_m + \mathrm{RNAP^{70}} \\
+\end{align}
+	
 	\subsection{Transcription}
 
 \begin{align}
@@ -688,5 +701,5 @@ Figure \ref{fig:reactionconfig} shows a screenshot of the configuration file \te
 		$\sim$ & Amount of NTP & $100 nM$ & Amount to match RNAP & \texttt{txtl\_extract.m} \\ \hline
 	\end{tabular}
 	{\scriptsize * VN refers to publications by Vincent Noireaux (U. Minnesota).}
-\end{comment}
+
 \end{document}

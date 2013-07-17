@@ -1,8 +1,8 @@
-% txtl_prom_placI.m - promoter information for lacI promoter
+% txtl_prom_ptet3.m - promoter information for ptet promoter
 % RMM, 8 Sep 2012
 %
 % This file contains a description of the ptet promoter.
-% Calling the function txtl_prom_placI() will set up the reactions for
+% Calling the function txtl_prom_ptet() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
 
 % Written by Richard Murray, Sep 2012
@@ -36,7 +36,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
+function varargout = txtl_prom_ptet3(mode, tube, dna, rna,varargin)
 
     % Create strings for reactants and products
     DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -44,13 +44,14 @@ function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
     % importing the corresponding parameters
-    paramObj = txtl_component_config('lacI'); 
+    paramObj = txtl_component_config('tetRtoggleSwitch2'); 
+
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
-
+    
     promoterData = varargin{1};
-    defaultBasePairs = {'placI','junk','thio';...
+    defaultBasePairs = {'ptet3','junk','thio';...
         paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
@@ -61,43 +62,52 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
+    %
+    % Now put in the reactions for the utilization of NTPs
+    % Use an enzymatic reaction to proper rate limiting
+   
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
     
-
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
-    
     listOfSpecies = varargin{1};
-
+    
     % Parameters that describe this promoter
-    parameters = {'TXTL_PLACI_RNAPbound_F',paramObj.RNAPbound_Forward;...
-                  'TXTL_PLACI_RNAPbound_R',paramObj.RNAPbound_Reverse};
+    parameters = {'TXTL_PTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                  'TXTL_PTET_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
-
+    %
     % nominal transcription
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-   
-    matchStr = regexp(listOfSpecies,'(^protein lacI.*tetramer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
-    listOflacItetramers = vertcat(matchStr{:});
-    % repression of placI by lacItetramer
-    if ~isempty(listOflacItetramers)
-        for i = 1:size(listOflacItetramers,1)
-             txtl_addreaction(tube,...
-                [DNA ' + ' listOflacItetramers{i} ' <-> [' dna.name ':' listOflacItetramers{i} ']'],...
-            'MassAction',{'placI_sequestration_F',getDNASequestrationRates(paramObj,'F');...
-                          'placI_sequestration_R',getDNASequestrationRates(paramObj,'R')});
-        end
-    end
+    
+    matchStr = regexp(listOfSpecies,'(^protein tetR3.*dimer$)','tokens','once'); 
+    listOftetRdimer = vertcat(matchStr{:});
     
 
+    %! TODO make all these reactions conditional on specie availability
+    %! TODO has this todo been accomplished? Vipul 2/10/13
+    
+    % repression of ptet by tetR dimer
+    if ~isempty(listOftetRdimer)
+        for k = 1:size(listOftetRdimer,1)
+            txtl_addreaction(tube,...
+                [DNA ' + ' listOftetRdimer{k} ' <-> [' dna.name ':' listOftetRdimer{k} ']'],...
+            'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
+                          'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
+            
+        end
+    end
+   
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_prom_placI:undefinedmode', ...
+    error('txtltoolbox:txtl_prom_ptet3:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end 
-    
+end
+end
+
+
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
 % mode: matlab

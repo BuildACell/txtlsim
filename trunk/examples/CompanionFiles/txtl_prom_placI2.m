@@ -1,4 +1,4 @@
-% txtl_prom_placI.m - promoter information for lacI promoter
+% txtl_prom_placI2.m - promoter information for lacI promoter
 % RMM, 8 Sep 2012
 %
 % This file contains a description of the ptet promoter.
@@ -36,7 +36,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
+function varargout = txtl_prom_placI2(mode, tube, dna, rna,varargin)
 
     % Create strings for reactants and products
     DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -44,13 +44,13 @@ function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
     % importing the corresponding parameters
-    paramObj = txtl_component_config('lacI'); 
+    paramObj = txtl_component_config('lacItoggleSwitch'); 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
 
     promoterData = varargin{1};
-    defaultBasePairs = {'placI','junk','thio';...
+    defaultBasePairs = {'placI2','junk','thio';...
         paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
@@ -79,7 +79,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % nominal transcription
     txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
    
-    matchStr = regexp(listOfSpecies,'(^protein lacI.*tetramer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
+    matchStr = regexp(listOfSpecies,'(^protein lacI2.*tetramer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
     listOflacItetramers = vertcat(matchStr{:});
     % repression of placI by lacItetramer
     if ~isempty(listOflacItetramers)
@@ -94,7 +94,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_prom_placI:undefinedmode', ...
+    error('txtltoolbox:txtl_prom_placI2:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
     

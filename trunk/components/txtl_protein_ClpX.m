@@ -62,7 +62,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else
-    error('txtltoolbox:txtl_protein_deGFP:undefinedmode', ...
+    error('txtltoolbox:txtl_protein_ClpX:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end
 

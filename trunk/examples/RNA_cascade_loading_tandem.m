@@ -30,47 +30,47 @@ for i = 1:numParam
     j = i;
 %% Species indices
 %proteins
-iPROT_GFP_MATURE = findspecies(Mobj{i}, 'protein deGFP*');
-iPROT_GFP = findspecies(Mobj{i}, 'protein deGFP');
-iPROT_SIGMA70  = findspecies(Mobj{i}, 'protein sigma70');
-iPROT_GAMS  = findspecies(Mobj{i}, 'protein gamS');
+iPROT_GFP_MATURE = findspecies(Mobj{i}, 'protein deGFP*')
+iPROT_GFP = findspecies(Mobj{i}, 'protein deGFP')
+iPROT_SIGMA70  = findspecies(Mobj{i}, 'protein sigma70')
+iPROT_GAMS  = findspecies(Mobj{i}, 'protein gamS')
 
 %RNAs, and things bound
-iRNA_GFP = findspecies(Mobj{i}, 'RNA att-rbs--deGFP');
-iRIBOBOUND_GFP = findspecies(Mobj{i}, 'Ribo:RNA att-rbs--deGFP'); 
-iAA_RIBOBOUND_GFP = findspecies(Mobj{i}, 'AA:Ribo:RNA att-rbs--deGFP'); 
-iRNA_ATT = findspecies(Mobj{i}, 'RNA att');
-iCOMPLEX1 = findspecies(Mobj{i}, 'RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att');
-iNTP_COMPLEX1 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att');
-iCOMPLEX2 =  findspecies(Mobj{i}, 'RNA att:RNA anti');
-iRNAPBOUND_COMPLEX2 =  findspecies(Mobj{i}, 'RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att:RNA anti');
-iRNA_ANTI = findspecies(Mobj{i}, 'RNA anti');
-iRNA_CONTROL = findspecies(Mobj{i}, 'RNA control');
+iRNA_GFP = findspecies(Mobj{i}, 'RNA att-rbs--deGFP')
+iRIBOBOUND_GFP = findspecies(Mobj{i}, 'Ribo:RNA att-rbs--deGFP')
+%iAA_RIBOBOUND_GFP = findspecies(Mobj{i}, 'AA:Ribo:RNA att-rbs--deGFP')
+iRNA_ATT = findspecies(Mobj{i}, 'RNA att')
+iCOMPLEX1 = findspecies(Mobj{i}, 'RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att')
+iNTP_COMPLEX1 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att')
+iCOMPLEX2 =  findspecies(Mobj{i}, 'RNA att:RNA anti')
+iRNAPBOUND_COMPLEX2 =  findspecies(Mobj{i}, 'RNAP70:DNA pJ23119--att-rbs--deGFP:RNA att:RNA anti')
+iRNA_ANTI = findspecies(Mobj{i}, 'RNA anti')
+iRNA_CONTROL = findspecies(Mobj{i}, 'RNA control')
 
 % DNAs, and things bound
-iRNAP_DNA_CONTROL = findspecies(Mobj{i}, 'RNAP70:DNA pJ23119--control');
-iNTP_RNAP_DNA_CONTROL = findspecies(Mobj{i}, 'NTP:RNAP70:DNA pJ23119--control');
-iDNA_GFP = findspecies(Mobj{i}, 'DNA pJ23119--att-rbs--deGFP');
-iDNA_ANTI = findspecies(Mobj{i}, 'DNA pJ23119--anti');
-iDNA_CONTROL = findspecies(Mobj{i}, 'DNA pJ23119--control');
+iRNAP_DNA_CONTROL = findspecies(Mobj{i}, 'RNAP70:DNA pJ23119--control')
+iNTP_RNAP_DNA_CONTROL = findspecies(Mobj{i}, 'NTP:RNAP70:DNA pJ23119--control')
+iDNA_GFP = findspecies(Mobj{i}, 'DNA pJ23119--att-rbs--deGFP')
+iDNA_ANTI = findspecies(Mobj{i}, 'DNA pJ23119--anti')
+iDNA_CONTROL = findspecies(Mobj{i}, 'DNA pJ23119--control')
 
 % resources
-iNTP  = findspecies(Mobj{i}, 'NTP');
-iAA  = findspecies(Mobj{i}, 'AA');
-iRIBO  = findspecies(Mobj{i}, 'Ribo');
-iRNAP  = findspecies(Mobj{i}, 'RNAP');
-iRNAP70  = findspecies(Mobj{i}, 'RNAP70');
-iRECBCD  = findspecies(Mobj{i}, 'RecBCD');
-iRNASE  = findspecies(Mobj{i}, 'RNase');
+iNTP  = findspecies(Mobj{i}, 'NTP')
+iAA  = findspecies(Mobj{i}, 'AA')
+iRIBO  = findspecies(Mobj{i}, 'Ribo')
+iRNAP  = findspecies(Mobj{i}, 'RNAP')
+iRNAP70  = findspecies(Mobj{i}, 'RNAP70')
+iRECBCD  = findspecies(Mobj{i}, 'RecBCD')
+%iRNASE  = findspecies(Mobj{i}, 'RNase')
 
 close all
 
 %% Plot figures
 figure('OuterPosition',[100 100 860 600])
 plot(t_ode{i}/60, x_ode{i}(:,iPROT_GFP_MATURE), 'r', ...
-    t_ode{i}/60, x_ode{i}(:,iRIBOBOUND_GFP)+x_ode{i}(:,iAA_RIBOBOUND_GFP)+x_ode{i}(:,iRNA_GFP), 'b', ...
+    t_ode{i}/60, x_ode{i}(:,iRIBOBOUND_GFP)+x_ode{i}(:,iRNA_GFP), 'b', ...
     t_ode{i}/60, x_ode{i}(:,iRNA_ATT)+x_ode{i}(:,iCOMPLEX1)+x_ode{i}(:,iNTP_COMPLEX1)+x_ode{i}(:,iCOMPLEX2)+x_ode{i}(:,iRNAPBOUND_COMPLEX2), 'g', ...
-    t_ode{i}/60, x_ode{i}(:,iRNA_ANTI)+x_ode{i}(:,iCOMPLEX2)+x_ode{i}(:,iRNAPBOUND_COMPLEX2), 'k')
+    t_ode{i}/60, x_ode{i}(:,iRNA_ANTI)+x_ode{i}(:,iCOMPLEX2)+x_ode{i}(:,iRNAPBOUND_COMPLEX2), 'k')%x_ode{i}(:,iAA_RIBOBOUND_GFP)+
 legend('protein deGFP*', 'TOTAL RNA att-rbs--deGFP', 'TOTAL RNA att', 'TOTAL RNA anti','Location','NorthEastOutside')
 xlabel('time (min)')
 title(['protein expression, and total RNAs att=' num2str(attconc(k)) ' anti=' num2str(anticonc(j)) ' control=' num2str(controlconc(i))])
@@ -78,9 +78,8 @@ title(['protein expression, and total RNAs att=' num2str(attconc(k)) ' anti=' nu
 
 figure('OuterPosition',[100 100 860 600])
 plot(t_ode{i}/60, x_ode{i}(:,iRIBOBOUND_GFP), 'b', ...
-    t_ode{i}/60, x_ode{i}(:,iAA_RIBOBOUND_GFP), 'g', ...
     t_ode{i}/60, x_ode{i}(:,iRNA_GFP), 'k')
-legend('Ribo:RNA att-rbs--deGFP', 'AA:Ribo:RNA att-rbs--deGFP', 'RNA att-rbs--deGFP','Location','NorthEastOutside')
+legend('Ribo:RNA att-rbs--deGFP', 'RNA att-rbs--deGFP','Location','NorthEastOutside')
 xlabel('time (min)')
 title(['GFP translation att=' num2str(attconc(k)) ' anti=' num2str(anticonc(j)) ' control=' num2str(controlconc(i))])
  print('-dtiff','-r100',[num2str(i) 'GFPtranslation'] )
@@ -111,9 +110,8 @@ plot(t_ode{i}/60, x_ode{i}(:,iNTP)/x_ode{i}(1,iNTP), 'b', ...
     t_ode{i}/60, x_ode{i}(:,iAA)/x_ode{i}(1,iAA), 'k', ...
     t_ode{i}/60, x_ode{i}(:,iRNAP70)/x_ode{i}(1,iRNAP70), 'g',...
     t_ode{i}/60, x_ode{i}(:,iRECBCD)/x_ode{i}(1,iRECBCD), 'm', ...
-    t_ode{i}/60, x_ode{i}(:,iRIBO)/x_ode{i}(1,iRIBO), 'c',...
-    t_ode{i}/60, x_ode{i}(:,iRNASE)/x_ode{i}(1,iRNASE), 'y')
-legend('NTP', 'AA', 'RNAP70', 'RecBCD', 'Ribo', 'RNase','Location','NorthEastOutside')
+    t_ode{i}/60, x_ode{i}(:,iRIBO)/x_ode{i}(1,iRIBO), 'c')
+legend('NTP', 'AA', 'RNAP70', 'RecBCD', 'Ribo','Location','NorthEastOutside')
 xlabel('time (min)')
 title(['resource usage att=' num2str(attconc(k)) ' anti=' num2str(anticonc(j)) ' control=' num2str(controlconc(i))])
  print('-dtiff','-r200',[num2str(i) ' resource usage'])
