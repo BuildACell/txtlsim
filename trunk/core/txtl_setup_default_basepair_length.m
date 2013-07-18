@@ -47,8 +47,10 @@ function ObjectData = txtl_setup_default_basepair_length(tube,ObjectData,default
     [~,Aind,Bind] = intersect(defaultBasePairs(1,:),ObjectData(1,elementInd)); 
     
     % multiple lhs - multiple rhs -> no way to avoid for cycle
-    for k = 1:size(Aind,2)
-        ObjectData{2,elementInd(Bind(k))} = defaultBasePairs{2,Aind(k)};
+    if ~isempty(Aind)
+        for k = 1:size(Aind,2)
+            ObjectData{2,elementInd(Bind(k))} = defaultBasePairs{2,Aind(k)};
+        end
     end
 
 

@@ -1,3 +1,5 @@
+2013-07-17 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* config/: new folder for extract config files
 2013-07-15 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* core/txtl_setup_default_basepair_length.m: buxfig in indexing
 2013-07-11 Zoltan Tuza <zoltuz@zoltuz-laptop>

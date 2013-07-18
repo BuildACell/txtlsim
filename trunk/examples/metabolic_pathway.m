@@ -12,7 +12,7 @@ dna_t7rnap = txtl_add_dna(tube3, ...
    0.1, ...					% concentration (nM)
   'plasmid');					% type
 dna_deCFP = txtl_add_dna(tube3, ...
-  't7_lacI(50)', 'rbs(20)', 'LacI(1000)', ...	% promoter, rbs, gene
+  't7_lacI(50)', 'rbs(20)', 'lacI(1000)', ...	% promoter, rbs, gene
    1, ...					% concentration (nM)
   'plasmid');					% type
 
