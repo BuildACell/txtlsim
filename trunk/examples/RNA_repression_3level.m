@@ -1,4 +1,4 @@
-function [t_ode, x_ode, Mobj] = RNA_repression(varargin)
+function [t_ode, x_ode, Mobj] = RNA_repression_3level(varargin)
 
 % RNA_repression.m 
 % Vipul Singhal, April 2013
@@ -34,7 +34,12 @@ dna_att_deGFP = txtl_add_dna(tube3, ...
 
 % DNA with antisense RNA and dummy protein
 dna_anti_dummyprotein = txtl_add_dna(tube3, ...
-  'pJ23119(35)', 'anti1(91)', 'no_protein', ...	% promoter, utr, gene
+  'pJ23119(35)', 'att2(287)-anti1(91)', 'no_protein', ...	% promoter, utr, gene
+ANTI_conc*4.2, ...					% concentration (nM)
+  'plasmid');					% type
+
+dna_anti_dummyprotein = txtl_add_dna(tube3, ...
+  'pJ23119(35)', 'anti2(91)', 'no_protein', ...	% promoter, utr, gene
 ANTI_conc*4.2, ...					% concentration (nM)
   'plasmid');					% type
 

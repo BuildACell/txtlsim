@@ -4,13 +4,14 @@
 close all
 clear all
 %
-SimNumber = 19;
+SimNumber = 21;
 close all 
 ptet_DNA = 0.5;
 placI_DNA = 0.5;
-initial_tetR = [0:2:4];
-initial_lacI = [0:2:4];
+initial_tetR = [0:2:20];
+initial_lacI = [0:2:20];
 [a,b] = meshgrid(initial_tetR,initial_lacI);
+% lacI increases gown the column, tetR increases along a row, from left to r. 
 c = [reshape(a, numel(a), 1) reshape(b, numel(b), 1)]
 
 % Set up the standard TXTL tubes
@@ -59,4 +60,4 @@ x_ode{i} = simData{i}.Data;
 
 end
 
-plotGT2_troubleshoot
+plotGeneticToggle2_troubleshoot

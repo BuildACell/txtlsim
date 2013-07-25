@@ -70,8 +70,8 @@ mode = struct('add_dna_driver', {[]},...
 mode.prot_deg_flag = checkForStringInACellList(geneData(1,:),'lva');
 mode.prot_term_flag = checkForStringInACellList(geneData(1,:),'terminator');
 mode.no_protein_flag = checkForStringInACellList(geneData(1,:),'no_protein');
-mode.utr_attenuator_flag = checkForStringInACellList(utrData(1,:),{'att', 'att2'});
-mode.utr_antisense_flag = checkForStringInACellList(utrData(1,:),{'anti', 'anti2'});
+mode.utr_attenuator_flag = checkForStringInACellList(utrData(1,:),{'att1', 'att2'});
+mode.utr_antisense_flag = checkForStringInACellList(utrData(1,:),{'anti1', 'anti2'});
 mode.utr_rbs_flag = checkForStringInACellList(utrData(1,:),'rbs');
 [mode.prom_junk_flag, junkIndex] = checkForStringInACellList(promData(1,:),'junk');
 mode.prom_thio_flag = checkForStringInACellList(promData(1,:),'thio');
@@ -94,6 +94,7 @@ else
     dnastr = ['DNA ' promStr '--' utrStr '--' geneStr];
 end
 
+
     
 
 promoterName = promData{1,end}; % assuming {'thio','junk','prom'}
@@ -109,8 +110,7 @@ if isempty(varargin)
     dnaList{end+1} = {prom_spec, rbs_spec, gene_spec, dna_amount, type, 'rxns_not_set_up', mode};
     tubeUser.DNAinfo = dnaList;
     set(tube, 'UserData', tubeUser)
-    clear dnaList
-    clear tubeUser
+    clear dnaList tubeUser 
     
     % set up protein reactions and data, followed by utr followed by promoter
     % (promoter reactions require the lengths of the rna, therefore need to be
@@ -144,13 +144,18 @@ if isempty(varargin)
             [utrlen] = txtl_utr_rbs(mode, tube, rna, protein, utrData);
         end
     end
+    
     utrlenTot = sum(cell2mat(utrlen(2,:)));
-%     if mode.utr_antisense_flag
-%         rna.UserData = utrlenTot;
-%     else
-%         rna.UserData = utrlenTot + genelenTot;
-%     end
-    rna.UserData = utrlenTot + genelenTot;
+    if mode.utr_attenuator_flag
+        attenuatorLength = cell2mat(utrlen(2,1)); % assume att is always the first thing in the UTR
+        restOfRNALength = utrlenTot + genelenTot - attenuatorLength;
+        RNAlengthData.att = attenuatorLength;
+        RNAlengthData.remaining = restOfRNALength;
+    else
+        RNAlengthData = utrlenTot + genelenTot;
+    end
+    rna.UserData = RNAlengthData;
+    clear RNAlengthData attenuatorLength restOfRNALength
     
     %% Promoter properties, parameters and reactions %%%%%%%%%%%%%%%%%%%%%%
     % DNA solution is 22.5% of the 10ul reaction volume
@@ -158,7 +163,9 @@ if isempty(varargin)
     dna_amount = dna_amount*stockMulti;
     dna = txtl_addspecies(tube, dnastr, dna_amount, 'Internal');
     % Transcription %%
-    if exist(['txtl_prom_' promoterName], 'file') == 2
+    if strcmp(promoterName, 'pJ23119')
+        promData = txtl_prom_pJ23119(mode, tube, dna, rna, promData, prom_spec, rbs_spec, gene_spec);
+    elseif exist(['txtl_prom_' promoterName], 'file') == 2
         promData = eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, promData)']);
     else
         warning(['TXTL: can''t find txtl_prom_' promoterName ...
@@ -228,7 +235,9 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     
     dna = sbioselect(tube, 'Name', dnastr);
     % Transcription %%
-    if exist(['txtl_prom_' promoterName], 'file') == 2
+    if strcmp(promoterName, 'pJ23119')
+        txtl_prom_pJ23119(mode, tube, dna, rna, prom_spec, rbs_spec, gene_spec);
+    elseif exist(['txtl_prom_' promoterName], 'file') == 2
         eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies)']);
     else
         warning(['TXTL: can''t find txtl_prom_' promoterName ...
@@ -263,7 +272,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     end
    
     % Add in mRNA degradation reactions
-    txtl_mrna_degradation(mode, tube, dna, rna);
+    txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec);
     
     % Protein degradation (if tagged)
     if mode.prot_deg_flag

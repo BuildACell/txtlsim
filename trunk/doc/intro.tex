@@ -39,28 +39,30 @@ the 'Examples' Directory, and are documented in the 'Examples' Chapter
 below.
 
 The following code sets up a simple simulation of a negatively
-autoregulated gene in the TXTL system:
+autoregulated gene in the TXTL system (\texttt{negautoreg.m} in the examples directory):
 \begin{verbatim}
 % Set up the standard TX-TL tubes
-tube1 = txtl_extract('E8');
-tube2 = txtl_buffer('E8');
+tube1 = txtl_extract('E9');
+tube2 = txtl_buffer('E9');
 
 % Set up a tube that will contain our DNA
-tube3 = txtl_newtube('circuit');
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', ...
-  'tetR(647)-lva(40)', 16, 'linear');
-dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', ...
-  16, 'linear');
-dna_gamS = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'gamS(1000)', ...
-  1, 'plasmid');
+tube3 = txtl_newtube('negautoreg');
+
+dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes 
 Mobj = txtl_combine([tube1, tube2, tube3]);
-
+ txtl_addspecies(Mobj, 'aTc', 600);
+ 
 % Run a simulation
-configsetObj = getconfigset(Mobj, 'active');
-set(configsetObj, 'StopTime', 8*60*60);
-[t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
+simulationTime = 14*60*60;
+
+
+tic
+[simData] = txtl_runsim(Mobj,simulationTime);
+toc
+t_ode = simData.Time;
+x_ode = simData.Data;
 
 % Plot the results
 txtl_plot(t_ode,x_ode,Mobj);
@@ -69,7 +71,7 @@ Figure~\ref{fig:intro:negautoreg} shows the output from this code (plotted
 using the \url{txtl_plot} function).
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{negauto_1nM_toolbox}
+  \includegraphics[width=\textwidth]{NegativeAutoregulationPlotActuallyProducedByCode.png}
   \caption{Sample simulation of a negatively autoregulated
   transcriptional circuit.}
   \label{fig:intro:negautoreg}

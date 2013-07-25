@@ -19,7 +19,7 @@
 
 \begin{document}
 \title{\textsc{TXTL matlab toolbox - User's manual}}
-\date{\textsc{version 1.0}}
+\date{\textsc{version 1.1}}
 \author{\textsc{Zoltan A. Tuza, Vipul Singhal, Richard M. Murray}}
 \maketitle
 \textsc{\tableofcontents}
@@ -28,15 +28,14 @@
 
 \chapter{\textsc{Installation}}
 	\section{Prerequisites}
-	Our toolbox builds upon basic MATLAB\texttrademark  functionality and the Simbiology toolbox. Therefore the presence of Simbiology is essential for our TXTL toolbox to work. The toolbox was tested on MATLABb 2012 for Mac OSX, MATLAB 2010a for Linux and MATLAB 2011b Windows. 
+	Our toolbox builds upon basic MATLAB\texttrademark  functionality and the Simbiology toolbox. Therefore the presence of Simbiology is essential for our TXTL toolbox to work. The toolbox was tested on MATLAB 2012 for Mac OSX, MATLAB 2010a for Linux and MATLAB 2011b-2012a for Windows. 
 	\section{Installing the toolbox}
 	\begin{enumerate}
-\item Download the toolbox zip archive \textsf{txtl-0.2a.tgz} from the project's SourceForge\texttrademark page: \url{http://sourceforge.net/p/txtl/wiki/Home/}
-\item Unzip the file into a directory of your choice. In windows, this may take two unzip steps. Ultimately, you should have a folder named txtl-0.2a. 
-\item Set the MATLAB working directory to the folder txtl-0.2a, or a parent folder. 
+\item Download the toolbox zip archive \textsf{txtl\_0\_42a.tgz} from the project's SourceForge\texttrademark page: \url{http://sourceforge.net/p/txtl/wiki/Home/}
+\item Unzip the file into a directory of your choice. In windows, this may take two unzip steps. Ultimately, you should have a folder named txtl\_0\_42a. 
+\item Set the MATLAB working directory to the folder txtl\_0\_42a, or a parent folder. 
 \item You may either run \begin{verbatim} txtl_init  \end{verbatim} at the
-beginning of each MATLAB session or add the following directories to
-your MATLAB search path, and save: \textsf{Core, Components, Examples}. 
+beginning of each MATLAB session or add the directories there to the search path and save. 
 \item All done. Try opening and running \textsf{negautoreg.m} in the \textsf{Examples} directory. If this runs without error, you have successfully installed the TXTL modelling toolbox. Congrats!
 \end{enumerate}
 	
@@ -63,34 +62,34 @@ your MATLAB search path, and save: \textsf{Core, Components, Examples}.
 		
 		
 		\subsection{Walk-through}
-		If you have not already done so, ensure that you are in the \textsf{\textbackslash TXTL\_toolbox} directory, and run \texttt{txtl\_init} to add the necessary directories to the MATLAB search path. 
+		If you have not already done so, ensure that you are in the \textsf{\textbackslash trunk} directory, and run \texttt{txtl\_init} to add the necessary directories to the MATLAB search path. 
 			
-		The first step is to decide on a extract to use. The extract contains RNAP, Ribo, $\sigma 28$ and $\sigma 70$, RecBCD, RNA-ase, and sets up the reactions for the formation of RNAP70 and sequestration of RecBCD. The extract we will be using will be created using parameters defined in the external configuration file \textsf{'E6\_config.csv'}, and is implemented as: 
+		The first step is to decide on a extract to use. The extract contains RNAP, Ribo, $\sigma 28$ and $\sigma 70$, RecBCD, RNA-ase, and sets up the reactions for the formation of RNAP70 and sequestration of RecBCD. The extract we will be using will be created using parameters defined in the external configuration file \textsf{'E15\_config.csv'}, and is implemented as: 
 		
 				\begin{flushleft}
-						\texttt{tube1 = txtl\_extract('E6');} 
+						\texttt{tube1 = txtl\_extract('E15');} 
 				\end{flushleft}	
 				
-				Note that this command returns a handle to a Simbiology model object. This is stored in the aptly named variable \texttt{tube1}. We will later combine the 'contents' of this tube with those of other tubes, just like we do in the experimental protocol. 
+				Note that this command returns a handle to a Simbiology model object. This is stored in the aptly named variable \texttt{tube1}. We will later combine the 'contents' of this tube with those of other tubes, just like we do in the experimental protocol. One may read about Simbiology model objects at \url{http://www.mathworks.com/help/simbio/ug/what-is-a-model.html#bsrhh1k} and \url{http://www.mathworks.com/help/simbio/ref/modelobject.html}.
 				
-Next, we define the buffer (containing AA and NTP) to use, and store it in \texttt{tube2}. Once again, the buffer contents are drawn from the configuration file \textsf{'E6\_config.csv'}:
+Next, we define the buffer (containing AA and NTP) to use, and store it in \texttt{tube2}. Once again, the buffer contents are drawn from the configuration file \textsf{'E15\_config.csv'}:
 
 				\begin{flushleft}
-						\texttt{tube2 = txtl\_buffer('E6');} \\	
+						\texttt{tube2 = txtl\_buffer('E15');} \\	
 				\end{flushleft}	 
 		
 We then use the \texttt{txtl\_newtube} command to create a new model object which will contain the DNA we wish to use. This is done as follows:
 		
 				\begin{flushleft}
-						\texttt{tube3 = txtl\_newtube('circuit');} \\	
+						\texttt{tube3 = txtl\_newtube('gene\_expression');} \\	
 				\end{flushleft}	 
 				
 The next step is to define the DNA sequences to be added to \texttt{tube3}. This is done using the \texttt{txtl\_add\_dna} command:
 
 				\begin{flushleft}
-						\texttt{dna\_deGFP = txtl\_add\_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 4, 'plasmid');} \\	
+						\texttt{dna\_deGFP = txtl\_add\_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 1, 'plasmid');} \\	
 				\end{flushleft}
-Refer to the description of the \texttt{txtl\_add\_dna} command in \S 3.2 for full details of its usage. For our purposes, it suffices to now that this DNA is loaded onto a plasmid, and contains a p70 promoter (constitutive, 50 base pairs (BP) in length), a 20BP RBS domain, and a 1000BP deGFP gene. Furthermore, the DNA is such that the \textbf{final} concentration of this DNA in the \textbf{combined} tube will be 4nM. 
+Refer to the description of the \texttt{txtl\_add\_dna} command in \S 3.2 for full details of its usage. For our purposes, it suffices to know that this DNA is loaded onto a plasmid, and contains a p70 promoter (constitutive, 50 base pairs (BP) in length), a 20BP RBS domain, and a 1000BP deGFP gene. Furthermore, the DNA is such that the \textbf{final} concentration of this DNA in the \textbf{combined} tube will be 4nM. 
 
 We then simply combine the extract, buffer, and DNA:
 
@@ -101,35 +100,21 @@ We then simply combine the extract, buffer, and DNA:
 We now have to set the amount of time we want our simulation to run for and calling the \texttt{txtl\_runsim} command as follows:	
 
 				\begin{flushleft}
-						\texttt{[t\_ode,x\_ode] = txtl\_runsim(Mobj,14*60*60);} \\	
+						\texttt{[simData] = txtl\_runsim(Mobj,14*60*60);} \\
+						\texttt{t\_ode = simData.Time;}
+						\texttt{x\_ode = simData.Data;}
 				\end{flushleft}	
-This call to \texttt{txtl\_runsim} takes the Simbiology model object and the associated configuration set object, and runs the simulation from time zero to time \texttt{simulationTime}. It returns a vector of time points in that range (\texttt{t\_ode}) and a matrix \texttt{x\_ode}, where each column is the concentrations of a species in the model at time points corresponding to \texttt{t\_ode}. For more information, please refer to \textsc{Chapter 3: Overview of the Core Processes}. 
+This call to \texttt{txtl\_runsim} takes the Simbiology model object and the experiment duration to be simulated, and runs the simulation from time zero to time 14 hours. It returns a \texttt{simData} object, from which we can extract a vector of time points in that range (\texttt{t\_ode}) and a matrix \texttt{x\_ode}, where each column is the concentrations of a species in the model at time points corresponding to \texttt{t\_ode}. For more information, please refer to \textsc{Chapter 3: Overview of the Core Processes}. 
 
 Finally, the modelling toolbox contains a set of plotting tools that simplify the plotting of standard species, like Proteins, DNA, RNA and resources. We use \texttt{txtl\_plot} to accomplish this. One may simply call \texttt{txtl\_plot} with the data and model object as follows: \\
 
 \noindent \texttt{txtl\_plot(t\_ode,x\_ode,Mobj); \\}
 
-\noindent leading to a default set of species to be plotted. This can be made explicit with the optional \texttt{dataGroups} argument, which allows greater control over what is to be plotted: \\
-				 \begin{flushleft}
-						 \texttt{\noindent dataGroups\{1,1\} = 'DNA and mRNA'; \\
-						dataGroups\{1,2\} = \{'ALL\_DNA'\};\\ 
-						dataGroups\{1,3\} = \{'b-','r-','b--','r--','y-','c-','g-','g--'\};\\}
-						\vspace*{1\baselineskip}
-						\texttt{\noindent dataGroups\{2,1\} = 'Gene Expression';\\
-						dataGroups\{2,2\} = \{'protein deGFP\textasteriskcentered','[protein deGFP]\_tot'\};\\
-						dataGroups\{2,3\} = \{'g','g--','r-','g--','b-.'\};\\}
-						\vspace*{1\baselineskip}
-						\texttt{\noindent dataGroups\{3,1\} = 'Resource usage';\\}
-						\vspace*{1\baselineskip}
-						 \texttt{\noindent txtl\_plot(t\_ode,x\_ode,Mobj,dataGroups); \\}
-					
-				\end{flushleft}
+\noindent leading to a default set of species to be plotted. 
 						
 		\subsection{Results}
 		
-		Figure \ref{fig:geneexpr} shows the output of the plotting command for this example. The top plot shows the protein species defined in the \texttt{dataGroups}, the bottom left plot shows the DNA and mRNAs in the system, and the bottom right plot displays the resource usage. We observe that deGFP almost entirely exists in the mature state, and rises constantly for the first 400 minutes, before reaching a steady state of about 4uM. Examination of the resource plot illuminates the reason for the decrease in the protein production rate: the concentration of NTP in the system falls, leading to a decreased transcription rate, and consequently a fall in mRNA levels, leading to lowered translation. \\
-		The reason for the kink in the NTP curve at 180 minutes is due to an NTP degradation kicking in at this point. Before this event, the NTP decreases solely due to consumption for transcription. These will be updated to a new model, with mRNA regeneration (V Noireaux, 2003) up to 180 minutes, followed by rapid degradation due to turning off of regeneration. \\
-	
+		Figure \ref{fig:geneexpr} shows the output of the plotting command for this example. The top plot shows the protein species present in the model, the bottom left plot shows the DNA and mRNAs in the system, and the bottom right plot displays the resource usage. We observe that deGFP almost entirely exists in the mature state, and rises constantly for the first 200 minutes, before reaching a steady state of about 2uM.\\
 		
 		
 		\begin{figure}
@@ -149,9 +134,9 @@ Finally, the modelling toolbox contains a set of plotting tools that simplify th
 		\subsection{Code}
 		Please work through the Gene Expression example above to get basic familiarity with the commands and their usage. This example is slightly more complex than \texttt{geneexpr}. We provide the entire code for this example below: \\
 		
-		\noindent \texttt{tube1 = txtl\_extract('E8');} \\
-								\texttt{tube2 = txtl\_buffer('E8');} \\
-								\texttt{tube3 = txtl\_newtube('circuit');} 
+		\noindent \texttt{tube1 = txtl\_extract('E9');} \\
+								\texttt{tube2 = txtl\_buffer('E9');} \\
+								\texttt{tube3 = txtl\_newtube('negautoreg');} 
 								\vspace*{1\baselineskip}
 								
 								\noindent \texttt{dna\_tetR = txtl\_add\_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(647)-lva(40)', 16, 'linear'); }\\
@@ -162,23 +147,12 @@ Finally, the modelling toolbox contains a set of plotting tools that simplify th
 								\noindent \texttt{Mobj = txtl\_combine([tube1, tube2, tube3]);} 
 								\vspace*{1\baselineskip}	
 								
-								\noindent \texttt{configsetObj = getconfigset(Mobj, 'active');}\\
-								\texttt{set(configsetObj, 'StopTime', 8*60*60);}\\
-								\texttt{[t\_ode, x\_ode, mObj, simData] = txtl\_runsim(Mobj, configsetObj);}
+								\texttt{simulationTime =  8*60*60;}\\
+								\texttt{[t\_ode, x\_ode, mObj, simData] = txtl\_runsim(Mobj, simulationTime);}
 								\vspace*{1\baselineskip}
 								
 									 \begin{flushleft}
-						 \texttt{\noindent dataGroups\{1,1\} = 'DNA and mRNA'; \\
-						dataGroups\{1,2\} = \{'ALL\_DNA'\};\\ 
-						dataGroups\{1,3\} = \{'b-','r-','b--','r--','y-','c-','g-','g--'\};\\}
-						\vspace*{1\baselineskip}
-						\texttt{\noindent dataGroups\{2,1\} = 'Gene Expression';\\
-						dataGroups\{2,2\} = \{'protein tetR-lva-terminatordimer'\};;\\
-						dataGroups\{2,3\} = \{'g-','b-','g--','b--','r--','b-.','c-','y--','m-','k-','r-'\};\\}
-						\vspace*{1\baselineskip}
-						\texttt{\noindent dataGroups\{3,1\} = 'Resource usage';\\}
-						\vspace*{1\baselineskip}
-						 \texttt{\noindent txtl\_plot(t\_ode,x\_ode,Mobj,dataGroups); \\} 
+						 \texttt{\noindent txtl\_plot(t\_ode,x\_ode,Mobj); \\} 
 						 \end{flushleft}
 		
 		The important differences from the gene expression examples are that here we add 3 pieces of DNA into tube 3, two of which are linear. \\
@@ -390,25 +364,35 @@ Note: Generally, the lengths in BP are used to calculate transcription and trans
 		Simulate model. \texttt{txtl\_runsim} is the main function to execute the MATLAB differential equation solvers to solve for the species concentration trajectories forward in time from a specified initial condition. It returns a vector array \texttt{t\_ode\_output} containing time points and a matrix array \texttt{x\_ode\_output} containing the corresponding species concentration values. \texttt{x\_ode\_output} is arranged such that each column corresponds to a species, and contains that species' concentrations at the time points corresponding to the points specified in \texttt{t\_ode\_output}. \\
 		
 		\begin{tabular}{p{2cm}|p{13cm}}
-			Syntax & \texttt{[t\_ode\_output, x\_ode\_output, Mobj] = txtl\_runsim(modelObj, configsetObj)}\\
-			& or \\
-			& \texttt{[t\_ode\_output, x\_ode\_output, Mobj, simData\_output] = txtl\_runsim(modelObj, configsetObj, t\_ode\_input, x\_ode\_input, simData\_input)}\\ \hline
+			Syntax & \texttt{[simData] = txtl\_runsim(modelObj, simulationTime)}\\
+			& with the following variations: \\
+			& Input: \\
+			& \texttt{(Mobj)}\\
+			& \texttt{(Mobj ,simulationTime)}\\
+			& \texttt{(Mobj ,simulationTime, simData)}\\			
+			& \texttt{(Mobj ,simulationTime, t\_ode, x\_ode)}\\
+			& Output: \\
+			& \texttt{[simData]}\\
+			& \texttt{[t\_ode, x\_ode]}\\
+			& \texttt{[t\_ode, x\_ode, Mobj]}		\\	
+			& \texttt{[t\_ode, x\_ode, Mobj, simData]}	\\ 
+			\hline		
+			
 			Input &  \begin{itemize}
 				\item \texttt{modelObj}: pointer to the model object to simulate. This is the Simbiology model object returned by \texttt{txtl\_combine}.
-				\item \texttt{configsetObj}: pointer to the configuration set object to be used to configure the simulation properties like the simulation stopping time. See below for details. Also, see the matlab documentation for the Simbiology toolbox function \texttt{addconfigset}. 
-				\item \texttt{t\_ode\_input}: optional vector array containing time point data from previous runs. See below for more information. 
-				\item \texttt{x\_ode\_input}: optional matrix array containing species concentration trajectory data from previous runs. See below for more information.
-				\item \texttt{simData\_input}: optional structure containing simulation data, such as names of species. See below.   
+				\item \texttt{t\_ode}: optional vector array containing time point data from previous runs. See below for more information. 
+				\item \texttt{x\_ode}: optional matrix array containing species concentration trajectory data from previous runs. See below for more information.
+				\item \texttt{simData}: optional structure containing simulation data, such as names of species and previous simulation data.    
 				\end{itemize} \\ \hline
 			Output & \begin{itemize}
 				\item \texttt{t\_ode\_output}: vector array containing time point data from this run, appended to data from previous runs, if any. 
 				\item \texttt{x\_ode\_output}: matrix array containing species concentration trajectory data from this run, appended to data from previous runs, if any.
 				\item \texttt{Mobj}: model object the simulation was run on. 
-				\item \texttt{simData\_output}: optional structure containing simulation data, such as names of species. See below.   
+				\item \texttt{simData\_output}: optional structure containing simulation data, such as names of species.    
 				\end{itemize} \\ \hline
-			Usage & \texttt{[t\_ode, x\_ode, Mobj, simData] = txtl\_runsim(Mobj, configsetObj);}\\
+			Usage & \texttt{[t\_ode, x\_ode, Mobj, simData] = txtl\_runsim(Mobj, simulationTime, t\_ode, x\_ode);}\\
 			\end{tabular}
-			
+			\begin{comment}
 			\vspace{1\baselineskip}
 			When a Simbiology model is created, there is a default configuration set object associated with it, and we can use the \texttt{getconfigset} command to get a pointer to this object. This is illustrated below by using 'active' argument, since when the model object is created, the default configuration set is the active one. We can then set its properties like the end time we want our model to be simulated until: \\
 \texttt{configsetObj = getconfigset(Mobj, 'active');} \\
@@ -417,18 +401,18 @@ Note: Generally, the lengths in BP are used to calculate transcription and trans
 After which we can execute \texttt{txtl\_runsim}: \\
 \texttt{[t\_ode, x\_ode, Mobj, simData] = txtl\_runsim(Mobj, configsetObj);} 
 % the configsetObj,. in a future version of this documentation, incluse sensitivity and events, and a more complete documentation on the configuratin set object. 
-
+\end{comment}
 \vspace{1\baselineskip}
 A useful feature of \texttt{txtl\_runsim} is that is allows one to 'continue' a simulation from the end point of a previous run, with new species of more of existing species added before the simulation is continued. This models the situation when additional reagents like inducers or proteins are added to an experimental preparation after the experiment has commenced. This can be done as follows: \\
 
 First call to \texttt{txt\_runsim} \\
-\texttt{[t\_ode, x\_ode, Mobj, simData] = txtl\_runsim(Mobj, configsetObj);} \\
+\texttt{[t\_ode, x\_ode, Mobj, simData] = txtl\_runsim(Mobj, simulationTime);} \\
 
 Execute other code, say, add some inducer: \\
 \texttt{aTc = txtl\_addspecies(mObj, 'aTc', 50);}\\
 
 Continue simulation:\\
-\texttt{[t\_ode2, x\_ode2, Mobj, simData] = txtl\_runsim(Mobj, configsetObj, t\_ode, x\_ode, simData);} \\
+\texttt{[t\_ode2, x\_ode2, Mobj, simData] = txtl\_runsim(Mobj, t\_ode, x\_ode, simData);} \\
 
 The new arrays \texttt{t\_ode2, x\_ode2} contain the results of the first simulation appended to the results of the second simulation. Thus, one can simply plot these to view the results since the beginning of the first simulation. 
 
@@ -515,18 +499,35 @@ The new arrays \texttt{t\_ode2, x\_ode2} contain the results of the first simula
         	\item \textsc{AAmodel}: 
         	Similar to NTPmodel above, we recommend keeping this setting at 2. 
         	\item \textsc{Transcription\_Rate}:
-        	Reaction rate for: \\
+        	
         	\begin{align}
-        	& \mathrm{NTP:RNAP^{70}:DNA} \rightarrow \mathrm{DNA} + \mathrm{RNA} + \mathrm{RNAP} 
+        	& \mathrm{NTP:RNAP^{70}:DNA} \rightarrow \mathrm{DNA} + \mathrm{RNA} + \mathrm{RNAP} \\
         	\end{align}
-        	and is inversely proportional to the RNA length (sum of rbs length and gene length). 
+        	This is the reaction for transcription, with transcription rate calculated as:\\
+        	\begin{align}
+        	& \textsc{Transcription\_Rate} = \frac{(log(2)\times50)}{RNA\_length}\\
+        	\end{align}
+        	\textrm{and a dummy reaction for NTP consumption, with rate \textsc{Transcription\_Rate\_dummy}} \\
+        	\begin{align}
+        	& \mathrm{NTP:RNAP^{70}:DNA} \rightarrow \mathrm{DNA} + \mathrm{RNAP} \\ 
+        	& \textsc{Transcription\_Rate\_dummy} = \left(\frac{RNA\_length}{100}-1\right)\times\textsc{Transcription\_Rate}
+        	\end{align}
         	
         	\item \textsc{Translation\_Rate}: Reaction rate for: \\
         	% '[AA:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo'
         	\begin{align}
-        	& \mathrm{AA:Ribo:RNA}  \rightarrow \mathrm{Protein} + \mathrm{RNA} + \mathrm{Ribo}
+        	& \mathrm{ATP:AA:Ribo:RNA}  \rightarrow \mathrm{Protein} + \mathrm{RNA} + \mathrm{Ribo}\\
         	\end{align}
-        	and is inversely proportional to the gene length. 
+        	This is the reaction for translation, with reaction rate calculated as:\\
+        	\begin{align}
+        	& \textsc{Translation\_Rate} = \frac{(log(2)\times0.64)}{protein\_length}\\
+        	\end{align}
+        	\textrm{and a dummy reaction for AA consumption, with rate \textsc{Translation\_Rate\_dummy}} \\
+        	\begin{align}
+        	&\mathrm{ATP:AA:Ribo:RNA}  \rightarrow \mathrm{RNA} + \mathrm{Ribo} + \mathrm{ATP}\\
+        	& \textsc{Translation\_Rate\_dummy} = \left(\frac{protien\_length}{100}-1\right)\times\textsc{Translation\_Rate}
+        	\end{align}
+        	
         	\item \textsc{DNA\_RecBCD\_Forward and DNA\_RecBCD\_Reverse}:
         	Complex formation and dissociation rate between RecBCD enzyme and DNA.        	
         	\begin{align}
@@ -578,7 +579,7 @@ The new arrays \texttt{t\_ode2, x\_ode2} contain the results of the first simula
         	\end{align}
 			\end{enumerate}		
 		\subsubsection*{Configuration file: \textsf{'E<n>\_config.csv'}}
-		The configuration file associated with this class is used to define the contents of the tubes created by the \texttt{txtl\_extract} and \texttt{txtl\_buffer}. the integer <n> in the name of the file refers to the label of the buffer and extract in the TXTL experimental protocol. For instance, if we use extract \textsf{'E6'} and buffer \textsf{'B6'} in the experimental protocol for a circuit, we would create a configuration file named \textsf{'E6\_config.csv'}, which would encapsulate the features of the extract and the buffer. We could then use this file in the modelling toolbox as follows: \\
+		The configuration file associated with this class is used to define the contents of the tubes created by the \texttt{txtl\_extract} and \texttt{txtl\_buffer}. the integer <n> in the name of the file refers to the label of the buffer and extract in the TXTL experimental protocol. For instance, if we use extract \textsf{'E6'} and buffer \textsf{'B6'} in the experimental protocol for a circuit, we would create a configuration file named \textsf{'E6\_config.csv'}, which would encapsulate the variations between batches of the buffer and extract.  We use this file in the modelling toolbox as follows: \\
 		
 		\noindent \texttt{tube1 = txtl\_extract('E6');} \\
 		\texttt{tube2 = txtl\_buffer('E6');} \\
@@ -593,13 +594,10 @@ Note that we do not define two separate configuration files for the buffer and e
 		\end{center}
 		\end{figure}
 
-Figure \ref{fig:reactionconfig} shows a screenshot of the configuration file \textsf{'E6\_config.csv'} used in the \texttt{geneexpr} example. This file is a 'Comma Separated Value' file, and can be opened using Microsoft Excel. One can create custom configuration files by modifying the parameter values in this file, and saving it under a different name according to the naming convention defined above. 
+Figure \ref{fig:reactionconfig} shows a screenshot of the configuration file \textsf{'E6\_config.csv'}. This file is a 'Comma Separated Value' file, and is best opened in the MATLAB editor, with the 'File > Open as Text...' option. One can create custom configuration files by modifying the parameter values in this file, and saving it under a different name according to the naming convention defined above. 
 
-		
-		
 		\subsection*{txtl\_component\_config (class)}	
 		The txtl\_component\_config class enables users to input custom reaction parameters for the components they are using in their model. Components are found in the \textsf{components} directory in the main directory, and contain files that define proteins and promoters. The parameters present in the class and the corresponding configuration files are dependent on the components being used, but are highly analogous to the previous section. Editing of the configuration files is also carried out as above. 
-
 
 	\section{List of Core Reactions}
 	These reactions are currently those of Dan, and refer to the Toxin-Antitoxin System. We will modify them so that they correspond to the reactions in the TXTL toolbox. 
@@ -609,83 +607,76 @@ Figure \ref{fig:reactionconfig} shows a screenshot of the configuration file \te
 
 \begin{align}
 & \mathrm{RNAP} + \sigma^{70} \rightleftharpoons \mathrm{RNAP^{70}} \\
-& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
-& \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
-& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
-& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \rightarrow \nonumber \\ 
-& \qquad \qquad \qquad \qquad P_{parDE}\textrm{--}rbs\textrm{--}deGFP +  (rbs\textrm{--}deGFP)_m + \mathrm{RNAP^{70}} \\
+& \mathrm{RNAP} \rightarrow \phi \\
+& \mathrm{RNAP^{70}} \rightarrow \sigma^{70} \\
+& \mathrm{ATP} \rightarrow \mathrm{ADP} \\
+& \mathrm{RecBCD} + \mathrm{GamS} \rightleftharpoons \mathrm{RecBCD}\!:\!\mathrm{GamS} 
 \end{align}
 	
 	\subsection{Transcription}
 
 \begin{align}
-& \mathrm{RNAP} + \sigma^{70} \rightleftharpoons \mathrm{RNAP^{70}} \\
-& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
-& \mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
-& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \\
-& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{parDE}\textrm{--}rbs\textrm{--}deGFP \rightarrow \nonumber \\ 
-& \qquad \qquad \qquad \qquad P_{parDE}\textrm{--}rbs\textrm{--}deGFP +  (rbs\textrm{--}deGFP)_m + \mathrm{RNAP^{70}} \\
-& P_{70}\textrm{--}rbs\textrm{--}parD + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD \\
-& \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
-& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD \\
-& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parD \rightarrow \nonumber \\ 
-& \qquad \qquad \qquad \qquad P_{70}\textrm{--}rbs\textrm{--}parD +  (rbs\textrm{--}parD)_m + \mathrm{RNAP^{70}} \\
-& P_{70}\textrm{--}rbs\textrm{--}parE + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE \\
-& \mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE + \mathrm{NTP} \rightleftharpoons \nonumber \\ 
-& \qquad \qquad \qquad \qquad \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE \\
-& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!P_{70}\textrm{--}rbs\textrm{--}parE \rightarrow \nonumber \\ 
-& \qquad \qquad \qquad \qquad P_{70}\textrm{--}rbs\textrm{--}parE +  (rbs\textrm{--}parE)_m + \mathrm{RNAP^{70}}
+& \mathrm{DNA} + \mathrm{RNAP^{70}} \rightleftharpoons \mathrm{RNAP^{70}}\!:\!\mathrm{DNA} \\
+& \mathrm{RNAP^{70}}\!:\!\mathrm{DNA} + \mathrm{NTP} \rightleftharpoons \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!\mathrm{DNA} \\
+& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!\mathrm{DNA} \rightarrow \mathrm{DNA} +  \mathrm{RNA} + \mathrm{RNAP^{70}} 
+\end{align}
+Dummy reaction for NTP consumption, see previous section for rates:\\
+\begin{align}
+& \mathrm{NTP}\!:\!\mathrm{RNAP^{70}}\!:\!\mathrm{DNA} \rightarrow \mathrm{DNA} + \mathrm{RNAP^{70}} 
 \end{align}
 
 \subsection{Translation}
 
 \begin{align}
-& \mathrm{R} + (rbs\textrm{--}deGFP)_m \rightleftharpoons \mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m \\
-& \mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m + \mathrm{AA} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m \\
-& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m \rightarrow (rbs\textrm{--}deGFP)_m + \mathrm{deGFP} + \mathrm{R} \\
-& \mathrm{R} + (rbs\textrm{--}parD)_m \rightleftharpoons \mathrm{R}\!:\!(rbs\textrm{--}parD)_m \\
-& \mathrm{R}\!:\!(rbs\textrm{--}parD)_m + \mathrm{AA} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parD)_m \\
-& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parD)_m \rightarrow (rbs\textrm{--}parD)_m + \mathrm{D} + \mathrm{R} \\
-& \mathrm{R} + (rbs\textrm{--}parE)_m \rightleftharpoons \mathrm{R}\!:\!(rbs\textrm{--}parE)_m \\
-& \mathrm{R}\!:\!(rbs\textrm{--}parE)_m + \mathrm{AA} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parE)_m \\
-& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parE)_m \rightarrow (rbs\textrm{--}parE)_m + \mathrm{E} + \mathrm{R} 
+& \mathrm{RNA} + \mathrm{Ribo} \rightleftharpoons \mathrm{Ribo}\!:\!\mathrm{RNA} \\
+& \mathrm{Ribo}\!:\!\mathrm{RNA} + \mathrm{AA} + \mathrm{ATP} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{ATP}\!:\!\mathrm{Ribo}\!:\!\mathrm{RNA} \\
+& \mathrm{AA}\!:\!\mathrm{ATP}\!:\!\mathrm{Ribo}\!:\!\mathrm{RNA} \rightarrow \mathrm{RNA} +  \mathrm{protein} + \mathrm{Ribo} 
+\end{align}
+Dummy reaction for AA consumption, see previous section for rates:\\
+\begin{align}
+& \mathrm{AA}\!:\!\mathrm{ATP}\!:\!\mathrm{Ribo}\!:\!\mathrm{RNA} \rightarrow \mathrm{RNA} +   \mathrm{Ribo} 
 \end{align}
 
-\subsection{Degradation}
+\subsection{Protein Degradation (if tagged)}
 
 \begin{align}
-& (rbs\textrm{--}deGFP)_m + \mathrm{RNase} \rightarrow  \mathrm{RNase} \\
-& \mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m + \mathrm{RNase} \rightarrow \mathrm{R} + \mathrm{RNase} \\
-& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}deGFP)_m + \mathrm{RNase} \rightarrow \mathrm{AA} + \mathrm{R} + \mathrm{RNase} \\
-& (rbs\textrm{--}parD)_m + \mathrm{RNase} \rightarrow  \mathrm{RNase} \\
-& (rbs\textrm{--}parE)_m + \mathrm{RNase} \rightarrow  \mathrm{RNase} \\
-& \mathrm{R}\!:\!(rbs\textrm{--}parD)_m + \mathrm{RNase} \rightarrow \mathrm{R} + \mathrm{RNase} \\
-& \mathrm{R}\!:\!(rbs\textrm{--}parE)_m + \mathrm{RNase} \rightarrow \mathrm{R} + \mathrm{RNase} \\
-& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parD)_m + \mathrm{RNase} \rightarrow \mathrm{AA} + \mathrm{R} + \mathrm{RNase} \\
-& \mathrm{AA}\!:\!\mathrm{R}\!:\!(rbs\textrm{--}parE)_m + \mathrm{RNase} \rightarrow \mathrm{AA} + \mathrm{R} + \mathrm{RNase}
+& \mathrm{ClpX}  \rightarrow \mathrm{ClpX^*} \\
+& \mathrm{protein} + \mathrm{ClpX^*} \rightleftharpoons \mathrm{protein}\!:\!\mathrm{ClpX^*} \\
+& \mathrm{protein}\!:\!\mathrm{ClpX^*} + \mathrm{ATP} \rightarrow \mathrm{ClpX^*} \\
+& \mathrm{ClpX^*} \rightarrow \phi
 \end{align}
 
-\subsection{Protein complex association/dissociation}
+\subsection{Protein reactions}
+\textbf{Multimerization}
+\begin{align}
+& \mathrm{protein} + \mathrm{protein} \rightleftharpoons \mathrm{protein\_dimer} \\
+ & \mathrm{protein\_dimer} + \mathrm{protein\_dimer} \rightleftharpoons \mathrm{protein\_tetramer}
+\end{align}
+\textbf{Repression}\\
+Here the DNA has a promoter which is repressed by protein A. For example, $tetR\_dimer$ can repress $ptet\textrm{--}rbs\textrm{--}gene$.
+\begin{align}
+& \mathrm{protein\_A} + \mathrm{DNA\_A} \rightleftharpoons \mathrm{DNA\_A}\!:\!\mathrm{protein\_A} 
+\end{align}
+Notice that in the transcription step, there is no reaction for RNA polymerase binding to the protein-bound DNA, hence repression. \\
+
+\noindent \textbf{Maturation}\\
+A few proteins, like $ClpX$ and $deGFP$, undergo maturation. 
+\begin{align}
+& \mathrm{protein}  \rightarrow \mathrm{protein^*}
+\end{align}
+\subsection{Other Degradation}
 
 \begin{align}
-& \mathrm{D} + \mathrm{D} \rightleftharpoons \mathrm{D_2} \\
-& \mathrm{E} + \mathrm{E} \rightleftharpoons \mathrm{E_2} \\
-& \mathrm{D_2} + \mathrm{E_2} \rightleftharpoons \mathrm{D_2E_2} \\
-& \mathrm{RecBCD} + \mathrm{GamS} \rightarrow \mathrm{RecBCD}\!:\!\mathrm{GamS} 
+& \mathrm{DNA} + \mathrm{RecBCD} \rightleftharpoons \mathrm{DNA}\!:\!\mathrm{RecBCD} \\
+& \mathrm{DNA}\!:\!\mathrm{RecBCD} \rightarrow \mathrm{RecBCD} \\
+& \mathrm{RNA} + \mathrm{RNase} \rightleftharpoons \mathrm{RNA}\!:\!\mathrm{RNase} \\
+& \mathrm{RNA}\!:\!\mathrm{RNase} \rightarrow \mathrm{RNase} \\
+& \mathrm{Ribo}\!:\!\mathrm{RNA} + \mathrm{RNase} \rightleftharpoons \mathrm{Ribo}\!:\!\mathrm{RNA}\!:\!\mathrm{RNase} \\
+& \mathrm{Ribo}\!:\!\mathrm{RNA}\!:\!\mathrm{RNase} \rightarrow \mathrm{RNase} + \mathrm{Ribo} \\
+& \mathrm{AA}\!:\!\mathrm{ATP}\!:\!\mathrm{Ribo}\!:\!\mathrm{RNA} + \mathrm{RNase} \rightleftharpoons \mathrm{AA}\!:\!\mathrm{ATP}\!:\!\mathrm{Ribo}\!:\!\mathrm{RNA}\!:\!\mathrm{RNase} \\
+&\mathrm{AA}\!:\!\mathrm{ATP}\!:\!\mathrm{Ribo}\!:\!\mathrm{RNA}\!:\!\mathrm{RNase} \rightarrow \mathrm{RNase} + \mathrm{AA} + \mathrm{ATP} + \mathrm{Ribo} 
 \end{align}
-
-\subsection{Repression}
-
-\begin{align}
-& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{D_2} \rightleftharpoons P_{parDE}\textrm{--}rbs\textrm{--}deGFP\!:\!\mathrm{D_2} \\
-& P_{parDE}\textrm{--}rbs\textrm{--}deGFP + \mathrm{D_2E_2} \rightleftharpoons P_{parDE}\textrm{--}rbs\textrm{--}deGFP\!:\!\mathrm{D_2E_2}
-\end{align}
-
-\subsection{Other}
-
-\begin{align}
-& \mathrm{deGFP} \rightarrow \mathrm{deGFP^*}
-\end{align}
+\begin{comment}
 	\section{List of Parameters}
 	\begin{tabular}{|c|c|c|c|c|}
 	\hline
@@ -701,5 +692,5 @@ Figure \ref{fig:reactionconfig} shows a screenshot of the configuration file \te
 		$\sim$ & Amount of NTP & $100 nM$ & Amount to match RNAP & \texttt{txtl\_extract.m} \\ \hline
 	\end{tabular}
 	{\scriptsize * VN refers to publications by Vincent Noireaux (U. Minnesota).}
-
+\end{comment}
 \end{document}

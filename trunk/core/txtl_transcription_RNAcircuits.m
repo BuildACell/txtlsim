@@ -36,11 +36,11 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function txtl_transcription(mode, varargin)
+function txtl_transcription_RNAcircuits(mode, varargin)
 tube = varargin{1};
 dna = varargin{2};
 rna = varargin{3};
-RNAP = varargin{4}; % RNA polymerase name for reactions
+RNAP = varargin{4};
 RNAPbound = varargin{5};
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -55,13 +55,13 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
             coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAP};
         end
     else
-        if nargin < 6
-            error('the number of argument should be at least 6, not %d',nargin);
-        elseif nargin > 6
-            extraSpecies = varargin{6};
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAP, 'RNA att', extraSpecies{:}};
+        if nargin == 9
+            prom_spec = varargin{6};
+            rbs_spec = varargin{7};
+            gene_spec = varargin{8};
+            coreSpecies = txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec);
         else
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound], 'RNA att', RNAP};
+            error('the number of argument should be at 9, not %d',nargin);
         end
     end
     
@@ -69,7 +69,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     if ~mode.utr_attenuator_flag
         if nargin < 6
@@ -94,47 +94,21 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward;
             'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse};
     else
-                
-        if nargin < 6
-            error('the number of argument should be at least 7, not %d',nargin);
-        elseif nargin > 6
-            extraSpecies = varargin{6};
-            % processing the extraSpecies
-            extraStr = extraSpecies{1};
-            for k=2:size(extraSpecies,1)
-                extraStr = [extraStr '+' extraSpecies{k}];
-            end
-            transcriptionEq1 = ...
-                ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA att]']; % att, when present, is always the first element in the RNA.
-            transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA att] -> '  dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr];
+        if nargin == 9
+            prom_spec = varargin{6};
+            rbs_spec = varargin{7};
+            gene_spec = varargin{8};
+            txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec);
         else
-            transcriptionEq1 = ...
-                ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA att]']; % att, when present, is always the first element in the RNA.
-            transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA att] -> '  dna.Name ' + ' rna.Name ' + ' RNAP];
+            error('the number of argument should be at 9, not %d',nargin);
         end
-        %replace the string for RNA_length variable in the expression with the
-        %string for the actual rna length. Tx rate the same for both
-        %reactions. can be made different if needed. 
-        ktxExpression =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
-            'RNA_Length','rna.UserData');
-        ktx1 = eval(ktxExpression);
-        ktxExpression =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
-            'RNA_Length','rna.UserData');
-        ktx2 = eval(ktxExpression);
-        % parameter values for the binding of NTP to RNAPbound or 
-        % [RNAPbound ':RNA att']. We assume same rate. can be made
-        % different
-        NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward;
-            'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse}; 
         
     end
     
     % NTP consumption models
     if tube.UserData.ReactionConfig.NTPmodel == 1
         % Compute the number of NTPs required, in 100 NTP blocks
-        ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
+        ntpcnt = ceil(rna.UserData/100);	% get number of NTP blocks
         if (ntpcnt == 0)
             ntpstr = '';
         else
@@ -150,49 +124,17 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
                 'MassAction',NTPparameters);
             
             %dummy raction
-            ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
+            ntpcnt = ceil(rna.UserData/100);	% get number of NTP blocks
             NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
             
             txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
                 'MassAction',NTPConsumptionRate);
-        else
-            % to deal with stiffness due to high reaction-order
-            txtl_addreaction(tube,['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']'],...
-                'MassAction',NTPparameters);
-            txtl_addreaction(tube,['[' RNAPbound ':RNA att] + NTP <-> [NTP:' RNAPbound ':RNA att]'],...
-                'MassAction',NTPparameters);            
-            %dummy raction
-            ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
-            NTPConsumptionRate1 = {'TXTL_NTP_consumption1',(ntpcnt-1)*ktx1};
-            NTPConsumptionRate2 = {'TXTL_NTP_consumption2',(ntpcnt-1)*ktx2};
-            txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
-                'MassAction',NTPConsumptionRate1);
-            txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att] -> ' dna.Name ' +  ' RNAP ' + RNA att'],...
-                'MassAction',NTPConsumptionRate2);            
         end
-        
     end
     
     % transcription and att-anti reactions
-    if mode.utr_attenuator_flag
-        txtl_addreaction(tube,transcriptionEq1,'MassAction',{'TXTL_transcription_rate1',ktx1});
-        txtl_addreaction(tube,transcriptionEq2,'MassAction',{'TXTL_transcription_rate2',ktx2});
-        % Auto-Termination
-        auto_termination_rate = {'TXTL_RNA_ATT_AUTOTERM', tube.UserData.ReactionConfig.auto_termination_rate};
-        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att] -> ' dna.Name ' + [RNA att] + ' RNAP],...
-            'MassAction',auto_termination_rate);
-        % Complex 1 Formation (prevents extension of att, thereby
-        % inhibiting transcription and subsequent trasnlation
-        complex1_rate = {'TXTL_RNA_C1_F', tube.UserData.ReactionConfig.complex1_F_rate; ...
-            'TXTL_RNA_C1_R', tube.UserData.ReactionConfig.complex1_R_rate};
-        txtl_addreaction(tube,['[' RNAPbound ':RNA att] + [RNA anti] <-> [' RNAPbound ':RNA att:RNA anti]'],...
-            'MassAction',complex1_rate);         
-        % termination
-        att_anti_termination_rate = {'TXTL_RNA_ATTANTI_TERM', tube.UserData.ReactionConfig.att_anti_termination_rate};
-        txtl_addreaction(tube,['[' RNAPbound ':RNA att:RNA anti] -> ' dna.Name ' + [RNA att:RNA anti] + ' RNAP],...
-            'MassAction',att_anti_termination_rate);
-    else
-        txtl_addreaction(tube,transcriptionEq,'MassAction',{'TXTL_transcription_rate1',ktx});        
+    if ~mode.utr_attenuator_flag
+        txtl_addreaction(tube,transcriptionEq,'MassAction',{'TXTL_transcription_rate1',ktx});          
     end
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%

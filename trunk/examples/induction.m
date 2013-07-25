@@ -75,7 +75,7 @@ for atc = levels
   
   % Add additional inducer for the next run
   if count < size(levels,2)
-  inducer = txtl_addspecies(Mobj, 'aTc', levels(count+1)-levels(count));
+  inducer = txtl_addspecies(Mobj, 'aTc', levels(count+1)-levels(count))
   count = count + 1;
   end
 end

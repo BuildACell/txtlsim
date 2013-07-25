@@ -51,13 +51,15 @@ function varargout = txtl_prom_pJ23119(mode, tube, dna, rna, varargin)
 if strcmp(mode.add_dna_driver, 'Setup Species')
     
     promoterData = varargin{1};
+    prom_spec = varargin{2};
+    rbs_spec = varargin{3};
+    gene_spec = varargin{4};
     defaultBasePairs = {'pJ23119','junk','thio';...
         paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
     varargout{1} = promoterData;
-    
     coreSpecies = {RNAP,RNAPbound};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
@@ -66,11 +68,18 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
     % 
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
+    
+        
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
-    
+        prom_spec = varargin{1};
+    rbs_spec = varargin{2};
+    gene_spec = varargin{3};
     % Parameters that describe this promoter
     parameters = {'TXTL_PJ23119_RNAPbound_F',paramObj.RNAPbound_Forward;...
                   'TXTL_PJ23119_RNAPbound_R',paramObj.RNAPbound_Reverse};
@@ -81,8 +90,11 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
     % 
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else 
     error('txtltoolbox:txtl_prom_pJ23119:undefinedmode', ...

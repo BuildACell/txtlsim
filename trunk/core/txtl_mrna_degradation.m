@@ -1,9 +1,11 @@
-function txtl_mrna_degradation(mode, tube, dna, rna)
+function txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec)
     
     txtl_addreaction(tube,[rna.Name ' -> null'],...
         'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     if mode.utr_attenuator_flag
-        txtl_addreaction(tube,['RNA att -> null'],...
+        [utrData, utrStr] = txtl_parsespec(rbs_spec);
+        att = utrData{1,1};
+        txtl_addreaction(tube,['RNA ' att ' -> null'],...
             'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     end
     if mode.utr_rbs_flag

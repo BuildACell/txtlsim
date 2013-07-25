@@ -114,6 +114,10 @@ plot(t_ode{i}/3600, x_ode{i}(:,iaTc), 'k-',t_ode{i}/3600, x_ode{i}(:,iaTcbound),
 legend('aTc', 'aTc:tetRdimer', 'tetR', 'tetRdimer', 'Location', 'NorthEastOutside')%
 h = suptitle(['init tetR monomer = ' num2str(c(i,1)) ', init lacI monomer = ' num2str(c(i,2))])
 dirstr = pwd;
+[ax1,h1]=suplabel('time/h');
+[ax2,h2]=suplabel('conc/nM','y');
+figureHandle = gcf;
+set(findall(figureHandle,'type','text'),'fontSize',8)
 cd([pwd '\examples\Vipul\Genetic Toggle\' folderdate])
 print('-dtiff','-r200',['TimeTraces__tetR_' num2str(c(i,1)) '__lacI_' num2str(c(i,2)) '___' folderdate])
 saveas(gcf, ['TimeTraces__tetR_' num2str(c(i,1)) '__lacI_' num2str(c(i,2)) '___' folderdate '.fig'])
