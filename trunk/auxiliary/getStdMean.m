@@ -3,7 +3,11 @@ function [data_mean,data_std] = getStdMean(varargin)
 if nargin == 1
     data      = varargin{1};
     data_mean = mean(data,2);
-    data_std  = std(data')';
+    if size(data,2) == 1
+        data_std = zeros(size(data));
+    else
+        data_std  = std(data')';
+    end
     
 else
     dataDim = cell2mat(cellfun(@size,varargin','UniformOutput',false));

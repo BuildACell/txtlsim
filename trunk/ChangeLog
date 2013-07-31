@@ -1,3 +1,9 @@
+2013-07-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* core/findspecies.m: complete code refactoring, multicompartment compatibility
+	* core/txtl_addspecies.m: major code refactoring, multicompartment spcesies adding.
+	* examples/geneexpr_vesicule.m: first cut for vesicule based simulations.
+	* core/txtl_enzyme_resource_degradation.m: enzyme and resource related degradations are moved here for txtl_runsim.
+	* auxiliary/: new aux functions, see svn commit for further information.
 2013-07-17 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* config/: new folder for extract config files
 2013-07-15 Zoltan Tuza <zoltuz@zoltuz-laptop>

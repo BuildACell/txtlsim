@@ -70,7 +70,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
-    [~,listOfSpecies] = getstoichmatrix(tube);
+    listOfSpecies = get(tube.species, 'name');
   
     % Set up the binding reaction for all protein variants
     matchStr = regexp(listOfSpecies,'(^protein tetRmonomeric.*)','tokens','once'); 

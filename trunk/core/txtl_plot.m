@@ -101,13 +101,17 @@ numOfGroups = size(dataGroups,1);
 listOfProteins = {};
 listOfRNAs = {};
 listOfDNAs = {};
-[~,listOfSpecies] = getstoichmatrix(modelObj);
+if size(modelObj.Compartments,1) > 1
+    currModelObj = modelObj.Compartments(1);
+else 
+    currModelObj = modelObj;
+end
 
-
+listOfSpecies = get(currModelObj.species, 'name');
 
 
 if strcmp(operationMode,'standalone')
-    figure('Name',modelObj.Name); clf();
+    figure('Name',currModelObj.Name); clf();
 end
 
 % building the output cell structure
@@ -154,9 +158,9 @@ for k = 1:numOfGroups
             
             % collect the data
             listOfDNAsRNAs = vertcat(listOfDNAs,listOfRNAs);
-            dataX = getDataForSpecies(modelObj,x_ode,listOfDNAsRNAs');
-            dataDNAs = getDataForSpecies(modelObj,x_ode,listOfDNAs');
-            dataRNAs = getDataForSpecies(modelObj,x_ode,listOfRNAs');
+            dataX = getDataForSpecies(currModelObj,x_ode,listOfDNAsRNAs');
+            dataDNAs = getDataForSpecies(currModelObj,x_ode,listOfDNAs');
+            dataRNAs = getDataForSpecies(currModelObj,x_ode,listOfRNAs');
             
             % replace free RNA concentration with total RNA concentration
             [~, ia, ib] = intersect(listOfRNAs, totRNAs(:,1));
@@ -249,7 +253,7 @@ for k = 1:numOfGroups
             listOfProteins =  horzcat(listOfProteins,dataGroups{k,2});
             
         end
-        dataX = getDataForSpecies(modelObj,x_ode,listOfProteins);
+        dataX = getDataForSpecies(currModelObj,x_ode,listOfProteins);
         % adding total protein concentraion into the common data matrix and a
         % label matrix as well (This could be done before, because the
         % listOfProteins was used for aquiring Species data by name)
@@ -299,7 +303,7 @@ for k = 1:numOfGroups
     elseif(strcmp(dataGroups{k,1},'Resource usage'))
         
         listOfResources = {'NTP','AA','RNAP','Ribo'};
-        dataX = getDataForSpecies(modelObj,x_ode,listOfResources);
+        dataX = getDataForSpecies(currModelObj,x_ode,listOfResources);
         
         % ---- Calling the txtl_plot standalone -> figure is generated -------%
         if strcmp(operationMode,'standalone')
@@ -368,8 +372,8 @@ for z=1:size(regexp_ind,1)
     specie_match = regexp(listOfSpecies,r_str,'tokens','once');
     autoSpecies{z} = vertcat(specie_match{:});
     
-    %     for l=1:size(modelObj.Species,1)
-    %         specie_match = regexp(modelObj.Species(l).Name,r_str,'tokens');
+    %     for l=1:size(currModelObj.Species,1)
+    %         specie_match = regexp(currModelObj.Species(l).Name,r_str,'tokens');
     %         if(~cellfun(@(x) isempty(x),specie_match))
     %             autoSpecies(end+1) = specie_match{1}{1};
     %         end
@@ -379,10 +383,10 @@ autoSpecies = vertcat(autoSpecies{:});
 end
 
 
-function dataX = getDataForSpecies(modelObj,x_ode,listOfSpecies)
+function dataX = getDataForSpecies(currModelObj,x_ode,listOfSpecies)
 % collect data for the listed species from the simulation result array (x_ode)
 
-indexNum = findspecies(modelObj, listOfSpecies);
+indexNum = findspecies(currModelObj, listOfSpecies);
 notASpecie = find(indexNum == 0);
 if (~isempty(notASpecie))
     for k=1:size(notASpecie,2)

@@ -204,7 +204,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     mode.add_dna_driver = varargin{1};
     % get a list of the species to search through before setting up
     % certain reactions
-    [~,listOfSpecies] = getstoichmatrix(tube);
+    listOfSpecies = get(tube.species, 'name');
     
     
     % set up protein reactions and data, followed by utr followed by promoter

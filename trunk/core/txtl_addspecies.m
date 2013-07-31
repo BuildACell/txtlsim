@@ -38,69 +38,76 @@ function simBioSpecies = txtl_addspecies(tube, name, amount, varargin)
 % POSSIBILITY OF SUCH DAMAGE.
 
 add_dna_mode = struct('add_dna_driver', {'Setup Species'});
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: USER %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if isempty(varargin)
-    mode = 'User';
-    
-    
-    % check
-    if (size(amount,1) > 1)
-        assert(size(name,1) == size(amount,1));
+
+
+% checks
+if (length(amount) > 1)
+    assert(length(name) == length(amount));
+end
+
+if ~iscell(amount)
+    amount = num2cell(amount);
+end
+
+if ischar(name)
+    name = {name};
+end
+
+%%%%% Handling multiple compartments 
+if size(tube.Compartments,1) > 1
+    % test for valid compartment name in species string
+    [matchstr splitstr] = regexp(name,'\.','split');
+    if sum(find(cellfun(@isempty,splitstr) == 1)) > 0
+        error('Model has multiple compartmerts, but no a valid compartment ID was given!');
     end
+    compList = get(tube.Compartments,'name');
     
-    index = findspecies(tube, name);
-    
-    if iscell(name) % if more than one species are to be added
-        for k =1:size(index,2)
-            % protein has been added
-            if ~isempty(strfind(name{k},'protein'))
-                addOneSpecie(tube,name{k},amount{k},index(k));
-                txtl_setup_new_protein_added(tube,add_dna_mode);
-            else
-                addOneSpecie(tube,name{k},amount{k},index(k));
-            end          
+    for k = 1:length(matchstr);
+        matchRes = findStringInAList(compList,matchstr{k}{1});
+        name{k} = matchstr{k}{2};
+        ind = find(matchRes > 0);
+        if ~isempty(ind)
+            compInd(k) = ind;
+        else
+            compInd(k) = 0;
         end
+    end
+    
+    if sum(find(compInd == 0)) ~= 0
+        error('Model has multiple compartmerts, but no (not a) valid compartment ID was given!');
     else
-            if ~isempty(strfind(name,'protein'))
-                addOneSpecie(tube,name,amount,index);
-                txtl_setup_new_protein_added(tube,add_dna_mode);
-            else
-                addOneSpecie(tube,name,amount,index);
-            end
-    end
-    
-    indexPost = findspecies(tube, name);
-    simBioSpecies = tube.Species(indexPost);
-    
-    
-    %%%%%%%%%%%%%%%%%%% DRIVER MODE: INTERNAL %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(varargin{1}, 'Internal')
-    mode = varargin{1};
-    
-    % check
-    if (size(amount,1) > 1)
-        assert(size(name,1) == size(amount,1));
-    end
-    
-    index = findspecies(tube, name);
-    
-    if iscell(name)
-        for k =1:size(index,2)
-            addOneSpecie(tube,name{k},amount{k},index(k));
+        currentComp = compList(compInd);
+        % addspecies to the corresponding compartments
+        for k=1:size(compInd,1)
+            index = findspecies(tube.Compartments(compInd(k)), name{k});
+            index = num2cell(index);
+            addOneSpecie(tube.Compartments(compInd(k)),name{k},amount{k},index{k});
         end
-    else
-        addOneSpecie(tube,name,amount,index);
+        % TODO zoltuz 30/7/13 possible error with multi compartment species
+        % e.g. NTP,IPTG exist in multiple compartments
+        indexPost = findspecies(tube, name);
+        simBioSpecies = tube.Species(indexPost);
+        return
     end
-    indexPost = findspecies(tube, name);
-    simBioSpecies = tube.Species(indexPost);
-    
+else
+    index = findspecies(tube, name);
 end
 
 
+index = num2cell(index);
+
+cellfun(@(x,y,z) addOneSpecie(tube,x,y,z,'no_output'),name,amount,index,'UniformOutput',false);
+indexPost = findspecies(tube, name);
+simBioSpecies = tube.Species(indexPost);
+
+% has protein been added?
+ if isempty(varargin) && sum(cellfun(@(x) isempty(strfind(x,'protein')),name)) >0
+       txtl_setup_new_protein_added(tube,add_dna_mode);
+ end
 end
 
 
-function varargout = addOneSpecie(tube,name,amount,index)
+function varargout = addOneSpecie(tube,name,amount,index,varargin)
 % if amount wasn't specified then make it zero
 if isempty(amount)
     amount = 0;
@@ -112,8 +119,9 @@ else
     tube.Species(index).InitialAmount = ...
         tube.Species(index).InitialAmount + amount;
     tube.Species(index);
-    varargout{1} = tube.Species(index) ;
+    varargout{1} = tube.Species(index);
 end
+
 end
 
 

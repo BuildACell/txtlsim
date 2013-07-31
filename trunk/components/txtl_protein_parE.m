@@ -62,7 +62,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
-    [~,listOfSpecies] = getstoichmatrix(tube);
+    listOfSpecies = get(tube.species, 'name');
   
 
 
