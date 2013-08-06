@@ -1,3 +1,6 @@
+2013-08-05 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* core/txtl_runsim.m: version detection to switch off AbsoluteToleranceScaling in >=Matlab 8.0v (without that the ODE solver fails with the current model) 
+
 2013-07-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* core/findspecies.m: complete code refactoring, multicompartment compatibility
 	* core/txtl_addspecies.m: major code refactoring, multicompartment spcesies adding.

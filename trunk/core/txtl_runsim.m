@@ -77,9 +77,14 @@ if nargin >1
         set(configsetObj, 'SolverType', 'ode15s');
         set(configsetObj, 'StopTime', simulationTime);
         
+        
     else
         configsetObj = varargin{2};
     end
+end
+if ~verLessThan('Matlab','8')
+    Sopt = get(configsetObj,'SolverOptions');
+    set(Sopt,'AbsoluteToleranceScaling',false);
 end
 
 
