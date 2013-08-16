@@ -1,3 +1,8 @@
+2013-08-15 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* auxiliary/parseGetEqOutput.m: new parser function, it parses a simbiology objects into an ode functions compatible file. 
+	* tmp/: new directory to store script generated files
+	* modules/: new directory for external modules
+	* data/: new directory to store data for wetlab experiments 
 2013-08-05 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* core/txtl_runsim.m: version detection to switch off AbsoluteToleranceScaling in >=Matlab 8.0v (without that the ODE solver fails with the current model) 
 

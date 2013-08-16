@@ -4,6 +4,7 @@ addpath([pwd '/config'])
 addpath([pwd '/core'])
 addpath([pwd '/examples'])
 addpath([pwd '/examples/CompanionFiles'])
+addpath([pwd '/modules'])
 addpath([pwd '/tests'])
 
 

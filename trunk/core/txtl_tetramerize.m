@@ -1,9 +1,7 @@
 % txtl_tetramerize.m - general protein tetramerization
 % Zoltan A. Tuza Sep 2012
 %
-% This file contains a description of the protein produced by tetR.
-% Calling the function txtl_protein_tetR() will set up the reactions for
-% sequestration by the inducer aTc.
+% Reactions for protein tetramerization. 
 
 %
 % Copyright (c) 2012 by California Institute of Technology
