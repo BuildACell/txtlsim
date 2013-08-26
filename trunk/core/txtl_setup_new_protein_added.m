@@ -30,7 +30,14 @@ matchStr = vertcat(matchStr{:});
 proteinList = regexprep(matchStr,'tetramer|dimer','');
 proteinList = unique(proteinList);
 
-[~, ia, ~] = union(proteinList,proteinsAlreadySetUp);
+%implementation of union has changed in 2013a [~, ia, ~] = union(proteinList,proteinsAlreadySetUp);
+ia = [];
+for k=1:size(proteinList,1)
+    if findStringInAList(proteinsAlreadySetUp,proteinList(k)) == 0
+        ia(end+1) = k;
+    end
+end
+
 
 % Proteins from the first list have not been set up (indexed by ia)
 for k = 1:size(ia,1)

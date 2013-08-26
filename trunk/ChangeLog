@@ -1,3 +1,17 @@
+2013-08-25 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* tests/test_basic_examples.m: test file to test basic functionality through example files
+	* core/findspecies.m: finding species within complexes 3rd arugment: withinComplex, used for calculate totel concentration of species.
+	* auxiliary/findStringInAList.m: substring search to find all instances of the searched string within strings
+	* core/txtl_getDefaultPlotDataStruct.m: creates a default data struct for txtl_plot
+	* core/txtl_plot.m: refactoring to accommodate the new plot data struct
+	* core/txtl_setup_new_protein_added.m: in Matlab 2013a the implementation of union has changed, list comparison is modified accordingly
+	* auxiliary/wholeExpfileReader.m: complex experiment file reader, reads biotek platereader generated excel files (in csv format), then loads up related matrices and adjust the background signal in each valve.
+	* auxiliary/calcAdditionalData.m: calculates experiment related files, e.g. expression rates, endtimes.
+	* auxiliary/processMGData.m: calculetes mRNA signal fits for each valves.
+	* examples/genetic_toggle_switch_function.m: function form of the toggle switch for rapid testing experimental conditions.
+	* examples/genetic_toggle_switch_gradient.m: example file for toggle switch experiment conditions.  
+2013-08-16 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* core/txtl_extract: linear dna degradation related species has been moved to txtl_add_dna (under linear dna degradation).
 2013-08-15 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* auxiliary/parseGetEqOutput.m: new parser function, it parses a simbiology objects into an ode functions compatible file. 
 	* tmp/: new directory to store script generated files

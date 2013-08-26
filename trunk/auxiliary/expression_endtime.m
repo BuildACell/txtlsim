@@ -7,6 +7,9 @@ for k=1:dataChannels
         indend = find(data(end,k)*0.98 < data(:,k));
         endtime_ind(k) = indend(1);
         endtime(k) = t_vec(endtime_ind(k));
+    else 
+        endtime(k) = 0;
+        endtime_ind(k) =0;
     end
 end
 

@@ -24,7 +24,7 @@ dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', 1, 'plasmid'
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
- txtl_addspecies(Mobj, 'aTc', 600);
+ txtl_addspecies(Mobj, 'aTc', 5);
 
 
 % Run a simulaton
@@ -36,7 +36,7 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulation
 
-simulationTime = 14*60*60;
+simulationTime = 14*60*60; % 14 hours
 
 
 tic
@@ -47,9 +47,16 @@ x_ode = simData.Data;
 
 
 %% plot the result
- txtl_plot(t_ode,x_ode,Mobj);
+
+dataGroups = txtl_getDefaultPlotDataStruct();
+dataGroups(2).SpeciesToPlot   = {'ALL_PROTEIN','[protein tetRdimer]_tot'};
 
 
+txtl_plot(t_ode,x_ode,Mobj,dataGroups);
+
+
+ 
+ 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:
 % mode: matlab

@@ -58,19 +58,8 @@ handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
 
-
-% DNA and mRNA plot
-defaultdataGroups{1,1} = 'DNA and mRNA';
-defaultdataGroups{1,2} = {'ALL_DNA'}; 
-defaultdataGroups{1,3} = {'b','r','g','b--','r--','g--','c','y','w','k'};
-
-% Gene Expression Plot
-defaultdataGroups{2,1} = 'Gene Expression';
-defaultdataGroups{2,2} = {'ALL_PROTEIN'};
-defaultdataGroups{2,3} = {'b','r','g','b--','r--','g--','c','y','w','k'};
-
-% Resource Plot
-defaultdataGroups{3,1} = 'Resource usage';
+% get default data structrure for plot
+defaultdataGroups = txtl_getDefaultPlotDataStruct();
 
 switch nargin
     

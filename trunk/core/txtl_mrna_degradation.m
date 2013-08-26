@@ -10,9 +10,9 @@ function txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec)
     end
     if mode.utr_rbs_flag
         txtl_addreaction(tube,['AA:ATP:Ribo:' rna.Name ' -> AA + ATP + Ribo'],...
-            'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
+            'MassAction',{'TXTL_AA_ATP_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
         txtl_addreaction(tube,['Ribo:' rna.Name ' -> Ribo'],...
-            'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
+            'MassAction',{'TXTL_Ribo_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
     end
 
 

@@ -23,7 +23,7 @@ data.x0 = dataOut.initialValues;
 data.p0 = dataOut.parameters;
 
 data.modelFcn = str2func(dataOut.modelFcn);
-data.costFcn = @extract_calibration_cost_fcn;
+data.costFcn = @paramestCostFcn;
 
 % building initial cases
 %
@@ -46,7 +46,7 @@ end
 % select parameters for estimation
 
 K_tx = findStringInAList(dataOut.parameterNames,'TXTL_transcription_rate1');
-ntpdeg = findStringInAList(dataOut.parameterNames,'NTPdeg_F');
+ntpdeg = findStringInAList(dataOut.parameterNames,'ATPdeg_F');
 rbs_f = findStringInAList(dataOut.parameterNames,'TXTL_UTR_RBS_F');
 
 % selecting parameters of interest 

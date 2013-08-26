@@ -1,5 +1,4 @@
-% Genetic Toggle Switch example
-% Vipul Singhal, September 2012
+
 %
 % This file contains a simple example of setting up a TXTL simulation
 % for a genetic switch. It shows the bistability of the circuit, and the
@@ -12,17 +11,12 @@
 % another thing to be played with (and hence should be told to anyone who
 % uses this simulation, is that TX and TL rates might be mo
 
-% clean up
-close all
-clearvars
+function [simData,Mobj] = genetic_toggle_switch_function(extract,ptet_DNA,placI_DNA,tspan,IPTG_amount,atc_amount)
 
-% define plasmid concentration
-ptet_DNA = 1; % nM
-placI_DNA = 1; % nM
 
 % set up the tubes
-tube1 = txtl_extract('E9');
-tube2 = txtl_buffer('E9');
+tube1 = txtl_extract(extract);
+tube2 = txtl_buffer(extract);
 tube3 = txtl_newtube('genetics_switch');
 
 % add dna to tube3
@@ -35,24 +29,15 @@ dna_tetR = txtl_add_dna(tube3, 'placI(50)', 'rbs(20)', 'tetR(647)', placI_DNA, '
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % add inducers
-txtl_addspecies(Mobj, 'aTc',330);
-txtl_addspecies(Mobj, 'IPTG',20);
+txtl_addspecies(Mobj, 'aTc',IPTG_amount);
+txtl_addspecies(Mobj, 'IPTG',atc_amount);
 
 % set up simulation
-simulationTime = 14*60*60; % hours
+simulationTime = tspan*60*60; % hours
 
 % simulate the reaction
 tic 
 simData = txtl_runsim(Mobj,simulationTime);
 toc
 
-t_ode = simData.Time;
-x_ode = simData.Data;
-
-% plot data
-dataGroups = txtl_getDefaultPlotDataStruct();
-
-dataGroups(2).SpeciesToPlot = {'[protein lacItetramer]_tot','[protein tetRdimer]_tot'};
-
-txtl_plot(t_ode,x_ode,Mobj,dataGroups);
-
+end

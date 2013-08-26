@@ -83,10 +83,6 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
                        'TXTL_INDUCER_TETR_ATC_R',paramObj.Protein_Inducer_Reverse});
     end
 
-    % degrade the aTc inducer
-     txtl_addreaction(tube,'aTc -> null',...
-      'MassAction',{'TXTL_INDUCER_DEGRADATION_ATC',paramObj.Inducer_Degradation});
-
     % set up a reaction for protein dimerization
     txtl_dimerize(mode, tube,protein, ...
         [paramObj.Dimmerization_Forward, paramObj.Dimmerization_Reverse]);

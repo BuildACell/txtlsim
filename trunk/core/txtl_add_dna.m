@@ -52,13 +52,13 @@
 %%
 function dna = txtl_add_dna(tube, prom_spec, rbs_spec, gene_spec, dna_amount, type, varargin)
 mode = struct('add_dna_driver', {[]},...
-              'prot_deg_flag',{false},...
-              'no_protein_flag',{false}, ...
-              'prot_term_flag',{false},...
-              'utr_attenuator_flag',{false},...
-              'utr_antisense_flag',{false},...
-              'utr_rbs_flag',{false}, ...
-              'prom_junk_flag',{false},'prom_thio_flag',{false});
+    'prot_deg_flag',{false},...
+    'no_protein_flag',{false}, ...
+    'prot_term_flag',{false},...
+    'utr_attenuator_flag',{false},...
+    'utr_antisense_flag',{false},...
+    'utr_rbs_flag',{false}, ...
+    'prom_junk_flag',{false},'prom_thio_flag',{false});
 % Extract out the names and lengths
 [promData, promStr] = txtl_parsespec(prom_spec);
 [utrData, utrStr] = txtl_parsespec(rbs_spec);
@@ -82,11 +82,11 @@ geneName = geneData{1,1}; %assuming the format is gene-lva-...-terminator
 %! TODO: VS 4/17/13 Is rbs always the last entry of utr? what about
 %spacer?
 rbsName = utrData{1,end}; % format is att-...-rbs.
-if mode.utr_antisense_flag || mode.no_protein_flag 
+if mode.utr_antisense_flag || mode.no_protein_flag
     protstr = ['protein ' geneStr];
-    rnastr = ['RNA ' utrStr]; 
+    rnastr = ['RNA ' utrStr];
     dnastr = ['DNA ' promStr '--' utrStr];
-    % dont care what else is after the antisense. the sole purpose of 
+    % dont care what else is after the antisense. the sole purpose of
     % antisense is to sequester the RNA att
 else
     protstr = ['protein ' geneStr]; % protstr looks something like 'protein tetR-lva-terminator'
@@ -95,7 +95,7 @@ else
 end
 
 
-    
+
 
 promoterName = promData{1,end}; % assuming {'thio','junk','prom'}
 
@@ -110,13 +110,13 @@ if isempty(varargin)
     dnaList{end+1} = {prom_spec, rbs_spec, gene_spec, dna_amount, type, 'rxns_not_set_up', mode};
     tubeUser.DNAinfo = dnaList;
     set(tube, 'UserData', tubeUser)
-    clear dnaList tubeUser 
+    clear dnaList tubeUser
     
     % set up protein reactions and data, followed by utr followed by promoter
     % (promoter reactions require the lengths of the rna, therefore need to be
     % set up after the protein and utr files are called.
     
-
+    
     %% Protein properties, parameters and reactions %
     protein = txtl_addspecies(tube, protstr, 0, 'Internal');
     if exist(['txtl_protein_' geneName], 'file') == 2
@@ -173,12 +173,12 @@ if isempty(varargin)
         promData = txtl_prom_p70(mode, tube, dna, rna, promData);
     end
     promlenTot = sum(cell2mat(promData(2,:)));
-%     if mode.utr_antisense_flag
-%         dna.UserData = promlenTot + utrlenTot;
-%     else
-%         dna.UserData = promlenTot + utrlenTot + genelenTot;
-%     end    
-        dna.UserData = promlenTot + utrlenTot + genelenTot;   
+    %     if mode.utr_antisense_flag
+    %         dna.UserData = promlenTot + utrlenTot;
+    %     else
+    %         dna.UserData = promlenTot + utrlenTot + genelenTot;
+    %     end
+    dna.UserData = promlenTot + utrlenTot + genelenTot;
     
     %% Translation %%
     if mode.utr_rbs_flag % no translation if there is no ribosome binding site present
@@ -188,7 +188,13 @@ if isempty(varargin)
     %% DNA, protein degradation
     
     % DNA degradation
-    if strcmp(type, 'linear')
+    if strcmp(type, 'linear') 
+        % set up species for linear DNA degradation
+        % Extract is 1/3 of the 10ul reaction volume
+        extractStockMulti = 10/(10/3);
+        % Add in exonuclease 
+        txtl_addspecies(tube, 'RecBCD', extractStockMulti*0.3);	% % 0.3 from Clare Chen (Jongmin will provide ref)
+        
         txtl_dna_degradation(mode, tube, dna);
     end
     
@@ -221,9 +227,9 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     end
     
     %% Untranslated Region properties, parameters and reactions %%%%%%%%%%%
-  
+    
     rna = sbioselect(tube, 'Name', rnastr);
-    if exist(['txtl_utr_' rbsName], 'file') == 2 
+    if exist(['txtl_utr_' rbsName], 'file') == 2
         eval(['txtl_utr_' rbsName '(mode, tube, rna, protein)']);
     else
         warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
@@ -247,8 +253,8 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     
     % Translation %%
     if mode.utr_rbs_flag % no translation unless rbs present. (no rbs => no Ribobound)
-    Ribobound = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
-    txtl_translation(mode, tube, dna, rna, protein, Ribobound);
+        Ribobound = sbioselect(tube, 'Name', ['Ribo:' rna.Name]);
+        txtl_translation(mode, tube, dna, rna, protein, Ribobound);
     end
     %% DNA, mRNA, protein degradation
     
@@ -268,9 +274,14 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         kDNA_recbcd_f = tube.UserData.ReactionConfig.DNA_RecBCD_Forward;
         % backward rr for DNA + RecBCD <-> DNA:RecBCD
         kDNA_recbcd_r = tube.UserData.ReactionConfig.DNA_RecBCD_Reverse;
+        
+        % linear DNA protection by gamS
+        txtl_addreaction(tube,'RecBCD + [protein gamS] -> RecBCD:gamS',...
+            'MassAction',{'GamS_RecBCD_f',tube.UserData.ReactionConfig.GamS_RecBCD_F});
+        
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]);
     end
-   
+    
     % Add in mRNA degradation reactions
     txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec);
     

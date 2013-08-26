@@ -58,12 +58,6 @@ addspecies(tube, 'Ribo', stockMulti*1000);	% 2300 nM based on VN's paper
      'MassAction',{'TXTL_RNAP_S70_F',tube.UserData.ReactionConfig.RNAP_S70_F;
                    'TXTL_RNAP_S70_R',tube.UserData.ReactionConfig.RNAP_S70_R});               
 
-% Add in exonuclease + protection reactions (if [protein gamS] > 0)
-addspecies(tube, 'RecBCD', stockMulti*0.3);	% % 0.3 from Clare Chen (Jongmin will provide ref)
-
-txtl_addreaction(tube,'RecBCD + [protein gamS] -> RecBCD:gamS',...
-     'MassAction',{'GamS_RecBCD_f',tube.UserData.ReactionConfig.GamS_RecBCD_F});
-
 % % Add in RNA degradation
 % addspecies(tube, 'RNase', stockMulti*1);	% 1 nM
 

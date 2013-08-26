@@ -9,9 +9,9 @@ RNAP_deg = 0.0011;
 txtl_addreaction(modelObj,'RNAP -> null',...
     'MassAction',{'RNAPdeg_F',RNAP_deg});
 txtl_addreaction(modelObj,'RNAP70 -> protein sigma70',...
-    'MassAction',{'RNAPdeg_F',RNAP_deg});
+    'MassAction',{'RNAP70deg_F',RNAP_deg});
 txtl_addreaction(modelObj,'RNAP28 -> protein sigma28',...
-    'MassAction',{'RNAPdeg_F',RNAP_deg});
+    'MassAction',{'RNAP28deg_F',RNAP_deg});
 
 end
 

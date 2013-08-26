@@ -1,4 +1,17 @@
 
+%%
+% *negative auto regulation function form*
+% input:
+% * extract: name of the extract
+% * dna_amount (plasmid): in the reaction
+% * tspan: the simulation time in *hours*
+% * atc_amount: amount of ATC induder in the reaction
+% 
+% output:
+% * simulation timepoint
+% * simulation data
+% * Simbiology model obj
+
 function [t_ode, x_ode, Mobj] =  negautoreg_function(extract,dna_amount,tspan,atc_amount)
 
 % Set up the standard TXTL tubes
@@ -7,11 +20,10 @@ tube1 = txtl_extract(extract);
 tube2 = txtl_buffer(extract);
 
 % Now set up a tube that will contain our DNA
-tube3 = txtl_newtube('circuit');
+tube3 = txtl_newtube('negautoreg');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-%dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'tetR(1200)-lva(40)-terminator(100)', dna_amount, 'plasmid');
 dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', dna_amount, 'plasmid');
 
 
