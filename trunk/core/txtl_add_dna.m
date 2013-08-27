@@ -227,7 +227,7 @@ if isempty(varargin)
         % Extract is 1/3 of the 10ul reaction volume
         extractStockMulti = 10/(10/3);
         % Add in exonuclease 
-        txtl_addspecies(tube, 'RecBCD', extractStockMulti*0.3);	% % 0.3 from Clare Chen (Jongmin will provide ref)
+        txtl_addspecies(tube, 'RecBCD', extractStockMulti*5);	% % 0.3 from Clare Chen (Jongmin will provide ref)
         
         txtl_dna_degradation(mode, tube, dna);
     end
@@ -313,8 +313,9 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         kDNA_recbcd_r = tube.UserData.ReactionConfig.DNA_RecBCD_Reverse;
         
         % linear DNA protection by gamS
-        txtl_addreaction(tube,'RecBCD + [protein gamS] -> RecBCD:gamS',...
-            'MassAction',{'GamS_RecBCD_f',tube.UserData.ReactionConfig.GamS_RecBCD_F});
+        txtl_addreaction(tube,'RecBCD + [protein gamS] <-> RecBCD:gamS',...
+            'MassAction',{'GamS_RecBCD_f',tube.UserData.ReactionConfig.GamS_RecBCD_F;...
+            'GamS_RecBCD_r',tube.UserData.ReactionConfig.GamS_RecBCD_F/5});
         
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]);
     end

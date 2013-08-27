@@ -14,7 +14,7 @@ Protein_ClpXP_complex_deg, Numeric, 0.1,
 RNAP_S70_F, Numeric, 100,
 RNAP_S70_R, Numeric, 0.01,
 
-GamS_RecBCD_F, Numeric, 1, ! TODO: update these numbers based on measurements
+GamS_RecBCD_F, Numeric, 0.001, ! TODO: update these numbers based on measurements
 
 AA_Forward,Expression,log(2) / 0.1, binding rate of 1 ms
 AA_Reverse,Expression, 1 * log(2) / 0.1, Km of 100 for amino acid usage 10uM
