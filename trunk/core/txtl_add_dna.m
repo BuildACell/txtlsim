@@ -52,13 +52,17 @@
 %%
 function dna = txtl_add_dna(tube, prom_spec, rbs_spec, gene_spec, dna_amount, type, varargin)
 mode = struct('add_dna_driver', {[]},...
-    'prot_deg_flag',{false},...
-    'no_protein_flag',{false}, ...
-    'prot_term_flag',{false},...
-    'utr_attenuator_flag',{false},...
-    'utr_antisense_flag',{false},...
-    'utr_rbs_flag',{false}, ...
-    'prom_junk_flag',{false},'prom_thio_flag',{false});
+              'prot_deg_flag',{false},...
+              'no_protein_flag',{false}, ...
+              'prot_term_flag',{false},...
+              'utr_attenuator_flag',{false},...
+              'utr_antisense_flag',{false},...
+              'utr_rbs_flag',{false}, ...
+              'prom_junk_flag',{false},'prom_thio_flag',{false}, ...
+              'sim_module_exception', {false}, 'double_antisense', {false}); 
+          %generalise code to remove sim module. 
+          
+          
 % Extract out the names and lengths
 [promData, promStr] = txtl_parsespec(prom_spec);
 [utrData, utrStr] = txtl_parsespec(rbs_spec);
@@ -75,6 +79,20 @@ mode.utr_antisense_flag = checkForStringInACellList(utrData(1,:),{'anti1', 'anti
 mode.utr_rbs_flag = checkForStringInACellList(utrData(1,:),'rbs');
 [mode.prom_junk_flag, junkIndex] = checkForStringInACellList(promData(1,:),'junk');
 mode.prom_thio_flag = checkForStringInACellList(promData(1,:),'thio');
+
+[BooleanAtt1Present,indexesOfAtt1Present] = checkForStringInACellList(utrData(1,:),'att1');
+[BooleanAnti1Present,indexesOfAnti1Present] = checkForStringInACellList(utrData(1,:),'anti1');
+if length(indexesOfAtt1Present)==2
+    if indexesOfAtt1Present == [1 2]
+        mode.sim_module_exception = true;
+    end
+end
+if length(indexesOfAnti1Present)==2
+    if indexesOfAnti1Present == [2 3]
+        mode.double_antisense = true;
+    end
+end
+
 %! TODO: (VS 4/17/13) need to add to this if other new types of domains are added to which ribisome can bind.
 
 % species name string building
@@ -128,32 +146,48 @@ if isempty(varargin)
     %% Untranslated Region properties, parameters and reactions %
     rna = txtl_addspecies(tube, rnastr, 0, 'Internal');
     if exist(['txtl_utr_' rbsName], 'file') == 2
-        if mode.utr_rbs_flag
+        if mode.utr_rbs_flag 
+            %ribosome must bind
             [Ribobound, utrlen] = eval(['txtl_utr_' rbsName '(mode, tube, rna, protein, utrData)']);
         else
+            % no rbs present, no ribosome binds. (so far there are no files apart from txtl_utr_rbs
             [utrlen] = eval(['txtl_utr_' rbsName '(mode, tube, rna, protein, utrData)']);
         end
-    else
-        if mode.utr_rbs_flag
+    else 
+        if mode.utr_rbs_flag 
+            %file doesnt exist and rbs flag is set. basically never happens, since rbs file is present. 
             warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
                 '; using default rbs params']);
             [Ribobound, utrlen] = txtl_utr_rbs(mode, tube, rna, protein, utrData);
         else
+            if ~(mode.utr_antisense_flag || strcmp(rbsName, 'control'))
             warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
                 '; using default rbs params']);
+            end
             [utrlen] = txtl_utr_rbs(mode, tube, rna, protein, utrData);
         end
     end
     
     utrlenTot = sum(cell2mat(utrlen(2,:)));
     if mode.utr_attenuator_flag
+        if mode.sim_module_exception % SIM module exception
+                attFirstLength = cell2mat(utrlen(2,1)); 
+                attSecondLength = cell2mat(utrlen(2,2)); 
+                restOfRNALength = utrlenTot + genelenTot - attFirstLength - attSecondLength;
+                RNAlengthData.attFirst = attFirstLength;
+                RNAlengthData.attSecond = attSecondLength;
+                RNAlengthData.remaining = restOfRNALength;
+            
+        else
         attenuatorLength = cell2mat(utrlen(2,1)); % assume att is always the first thing in the UTR
         restOfRNALength = utrlenTot + genelenTot - attenuatorLength;
         RNAlengthData.att = attenuatorLength;
         RNAlengthData.remaining = restOfRNALength;
+        end
     else
         RNAlengthData = utrlenTot + genelenTot;
     end
+    
     rna.UserData = RNAlengthData;
     clear RNAlengthData attenuatorLength restOfRNALength
     
@@ -232,8 +266,11 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     if exist(['txtl_utr_' rbsName], 'file') == 2
         eval(['txtl_utr_' rbsName '(mode, tube, rna, protein)']);
     else
-        warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
-            '; using default rbs params']);
+        if ~(mode.utr_antisense_flag || strcmp(rbsName, 'control'))
+            warning('txtltoolbox:txtl_add_dna:fileNotFound', ['TXTL: can''t find txtl_utr_' rbsName ...
+                '; using default rbs params']);
+        end
+        
         txtl_utr_rbs(mode, tube, rna, protein, utrData);
     end
     
@@ -308,7 +345,7 @@ end % end of function
 function [binVariable,indexes] = checkForStringInACellList(cellList,matchStr)
 FlagVector = cellfun(@(x) strcmp(x,matchStr),cellList,'UniformOutput',false);
 indexes = find(cell2mat(FlagVector) > 0);
-if sum(cell2mat(FlagVector)) == 1
+if sum(cell2mat(FlagVector)) >= 1
     binVariable = true;
 else
     binVariable = false;

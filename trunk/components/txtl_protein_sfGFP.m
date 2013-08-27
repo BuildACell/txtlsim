@@ -1,7 +1,8 @@
-% txtl_extract.m - function to create a tube of TX-TL extract
-%! TODO: add documentation
+% txtl_protein_deGFP.m - protein information for deGFP
+% VS, 4 March 2013
 
-% Written by Richard Murray, Sep 2012
+
+% Written by Richard Murray, 9 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -32,34 +33,39 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_extract(name)
-tube = txtl_newtube(name);
+function varargout = txtl_protein_sfGFP(mode, tube, protein, varargin)
 
-% Extract is 1/3 of the 10ul reaction volume
-stockMulti = 10/(10/3); 
+paramObj = txtl_component_config('sfGFP');
 
-%% building configuration object for the current experiment
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(mode.add_dna_driver, 'Setup Species')
+    
+    geneData = varargin{1};
+    
+    defaultBasePairs = {'deGFP','lva','terminator';...
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
+    
+    varargout{1} = geneData;
+    
+    coreSpecies = {[protein.Name '*']};
+    % empty cellarray for amount => zero amount
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
+ 
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
 
-TXTLconfig = txtl_reaction_config(name);
-tube.UserData.ReactionConfig = TXTLconfig;
+    % Set up the maturation reaction
+    txtl_addreaction(tube,['[' protein.Name '] -> [' protein.Name '*]'],...
+     'MassAction',{'TXTL_PROT_deGFP_MATURATION',paramObj.Protein_Maturation});
+    
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
+else
+    error('txtltoolbox:txtl_protein_sfGFP:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end
 
-
-%% setting up species and concentrations in the extract 
-
-% Add in ribosomes, RNAP, sigma70 and sigma 28
-addspecies(tube, 'RNAP', stockMulti*100);	% 100 nM based on VN's paper
-sigma70 = addspecies(tube, 'protein sigma70', stockMulti*35); % 35 nM based on VN's paper
-sigma28 = addspecies(tube, 'protein sigma28', stockMulti*20); % <20 nM based on VN's paper
-addspecies(tube, 'Ribo', stockMulti*1000);	% 2300 nM based on VN's paper
-
-% Add RNAP+Sigma70 <-> RNAP70 reaction
-% Set up the reaction
- txtl_addreaction(tube,['RNAP + ' sigma70.Name ' <-> RNAP70'],...
-     'MassAction',{'TXTL_RNAP_S70_F',tube.UserData.ReactionConfig.RNAP_S70_F;
-                   'TXTL_RNAP_S70_R',tube.UserData.ReactionConfig.RNAP_S70_R});               
-
-% % Add in RNA degradation
-addspecies(tube, 'RNase', stockMulti*100);	% 1 nM
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

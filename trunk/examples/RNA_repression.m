@@ -33,10 +33,10 @@ dna_att_deGFP = txtl_add_dna(tube3, ...
 %   'p70(35)', 'rbs(20)', 'gamS(1000)', 0*4.2, 'plasmid'); 
 
 % DNA with antisense RNA and dummy protein
-dna_anti_dummyprotein = txtl_add_dna(tube3, ...
-  'pJ23119(35)', 'anti1(91)', 'no_protein', ...	% promoter, utr, gene
-ANTI_conc*4.2, ...					% concentration (nM)
-  'plasmid');					% type
+% dna_anti_dummyprotein = txtl_add_dna(tube3, ...
+%   'pJ23119(35)', 'anti1(91)', 'no_protein', ...	% promoter, utr, gene
+% ANTI_conc*4.2, ...					% concentration (nM)
+%   'plasmid');					% type
 
 % dna_control_dummyprotein = txtl_add_dna(tube3, ...
 %   'pJ23119(35)', 'control(91)', 'no_protein', ...	% promoter, utr, gene

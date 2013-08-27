@@ -14,9 +14,6 @@ elseif nargin == 3
     CONTROL_DNA_conc = varargin{3};
 end
 
-
-
-
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
 tube1 = txtl_extract('E9_RNAcascade');

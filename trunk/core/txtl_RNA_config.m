@@ -1,37 +1,32 @@
-classdef txtl_reaction_config
+classdef txtl_RNA_config
     %TXTL_REACTION_CONFIG Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
-        NTPmodel;
-        AAmodel;
-        Transcription_Rate;
-        Translation_Rate;
-        DNA_RecBCD_Forward;
-        DNA_RecBCD_Reverse;
-        DNA_RecBCD_complex_deg;
-        Protein_ClpXP_Forward;
-        Protein_ClpXP_Reverse;
-        Protein_ClpXP_complex_deg;
-        RNAP_S70_F;
-        RNAP_S70_R;
-        GamS_RecBCD_F;
-        AA_Forward;
-        AA_Reverse;
-        Ribosome_Binding_F;
-        Ribosome_Binding_R;
-        RNA_deg;
-        RNase_F;
-        RNase_R;
-        NTP_Forward;
-        NTP_Reverse;
-        NTP_Concentration;
-        AA_Concentration;
-      
+        att1_anti1_termination_rate;
+        att1_anti1_repression_F_rate;
+        att1_anti1_repression_R_rate;
+        att1_auto_termination_rate;
+        att1_anti2_Xtalk_F_rate;
+        att1_anti2_Xtalk_R_rate;
+        att1_anti2_Xtalk_termination_rate;  
+        att2_anti2_termination_rate;
+        att2_anti2_repression_F_rate;
+        att2_anti2_repression_R_rate;
+        att2_auto_termination_rate;
+        att2_anti1_Xtalk_F_rate;
+        att2_anti1_Xtalk_R_rate;
+        att2_anti1_Xtalk_termination_rate; 
+        att1_anti11_repression_F_rate;
+        att1_anti11_repression_R_rate;
+        att1_anti11_termination_rate;
+        att2_anti1_anti1_Xtalk_F_rate;
+        att2_anti1_anti1_Xtalk_R_rate;
+        att2_anti11_Xtalk_termination_rate;
     end
     
     methods
-        function rConf = txtl_reaction_config(name)
+        function rConf = txtl_RNA_config(name)
             listOfProperties = properties(rConf);
             fileName = [name '_config.csv'];
             if exist(fileName,'file') == 2

@@ -4,11 +4,11 @@
 % This file contains a simple example of setting up a TXTL simulation
 % for gene expression using the standard TXTL control plasmid.
 %
-
+close all
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+tube1 = txtl_extract('E15_1');
+tube2 = txtl_buffer('E15_1');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('gene_expression');
@@ -16,7 +16,7 @@ tube3 = txtl_newtube('gene_expression');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
-   1, ...					% concentration (nM)
+   4, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
@@ -41,6 +41,21 @@ x_ode = simData.Data;
 %% plot the result
 
 txtl_plot(simData,Mobj);
+
+%% plot the result
+
+cellOfSpecies = {'RNAP70',[];  
+    'NTP',[]; 
+    'ATP',[];
+   'RNA rbs--deGFP',[];
+   'AA:ATP:Ribo:RNA rbs--deGFP','Ribo:RNA rbs--deGFP';};
+   
+
+titleString = {'RNAP70'; 'free NTP'; 'free ATP';
+   'free RNA'; 'Ribobound RNA'};
+plotCustomSpecies({Mobj},{x_ode}, {t_ode}, cellOfSpecies, titleString, 2, 'save')
+
+
 
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:

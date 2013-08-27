@@ -48,7 +48,7 @@ stockMulti = 10/4.1666;
  addspecies(tube, 'NTP', stockMulti*TXTLconfig.NTP_Concentration);		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
  addspecies(tube, 'ATP', stockMulti*(TXTLconfig.NTP_Concentration/4));		% 100 ntp's/unit (NTP = ATP+GTP+CTP+UTP)
  addspecies(tube, 'AA',  stockMulti*TXTLconfig.AA_Concentration);		% 100 aa's/unit (20 amino acid)
-
+% !TODO: VS Aug 13 is there more ATP in the system than the other NTPs?
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
