@@ -1,3 +1,4 @@
+
 % IFFL as tested in lab by S. Guo
 % VS 2013
 
@@ -35,6 +36,16 @@ simData = txtl_runsim(Mobj,simulationTime);
 
 t_ode = simData.Time;
 x_ode = simData.Data;
+
+
+defaultGroups = txtl_getDefaultPlotDataStruct();
+defaultGroups(2).SpeciesToPlot = {'protein deGFP-lva*'};
+
+txtl_plot(t_ode,x_ode,Mobj,defaultGroups);
+
+
+
+%%
 
 figure
 cellOfSpecies = {'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer', 'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer:arabinose:protein AraC'

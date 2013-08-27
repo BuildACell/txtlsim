@@ -13,7 +13,7 @@
 % uses this simulation, is that TX and TL rates might be mo
 
 % clean up
-close all
+%close all
 clearvars
 
 % define plasmid concentration
@@ -35,11 +35,11 @@ dna_tetR = txtl_add_dna(tube3, 'placI(50)', 'rbs(20)', 'tetR(647)', placI_DNA, '
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % add inducers
-txtl_addspecies(Mobj, 'aTc',330);
-txtl_addspecies(Mobj, 'IPTG',20);
+txtl_addspecies(Mobj, 'aTc',0);
+txtl_addspecies(Mobj, 'IPTG',1000);
 
 % set up simulation
-simulationTime = 14*60*60; % hours
+simulationTime = 8*60*60; % hours
 
 % simulate the reaction
 tic 

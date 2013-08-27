@@ -29,8 +29,8 @@ dna_tetR = txtl_add_dna(tube3, 'placI(50)', 'rbs(20)', 'tetR(647)', placI_DNA, '
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % add inducers
-txtl_addspecies(Mobj, 'aTc',IPTG_amount);
-txtl_addspecies(Mobj, 'IPTG',atc_amount);
+txtl_addspecies(Mobj, 'IPTG',IPTG_amount);
+txtl_addspecies(Mobj, 'aTc',atc_amount);
 
 % set up simulation
 simulationTime = tspan*60*60; % hours

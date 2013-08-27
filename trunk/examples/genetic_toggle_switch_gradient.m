@@ -24,7 +24,7 @@ for k=1:size(aTcLevels,2)
     [simData{k}, Mobj{k}] = genetic_toggle_switch_function(extract,ptet_DNA,placI_DNA,tspan,IPTG_amount,aTcLevels(k));
     tetR = findspecies(Mobj{k},'protein tetRdimer','withInComplex');
     LacI = findspecies(Mobj{k},'protein lacItetramer','withInComplex');
-    plot(simData{k}.Time/60,simData{k}.Data(:,tetR));
+    plot(simData{k}.Time/60,sum(simData{k}.Data(:,tetR),2));
 end
 hold off
 
@@ -37,7 +37,7 @@ for k=1:size(IPTGLevels,2)
     [simData{k}, Mobj{k}] = genetic_toggle_switch_function(extract,ptet_DNA,placI_DNA,tspan,IPTGLevels(k),aTc_amount);
     tetR = findspecies(Mobj{k},'protein tetRdimer','withInComplex');
     LacI = findspecies(Mobj{k},'protein lacItetramer','withInComplex');
-    plot(simData{k}.Time/60,simData{k}.Data(:,LacI));
+    plot(simData{k}.Time/60,sum(simData{k}.Data(:,LacI),2));
 end
 hold off
 
