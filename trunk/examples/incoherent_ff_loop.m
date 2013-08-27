@@ -47,19 +47,19 @@ txtl_plot(t_ode,x_ode,Mobj,defaultGroups);
 
 %%
 
-figure
+
 cellOfSpecies = {'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer', 'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer:arabinose:protein AraC'
                  'NTP:RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer','NTP:RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:protein tetRdimer:arabinose:protein AraC'
                  'RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:arabinose:protein AraC', 'RNAP70:DNA pBAD--rbs--tetR:arabinose:protein AraC'
                  'NTP:RNAP70:DNA pBAD_ptet--rbs--deGFP-lva:arabinose:protein AraC', 'NTP:RNAP70:DNA pBAD--rbs--tetR:arabinose:protein AraC'};
 plotCustomSpecies2({Mobj}, {x_ode}, {t_ode}, cellOfSpecies)
-figure
+
 cellOfSpecies = {'protein deGFP-lva*', 'protein tetR','protein ClpX*'
                  'protein AraC','protein tetRdimer','protein deGFP-lva*:protein ClpX*'
                  'arabinose', 'aTc','protein deGFP-lva***'
                  'arabinose:protein AraC', '2 aTc:protein tetRdimer','protein ClpX'};
 plotCustomSpecies2({Mobj}, {x_ode}, {t_ode}, cellOfSpecies)
-figure
+
 cellOfSpecies = {'RNAP', 'protein sigma70','Ribo'
                  'RNAP70','RNase','NTP'
                  'ATP', 'AA','protein deGFP-lva'};

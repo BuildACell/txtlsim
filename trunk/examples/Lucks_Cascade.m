@@ -176,17 +176,17 @@ cellOfSpecies = {'RNA anti2','RNA anti2:RNA att2',           'RNAP70:DNA pJ23119
     'RNA att2-anti1-anti1',  'RNA att2-anti1-anti1:RNA att1','RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1:RNA att2-anti1-anti1'
     'RNA att1-rbs--sfGFP',   'RNA att2',                     'protein sfGFP*'
     'RNA control',           'RNA att1' ,                    'RNase'};
-plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'VariousRNA' )
+plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)
 
 cellOfSpecies = {'RNA anti2:RNase',              'RNA att2:RNase',   'Ribo:RNA att1-rbs--sfGFP:RNase'          
                      'RNA att2-anti1:RNase',         'RNA att1:RNase',   'RNA att1-rbs--sfGFP:RNase' 
                      'RNA att2-anti1-anti1:RNase',   'RNA control:RNase','AA:ATP:Ribo:RNA att1-rbs--sfGFP:RNase'};                 
-plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'RNase' )
+plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)
 
 cellOfSpecies = {'RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1', 'NTP:RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1';
                  'RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2','NTP:RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2';
                  'ATP'                                           'NTP'};
-plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'nascentDNA' )
+plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies) %,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'nascentDNA' 
 
 figure
 % Extract out the relevant experimental data: plots 1 - 5 and 9.
