@@ -50,10 +50,18 @@ switch nargin
         x_ode = simData.Data;
         dataGroups = defaultdataGroups;
     case 3
-        t_ode = varargin{1};
-        x_ode = varargin{2};
-        modelObj = varargin{3};
-        dataGroups = defaultdataGroups;
+        if isa(varargin{1},'SimData')
+            simData = varargin{1};
+            t_ode = simData.Time;
+            x_ode = simData.Data;
+            modelObj = varargin{2};
+            dataGroups = varargin{3};
+        else
+            t_ode = varargin{1};
+            x_ode = varargin{2};
+            modelObj = varargin{3};
+            dataGroups = defaultdataGroups;
+        end
     case 4
         t_ode = varargin{1};
         x_ode = varargin{2};

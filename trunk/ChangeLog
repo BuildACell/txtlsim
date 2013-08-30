@@ -1,3 +1,8 @@
+2013-08-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* auxiliary/parseGetEqOutput.m: bugfix, simbiology's getequation output can have more initial values than state variables, that leads to error in ode15s() function. A simple check looks for initial values with state equtions.
+	* core/txtl_plot.m: built in check to recognize simdata object when the function is called with 3 aruments txtl_plot(t,x,Mobj) vs txtl_(simData,Mobj,dataGroups).
+2013-08-28 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* doc/Makefile: makefile for the usersmanual, thanks to SCL
 2013-08-26 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* examples/incoherent_ff_loop_function.m: function for of the IFFL for rapid testing exp conditions. + example file
 2013-08-25 Zoltan Tuza <zoltuz@zoltuz-laptop>

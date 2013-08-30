@@ -58,9 +58,9 @@ if ~isempty(data.p_dependecies)
 end
 
 simTime =[];
-%% start of simulation
+%% start of simulations
 try
-    % calculate simulations with different initial values 
+    % run simulations with different initial values 
     for k=1:size(data.x0,2)
         tic
         [t(:,k),y{k}] = ode15s(@(t,x)data.modelFcn(t,x,pVector),tspan,data.x0(:,k));
@@ -102,6 +102,8 @@ if data.debugMode ==1 && cost < Inf
         plot(data.xdata/60,[data.ydata(:,k) sum(y{k}(:,data.targetSpecies),2)*data.speciesScaleFactor])
     end
     hold off
+    title(sprintf('current cost value:%f',cost))
+    disp('push any key to continue')
     pause
     close all
     

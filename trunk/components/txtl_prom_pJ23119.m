@@ -1,12 +1,6 @@
-% txtl_prom_p70.m - promoter information for p70 promoter
-% RMM, 8 Sep 2012
-%
-% This file contains a description of the standard p70 promoter.
-% Calling the function txtl_prom_p70() will set up the reactions for
-% transcription with the measured binding rates and transription rates.
+% Promoter file for the RNA circuit
 
-% Written by Richard Murray, Sep 2012
-%
+
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
 %

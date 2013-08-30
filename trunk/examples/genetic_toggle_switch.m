@@ -17,7 +17,7 @@
 clearvars
 
 % define plasmid concentration
-ptet_DNA = 1; % nM
+ptet_DNA = 4; % nM
 placI_DNA = 1; % nM
 
 % set up the tubes
@@ -35,8 +35,8 @@ dna_tetR = txtl_add_dna(tube3, 'placI(50)', 'rbs(20)', 'tetR(647)', placI_DNA, '
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % add inducers
-txtl_addspecies(Mobj, 'aTc',0);
-txtl_addspecies(Mobj, 'IPTG',1000);
+txtl_addspecies(Mobj, 'aTc',1000);
+txtl_addspecies(Mobj, 'IPTG',0);
 
 % set up simulation
 simulationTime = 8*60*60; % hours

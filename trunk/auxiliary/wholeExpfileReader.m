@@ -1,7 +1,8 @@
 % Zoltan A Tuza July 2013
 %
 % This function handles biotek plate reader data in csv format. The delimiter in
-% the file must be given.
+% the file must be given. The third optional argument is the valve of the negative
+% control. By default the 2nd valve is treated as negative control.
 %
 %
 % Copyright (c) 2013 by California Institute of Technology
@@ -33,22 +34,24 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function experimentData = wholeExpfileReader(fileName,delimiter,BgValve)
+function experimentData = wholeExpfileReader(fileName,delimiter,varargin)
 
 data = csvimport(fileName,'delimiter',delimiter);
 
-if isempty(BgValve)
-    noBGvalve = 2;
+
+if nargin > 2
+    noBGvalve = varargin{1};
 else
-    noBGvalve = BgValve;
+    noBGvalve = 2;
 end
 
-experimentData.BgValve = BgValve;
+experimentData.BgValve = noBGvalve;
 experimentData.FileName = fileName;
 
 
 %%
 
+%find the string with runtime and Interval info  
 res = cellfun(@(x) sscanf(x,'Runtime %d:%d:%d %*s Interval %d:%d:%d, %d Reads '),data(1:100,:),'UniformOutput',false);
 
 res2 = cellfun(@isempty,res);

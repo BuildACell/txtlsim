@@ -1,22 +1,18 @@
 %% load datasets
 
-pr_pr1_pr2_27 = data_importer('data/pr_pr1_pr2_02_27.csv','victor');
-pr_pr1_pr2_28 = data_importer('data/pr_pr1_pr2_02_28.csv','victor');
-pr_pr1_pr2_04 = data_importer('data/pr_pr1_pr2_03_04.csv','victor');
+% e15_pr_gfp_mg_0821 = wholeExpfileReader('ACS_paper_data/e15_pr_gfp_pr_gfp_mg_grad_0821_data.csv',';',2);
+% e15_pr_gfp_mg_0821 = processMGData(e15_pr_gfp_mg_0821);
+% e15_pr_gfp_mg_0821.valveNames = {'pos cont','neg cont','pr-gfp 1nM','pr-gfp 2nM','pr-gfp 3nM','pr-gfp 5nM','pr-gfp 10nM','pr-gfp 15nM'...
+%                                  'pr-gfp-s15-mg 1nm','pr-gfp-s15-mg 2nM','pr-gfp-s15-mg 3nM','pr-gfp-s15-mg 5nM','pr-gfp-s15-mg 10nM','pr-gfp-s15-mg 15nM'};
+%  
 
-
-% pr
-[data_1nm_mean data_1nm_std]  = getStdMean([pr_pr1_pr2_27.noBg(:,1) pr_pr1_pr2_28.noBg(:,1) pr_pr1_pr2_04.noBg(:,1)]);
-[data_2nm_mean data_2nm_std]  = getStdMean([ pr_pr1_pr2_28.noBg(:,3) pr_pr1_pr2_04.noBg(:,3)]);
-[data_3nm_mean data_3nm_std]  = getStdMean([pr_pr1_pr2_27.noBg(:,4) pr_pr1_pr2_04.noBg(:,4)]);
-[data_4nm_mean data_4nm_std]  = getStdMean([ pr_pr1_pr2_28.noBg(:,5) pr_pr1_pr2_04.noBg(:,5)]);
-
-
-data.xdata = pr_pr1_pr2_27.t_vec ;
-data.ydata = [data_1nm_mean./(225699.04) data_2nm_mean./(225699.04) data_3nm_mean./(225699.04) data_4nm_mean./(225699.04)];
+data.xdata = e15_pr_gfp_mg_0821.t_vec;
+data.ydata = e15_pr_gfp_mg_0821.noBg(:,3:8,2)./2683.9;
 
 %% initial values and parameters
 
+geneexpr
+close all;
 dataOut = parseGetEqOutput(Mobj);
 
 data.x0 = dataOut.initialValues;
@@ -45,12 +41,15 @@ end
 
 % select parameters for estimation
 
-K_tx = findStringInAList(dataOut.parameterNames,'TXTL_transcription_rate1');
-ntpdeg = findStringInAList(dataOut.parameterNames,'ATPdeg_F');
-rbs_f = findStringInAList(dataOut.parameterNames,'TXTL_UTR_RBS_F');
+ParametersToEstimate  = {'TXTL_TL_rate',...
+                         'TXTL_UTR_RBS_F',...
+                         'ATPdeg_F'
+                         };
+                     
+pSelect = cellfun(@(x) findStringInAList(dataOut.parameterNames,x),ParametersToEstimate);
 
 % selecting parameters of interest 
-data.p_mapping = [K_tx,ntpdeg,rbs_f];
+data.p_mapping = pSelect;
 
 gfp = findStringInAList(dataOut.speciesNames,'[protein deGFP*]');
 
@@ -59,7 +58,7 @@ data.targetSpecies = gfp;
 % conversion btw nM vs uM
 data.speciesScaleFactor = 0.001;
 % ploting simulation results with the origianl data in each step
-data.debugMode =0;
+data.debugMode =1;
 % output check 
 data.outputCheck = gfp;
 

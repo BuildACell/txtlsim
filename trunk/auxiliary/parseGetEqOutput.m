@@ -42,7 +42,7 @@ str = getequations(Mobj);
 tic 
 linebyline = textscan(str, '%s', 'delimiter', sprintf('\n'));
 
-% find dividers
+% find categories (Fluxes,Parameter Values,Initial Conditions,etc)
 div = regexp(linebyline{1},'^(.*):$','tokens','once');
 divPos = find(~cellfun('isempty',div) >0);
 r = regexp(linebyline{1},' = ','split','once');
@@ -143,7 +143,18 @@ toc
 
 % building the output structure 
 dataOut.parameters = cellfun(@(x) str2num(x),processedOutput{2,3}(:,2));
-dataOut.initialValues = cellfun(@(x) str2num(x),processedOutput{2,4}(:,2));
+% check each species has a corresponding ODE equation, one can add species
+% to the model without reactions attach to it.
+num = 1;
+for k = 1:size(processedOutput{2,4}(:,1))
+    ind = findStringInAList(processedOutput{2,odeEqcell}(:,1),processedOutput{2,4}(k,1));
+    if ind ==0
+        excludeInd(num) = k;
+        num = num+1;
+    end
+end
+selectedInitConds = ~ismember(1:19,excludeInd);
+dataOut.initialValues = cellfun(@(x) str2num(x),processedOutput{2,4}(selectedInitConds,2));
 dataOut.modelFile = [fileName '.m'];
 dataOut.modelFilePath = filePath;
 dataOut.modelFcn = fileName;

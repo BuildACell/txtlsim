@@ -17,6 +17,7 @@ p70_AraC = 1;
 pBAD_tetR = 1.1;
 pBAD_ptet_deGFP = 1.1;
 arabinose_amount = 1000;
+aTc_amount = 1;
 protein_ClpX =100;
 
 %% run aTc gradient 
@@ -30,5 +31,24 @@ for k=1:size(aTcLevels,2)
     labels{k} = [int2str(aTcLevels(k)) ' nM aTc'];
 end
 xlabel('Time [min]')
+ylabel('GFP-lva* [nM]')
 legend(labels)
 hold off
+
+
+
+%% run aTc gradient 
+figure(2)
+hold on
+for k=1:size(aTcLevels,2)
+    [simData{k}, Mobj{k}] = incoherent_ff_loop_function(extract,p70_AraC,pBAD_tetR,pBAD_ptet_deGFP,tspan,protein_ClpX,arabinoseLevels(k),aTc_amount);
+    
+    GFP = findspecies(Mobj{k},'protein deGFP-lva*');
+    plot(simData{k}.Time/60,sum(simData{k}.Data(:,GFP),2),colors{k});
+    labels{k} = [int2str(aTcLevels(k)) ' nM arabinose'];
+end
+xlabel('Time [min]')
+ylabel('GFP-lva* [nM]')
+legend(labels)
+hold off
+

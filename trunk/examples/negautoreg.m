@@ -19,12 +19,12 @@ tube3 = txtl_newtube('negautoreg');
 
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_tetR = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)', 'tetR(1200)', 1, 'plasmid');%
-% dna_deGFP = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
-% 'deGFP(1000)', 1, 'plasmid');
+ dna_deGFP = txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
+ 'deGFP(1000)', 1, 'plasmid');
 
 % Mix the contents of the individual tubes
 Mobj = txtl_combine([tube1, tube2, tube3]);
- txtl_addspecies(Mobj, 'aTc', 5);
+ txtl_addspecies(Mobj, 'aTc', 500);
 
 
 % Run a simulaton
@@ -42,6 +42,9 @@ simulationTime = 14*60*60; % 14 hours
 tic
 [simData] = txtl_runsim(Mobj,simulationTime);
 toc
+% the time vector of the simulation can be accessed through the simData
+% object.
+% simData.Data contains a matrix of data. (number of species) x (simulation time points)
 t_ode = simData.Time;
 x_ode = simData.Data;
 
@@ -52,7 +55,7 @@ dataGroups = txtl_getDefaultPlotDataStruct();
 dataGroups(2).SpeciesToPlot   = {'ALL_PROTEIN','[protein tetRdimer]_tot'};
 
 
-txtl_plot(t_ode,x_ode,Mobj,dataGroups);
+txtl_plot(simData,Mobj,dataGroups);
 
 
  
