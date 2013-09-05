@@ -153,7 +153,7 @@ for k = 1:size(processedOutput{2,4}(:,1))
         num = num+1;
     end
 end
-selectedInitConds = ~ismember(1:19,excludeInd);
+selectedInitConds = ~ismember(1:size(processedOutput{2,4}(:,1)),excludeInd);
 dataOut.initialValues = cellfun(@(x) str2num(x),processedOutput{2,4}(selectedInitConds,2));
 dataOut.modelFile = [fileName '.m'];
 dataOut.modelFilePath = filePath;

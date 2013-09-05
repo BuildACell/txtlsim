@@ -1,5 +1,13 @@
 
 function [Mobj,simData] =  geneexpr_function(extract,promoter,dna_amount,tspan,varargin)
+% geneexpr_function  simulates gene expression under different conditions.
+%   [Mobj,simData] = geneexpr_function(extract,promoter,dna_amount,tspan)
+%   extract states the extract config file from the config file directory,
+%   promoter specify the promoter and dna_amount sets DNA concetration in
+%   the simulation. tspan tells to the ode solver, the simulation time (in hours!)
+%
+%   See also geneexpr
+
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations

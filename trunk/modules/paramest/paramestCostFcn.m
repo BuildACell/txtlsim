@@ -87,9 +87,10 @@ try
     
 catch err
     cost = Inf;
+    err.message
 end
 
-str1 = sprintf('costV:%6.2f',cost);
+str1 = sprintf('costV:%6.2G\t',cost);
 str2 = strtrim(sprintf('p:%f ',p_act));
 str3 = sprintf('%6.2f sec',sum(simTime));
 disp([str1 ' ' str2 ' ' str3]);
