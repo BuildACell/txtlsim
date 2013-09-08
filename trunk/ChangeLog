@@ -1,3 +1,5 @@
+2013-09-07 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* auxiliary/mergeWholeExpFile.m: this function merges biotek plate reader data into one object (by calculating mean std for each data field, e.g. rates,endtime,rawdata)
 2013-09-04 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* modules/paramest/parameter_estimation_patternsearch.m: added, initial parameter value perturbation. Number of initial paramter vectors can be generated with latin hypercube sampling. 
 2013-08-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
