@@ -34,7 +34,7 @@ endTimesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels)
 MGSignal = cellfun(@(x,y) x.MgCurve(:,y),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
 [MGSignal_mean MGSignal_std] = getStdMean(MGSignal);
 
-%% build ouput struct
+%% build output struct
 
 mergedExpFile.expFiles     = expFile;
 mergedExpFile.Data_mean    = rawData_mean;

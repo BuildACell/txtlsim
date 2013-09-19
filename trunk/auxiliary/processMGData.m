@@ -5,7 +5,7 @@ channel_index = cellfun(@(x) strcmpi(x,'MG'),whole_exp_file.channels(:,1)) > 0;
 
 t_vec = whole_exp_file.t_vec/60;
 
-disp('calculating individual valves fit...')
+disp(sprintf('calculating the MG curve fit for individual wells in %s...',whole_exp_file.FileName));
 tic
 f2 = fittype('gauss3');
 for k = 1:size(whole_exp_file.Data,2);

@@ -1,8 +1,8 @@
 % Zoltan A Tuza July 2013
 %
 % This function handles biotek plate reader data in csv format. The delimiter in
-% the file must be given. The third optional argument is the valve of the negative
-% control. By default the 2nd valve is treated as negative control.
+% the file must be given. The third optional argument is the well of the negative
+% control. By default the 2nd well is treated as negative control.
 %
 %
 % Copyright (c) 2013 by California Institute of Technology
@@ -40,12 +40,12 @@ data = csvimport(fileName,'delimiter',delimiter);
 
 
 if nargin > 2
-    noBGvalve = varargin{1};
+    noBGwell = varargin{1};
 else
-    noBGvalve = 2;
+    noBGwell = 2;
 end
 
-experimentData.BgValve = noBGvalve;
+experimentData.Bgwell = noBGwell;
 experimentData.FileName = fileName;
 
 
@@ -80,13 +80,13 @@ for k = 1:size(ind,1)
     res = cellfun(@(x) strcmp(x,sprintf('%s:%d,%d',experimentData.channels{k,1},experimentData.channels{k,2}) ),data,'UniformOutput',false);
     dataHeaderInd = find(cell2mat(res) == 1);
     % determine the number of data columns
-    valveNum = sum(~cellfun(@isempty,data(dataHeaderInd+2,4:end)));
-    experimentData.valveNames = data(dataHeaderInd+2,(1:valveNum)+3);
+    wellNum = sum(~cellfun(@isempty,data(dataHeaderInd+2,4:end)));
+    experimentData.wellNames = data(dataHeaderInd+2,(1:wellNum)+3);
     % time vector
     tVecStr = data(dataHeaderInd+3:(dataHeaderInd+3+experimentData.numOfReads)-1,2);
     experimentData.t_vec = cellfun(@(x) [3600 60 1]*sscanf(x,'%d:%d:%d'),tVecStr);
     % handle canceled runs
-    tmpData = data(dataHeaderInd+3:(dataHeaderInd+3+experimentData.numOfReads)-1,(1:valveNum)+3);
+    tmpData = data(dataHeaderInd+3:(dataHeaderInd+3+experimentData.numOfReads)-1,(1:wellNum)+3);
     tmpData = cellfun(@(x) str2num(x),tmpData,'UniformOutput',false);
     emptyIndex = cellfun(@isempty,tmpData); % Find indices of empty cells
     experimentData.numOfValidReads = experimentData.numOfReads - sum(emptyIndex(:,1));
@@ -94,7 +94,7 @@ for k = 1:size(ind,1)
     tmpData(emptyIndex) = {0};
     experimentData.Data(:,:,k) = cell2mat(tmpData);
     
-    experimentData.noBg(:,:,k) = experimentData.Data(:,:,k) - repmat(experimentData.Data(:,noBGvalve,k),1,valveNum);
+    experimentData.noBg(:,:,k) = experimentData.Data(:,:,k) - repmat(experimentData.Data(:,noBGwell,k),1,wellNum);
     
 end
 
@@ -110,7 +110,7 @@ if channel_index ~= 0
     % on the biotek plate reader there are two distinct processes affecting
     % background -> two gaussian function covers that.
     f = fittype('gauss2');
-    [fitinfo,gof] = fit(experimentData.t_vec/60,experimentData.Data(:,BgValve,channel_index),f);
+    [fitinfo,gof] = fit(experimentData.t_vec/60,experimentData.Data(:,Bgwell,channel_index),f);
     bgAdjusted = experimentData.Data(:,:,channel_index) - repmat(fitinfo(experimentData.t_vec/60),1,size(experimentData.Data,2));
     experimentData.noBg(:,:,channel_index) = bgAdjusted;
 end

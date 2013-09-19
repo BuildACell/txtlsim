@@ -1,3 +1,6 @@
+2013-09-19 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* auxiliary/parseGetEqOutput.m: test added for getequations method, which is required for this function.
+	* auxiliary/getStdMean.m: refactor to make it compatible with expFileMerger.  
 2013-09-07 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* auxiliary/mergeWholeExpFile.m: this function merges biotek plate reader data into one object (by calculating mean std for each data field, e.g. rates,endtime,rawdata)
 2013-09-04 Zoltan Tuza <zoltuz@zoltuz-laptop>

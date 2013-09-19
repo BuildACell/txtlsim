@@ -37,7 +37,13 @@
 %%
 function dataOut = parseGetEqOutput(Mobj) 
 
-str = getequations(Mobj);
+
+if ismethod(Mobj,'getequations')
+    str = getequations(Mobj);
+else 
+    error('Simbiology has not getequations functionality, upgrade your matlab version at least to 2012b!');
+end
+
 
 tic 
 linebyline = textscan(str, '%s', 'delimiter', sprintf('\n'));
