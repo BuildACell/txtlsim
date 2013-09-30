@@ -16,6 +16,8 @@ end
 numOfWells = size(wellsToCompare,2);
 numOfChannels = size(expFile{1}.channels,1);
 
+% background
+backGround = cellfun(@(x) x.Data(:,x.Bgwell,:),expFile,'UniformOutput',false);
 % rawData
 rawData = cellfun(@(x,y) x.Data(:,y,:),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
 [rawData_mean rawData_std] = getStdMean(rawData);
@@ -30,13 +32,12 @@ ratesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels),ra
 endTimes = cellfun(@(x,y) x.endTime(y,:),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
 endTimesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels),rates,'UniformOutput',false);
 [endTimes_mean endTimes_std] = getStdMean(endTimesProcessed);
-% MgCurve
-MGSignal = cellfun(@(x,y) x.MgCurve(:,y),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
-[MGSignal_mean MGSignal_std] = getStdMean(MGSignal);
 
-%% build output struct
-
+%% build output struct part 1
 mergedExpFile.expFiles     = expFile;
+mergedExpFile.channels     = expFile{1}.channels;
+mergedExpFile.bgWells   = backGround;
+mergedExpFile.t_vec        = expFile{1}.t_vec;
 mergedExpFile.Data_mean    = rawData_mean;
 mergedExpFile.Data_std     = rawData_std;
 mergedExpFile.noBg_mean    = noBackgroundData_mean;
@@ -45,7 +46,14 @@ mergedExpFile.rate_mean    = rates_mean;
 mergedExpFile.rate_std     = rates_std;
 mergedExpFile.endTime_mean = endTimes_mean;
 mergedExpFile.endTime_std  = endTimes_std;
-mergedExpFile.MgCurve_mean = MGSignal_mean;
-mergedExpFile.MgCurve_std  = MGSignal_std;
+
+%% MgCurve
+% old approach average the fitted curves
+% MGSignal = cellfun(@(x,y) x.MgCurve(:,y),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
+% [MGSignal_mean MGSignal_std] = getStdMean(MGSignal);
+% new approach fit a curve on the averaged data
+mergedExpFile = processMGData(mergedExpFile);
+
+
 
 end

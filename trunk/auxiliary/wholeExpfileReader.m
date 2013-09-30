@@ -105,14 +105,20 @@ experimentData.t_vec = experimentData.t_vec(1:experimentData.numOfValidReads);
 
 % removing MG channel background signal by curve fitting
 % search for mg channel
-channel_index = cellfun(@(x) strcmpi(x,'MG'),experimentData.channels(:,1)) > 0;
-if channel_index ~= 0
+channel_index = find(cellfun(@(x) strcmpi(x,'MG'),experimentData.channels(:,1)) > 0);
+if ~isempty(channel_index)
     % on the biotek plate reader there are two distinct processes affecting
     % background -> two gaussian function covers that.
-    f = fittype('gauss2');
-    [fitinfo,gof] = fit(experimentData.t_vec/60,experimentData.Data(:,Bgwell,channel_index),f);
-    bgAdjusted = experimentData.Data(:,:,channel_index) - repmat(fitinfo(experimentData.t_vec/60),1,size(experimentData.Data,2));
+    %f = fittype('gauss2');
+    % new approach: smoothing spline
+    f2 = fittype( 'smoothingspline' );
+    opts = fitoptions( f2 );
+    opts.SmoothingParam = 1.353e-6;
+    [fitinfo,gof] = fit(experimentData.t_vec/60,experimentData.Data(1:experimentData.numOfValidReads,experimentData.Bgwell,channel_index),f2,opts);
+    bgAdjusted = experimentData.Data(1:experimentData.numOfValidReads,:,channel_index) - repmat(fitinfo(experimentData.t_vec/60),1,size(experimentData.Data,2));
     experimentData.noBg(:,:,channel_index) = bgAdjusted;
+    experimentData.MGBgFitinfo = fitinfo;
+    experimentData.MGBgGof = gof;
 end
 
 % calculate endTime, expression rate
