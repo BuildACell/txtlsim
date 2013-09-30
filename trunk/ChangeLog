@@ -1,3 +1,5 @@
+2013-09-30 DSG <dsg@DansMachine>
+	* auxiliary/replaceMissingData.m: function to move data from one experiment file to another
 2013-09-19 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* auxiliary/parseGetEqOutput.m: test added for getequations method, which is required for this function.
 	* auxiliary/getStdMean.m: refactor to make it compatible with expFileMerger.  
