@@ -1,3 +1,10 @@
+2013-10-10 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* auxiliary/stdshade.m: major refactoring in stdshade, now handles
+	matrices of data. no backward compatibility!  
+2013-09-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* auxiliary/mergeWholeExpFile.m: the MG signal curvefit is calculated after averaging the data. The background well from each experiment files is added to the return structure.  
+	* auxiliary/wholeExpfileReader.m: MG background curvefit is based on smoothingspline insted of gauss2. 
+	* auxiliary/processMGData.m: added option for choose fitting type, default is smoothingspline.  
 2013-09-30 DSG <dsg@DansMachine>
 	* auxiliary/replaceMissingData.m: function to move data from one experiment file to another
 2013-09-19 Zoltan Tuza <zoltuz@zoltuz-laptop>

@@ -7,6 +7,7 @@ if nargin == 1
         multiData = varargin{1};
         
     else
+        opMode = 'singleMatrix';
         data = varargin{1};
     end
     % multiple matrices are given

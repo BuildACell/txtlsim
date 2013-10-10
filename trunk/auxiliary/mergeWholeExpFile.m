@@ -33,6 +33,8 @@ endTimes = cellfun(@(x,y) x.endTime(y,:),expFile,num2cell(wellsToCompare,2),'Uni
 endTimesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels),rates,'UniformOutput',false);
 [endTimes_mean endTimes_std] = getStdMean(endTimesProcessed);
 
+
+
 %% build output struct part 1
 mergedExpFile.expFiles     = expFile;
 mergedExpFile.channels     = expFile{1}.channels;
@@ -54,6 +56,7 @@ mergedExpFile.endTime_std  = endTimes_std;
 % new approach fit a curve on the averaged data
 mergedExpFile = processMGData(mergedExpFile);
 
-
+%% Reporter data curve fit. Fit curves to protein reporter channels
+mergedExpFile = processProteinData(mergedExpFile);
 
 end

@@ -12,7 +12,7 @@ else
 end
 
 % search for mg channel
-channel_index = cellfun(@(x) strcmpi(x,'MG'),whole_exp_file.channels(:,1)) > 0;
+channel_index = find(cellfun(@(x) strcmpi(x,'MG'),whole_exp_file.channels(:,1)) > 0);
 
 t_vec = whole_exp_file.t_vec/60;
 

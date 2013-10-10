@@ -1,47 +1,50 @@
-function stdshade(amatrix,alpha,acolor,F,smth)
-% usage: stdshading(amatrix,alpha,acolor,F,smth)
-% plot mean and sem/std coming from a matrix of data, at which each row is an
-% observation. sem/std is shown as shading.
-% - acolor defines the used color (default is red) 
-% - F assignes the used x axis (default is steps of 1).
-% - alpha defines transparency of the shading (default is no shading and black mean line)
-% - smth defines the smoothing factor (default is no smooth)
-% smusall 2010/4/23
+function h = stdshade(xVector,meanData,stdData,varargin)
+% usage: stdshade(xVector,meanData,stdData,alpha,acolor)
+% the function plots the meanData vector/matrix, at which each column is an observation. 
+% the corresponding stdData is shown as shading.
+% - xVector contains the values of the x-axis
+% - meanData column vector of data
+% - stdData column vector of data used for shadowing, typically std of the
+% data 
+% - alpha defines transparency of the shading
+% - acolor defines the used color (default is red)
 
-if exist('acolor','var')==0 || isempty(acolor)
-    acolor='r'; 
+assert(all(size(meanData) == size(stdData)))
+
+if nargin == 3
+    alpha = 0.3;
+    acolor = 'r';
+elseif nargin == 5
+    alpha = varargin{1};
+    acolor = varargin{2};
 end
 
-if exist('F','var')==0 || isempty(F); 
-    F=1:size(amatrix,2);
-end
+% more than one data set is given
+numOfDataSets = size(meanData,2);
+if  numOfDataSets > 1
+    if size(alpha,1) ~= numOfDataSets
+        alpha = repmat(alpha,numOfDataSets,1);
+    end
+    for k=1:numOfDataSets
+        h(k) = stdshade(xVector,meanData(:,k),stdData(:,k),alpha(k),acolor{k});
+    end
+else
 
-if exist('smth','var'); if isempty(smth); smth=1; end
-else smth=1;
-end  
-
-if ne(size(F,1),1)
-    F=F';
-end
-
-amean=smooth(nanmean(amatrix),smth)';
-astd=nanstd(amatrix); % to get std shading
-% astd=nanstd(amatrix)/sqrt(size(amatrix,1)); % to get sem shading
-
-if exist('alpha','var')==0 || isempty(alpha) 
-    fill([F fliplr(F)],[amean+astd fliplr(amean-astd)],acolor,'linestyle','none');
-    acolor='k';
-else fill([F fliplr(F)],[amean+astd fliplr(amean-astd)],acolor, 'FaceAlpha', alpha,'linestyle','none');    
-end
-
-if ishold==0
-    check=true; else check=false;
-end
-
-hold on;plot(F,amean,acolor,'linewidth',1.5); %% change color or linewidth to adjust mean line
-
-if check
-    hold off;
+    fill([xVector' fliplr(xVector')],[meanData'+stdData' fliplr(meanData'-stdData')],acolor, 'FaceAlpha', alpha,'linestyle','none');
+    
+    if ishold==0
+        check=true;
+    else
+        check=false;
+    end
+    
+    hold on;
+    h = plot(xVector,meanData,acolor,'linewidth',1.5); %% change color or linewidth to adjust mean line
+    
+    if check
+        hold off;
+    end
+    
 end
 
 end
