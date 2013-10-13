@@ -36,6 +36,8 @@ endTimesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels)
 
 
 %% build output struct part 1
+mergedExpFile = getDefaultMergedExpFileStruct();
+
 mergedExpFile.expFiles     = expFile;
 mergedExpFile.channels     = expFile{1}.channels;
 mergedExpFile.bgWells   = backGround;

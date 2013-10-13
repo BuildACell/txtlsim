@@ -5,8 +5,6 @@ function wholeExpFile = processProteinData(wholeExpFile)
 % search for the protein reporter channels
 channel_idx = find(cellfun(@(x) ~strcmpi(x,'MG'),wholeExpFile.channels(:,1)) > 0);
 
-t_vec = wholeExpFile.t_vec/60;
-
 if isfield(wholeExpFile,'FileName')
     fileName = wholeExpFile.FileName;
 else
@@ -20,6 +18,8 @@ else
     % merged exp_file
     dataMtx = wholeExpFile.noBg_mean;
 end
+
+t_vec = wholeExpFile.t_vec(1:size(dataMtx,1))/60;
 
 disp(sprintf('calculating the protein reporter curves fit for individual wells in %s...',fileName));
 tic
