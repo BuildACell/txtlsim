@@ -39,7 +39,7 @@ else
     end
     
     hold on;
-    h = plot(xVector,meanData,acolor,'linewidth',1.5); %% change color or linewidth to adjust mean line
+    h = plot(xVector,meanData,'Color',acolor,'linewidth',1.5); %% change color or linewidth to adjust mean line
     
     if check
         hold off;
