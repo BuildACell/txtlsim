@@ -57,6 +57,8 @@ mergedExpFile.endTime_std  = endTimes_std;
 % [MGSignal_mean MGSignal_std] = getStdMean(MGSignal);
 % new approach fit a curve on the averaged data
 mergedExpFile = processMGData(mergedExpFile);
+% integrate MG data
+mergedExpFile = integrateMGData(mergedExpFile);
 
 %% Reporter data curve fit. Fit curves to protein reporter channels
 mergedExpFile = processProteinData(mergedExpFile);
