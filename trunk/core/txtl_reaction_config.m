@@ -27,6 +27,7 @@ classdef txtl_reaction_config
         NTP_Reverse;
         NTP_Concentration;
         AA_Concentration;
+        RNAPbound_termination_rate;
       
     end
     

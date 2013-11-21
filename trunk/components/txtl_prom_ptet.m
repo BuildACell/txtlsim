@@ -51,6 +51,13 @@ function varargout = txtl_prom_ptet(mode, tube, dna, rna,varargin)
 if strcmp(mode.add_dna_driver, 'Setup Species')
     
     promoterData = varargin{1};
+    if nargin==8
+    prom_spec = varargin{2};
+    rbs_spec = varargin{3};
+    gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
     defaultBasePairs = {'ptet','junk','thio';...
         paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
@@ -65,13 +72,22 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     %
     % Now put in the reactions for the utilization of NTPs
     % Use an enzymatic reaction to proper rate limiting
-   
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+   if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+   end
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     listOfSpecies = varargin{1};
-    
+    if nargin==8
+    prom_spec = varargin{2};
+    rbs_spec = varargin{3};
+    gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
     % Parameters that describe this promoter
     parameters = {'TXTL_PTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
                   'TXTL_PTET_RNAPbound_R',paramObj.RNAPbound_Reverse};
@@ -79,8 +95,14 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
     %
+    
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
     % nominal transcription
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    
     
     matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
     listOftetRdimer = vertcat(matchStr{:});

@@ -45,24 +45,22 @@ RNAPbound = varargin{5};
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
-    if ~mode.utr_attenuator_flag
-        if nargin < 6
-            error('the number of argument should be at least 6, not %d',nargin);
-        elseif nargin > 6
-            extraSpecies = varargin{6};
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAP,extraSpecies{:}};
-        else
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAP};
-        end
+    
+    
+    
+    if nargin < 9
+        error('the number of argument should be at least 9, not %d',nargin);
+    elseif nargin > 9
+        extraSpecies = varargin{9};
+        prom_spec = varargin{6};
+        rbs_spec = varargin{7};
+        gene_spec = varargin{8};
+        coreSpecies = txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec, extraSpecies);
     else
-        if nargin == 9
-            prom_spec = varargin{6};
-            rbs_spec = varargin{7};
-            gene_spec = varargin{8};
-            coreSpecies = txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec);
-        else
-            error('the number of argument should be at 9, not %d',nargin);
-        end
+        prom_spec = varargin{6};
+        rbs_spec = varargin{7};
+        gene_spec = varargin{8};
+        coreSpecies = txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec);
     end
     
     
@@ -71,73 +69,24 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
-    if ~mode.utr_attenuator_flag
-        if nargin < 6
-            error('the number of argument should be at least 6, not %d',nargin);
-        elseif nargin > 6
-            extraSpecies = varargin{6};
-            % processing the extraSpecies
-            extraStr = extraSpecies{1};
-            for k=2:size(extraSpecies,1)
-                extraStr = [extraStr '+' extraSpecies{k}];
-            end
-            transcriptionEq = ...
-                ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP ' + ' extraStr];
-        else
-            transcriptionEq = ...
-                ['[NTP:' RNAPbound '] -> ' dna.Name ' + ' rna.Name ' + ' RNAP];
-        end
-        ktxExpression =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
-            'RNA_Length','rna.UserData');
-        ktx = eval(ktxExpression);
-        % parameter values
-        NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward;
-            'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse};
+
+    if nargin < 9
+        error('the number of argument should be at least 9, not %d',nargin);
+    elseif nargin > 9
+        extraSpecies = varargin{9};
+        prom_spec = varargin{6};
+        rbs_spec = varargin{7};
+        gene_spec = varargin{8};
+        txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec, extraSpecies);
     else
-        if nargin == 9
-            prom_spec = varargin{6};
-            rbs_spec = varargin{7};
-            gene_spec = varargin{8};
-            txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec);
-        else
-            error('the number of argument should be at 9, not %d',nargin);
-        end
-        
+        prom_spec = varargin{6};
+        rbs_spec = varargin{7};
+        gene_spec = varargin{8};
+        txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec);
     end
     
-    % NTP consumption models
-    if tube.UserData.ReactionConfig.NTPmodel == 1
-        % Compute the number of NTPs required, in 100 NTP blocks
-        ntpcnt = ceil(rna.UserData/100);	% get number of NTP blocks
-        if (ntpcnt == 0)
-            ntpstr = '';
-        else
-            ntpstr = int2str(ntpcnt);
-        end
-        
-        txtl_addreaction(tube,['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']'],...
-            'MassAction',NTPparameters);
-    else
-        if ~mode.utr_attenuator_flag
-            % to deal with stiffness due to high reaction-order
-            txtl_addreaction(tube,['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']'],...
-                'MassAction',NTPparameters);
-            
-            %dummy raction
-            ntpcnt = ceil(rna.UserData/100);	% get number of NTP blocks
-            NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
-            
-            txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
-                'MassAction',NTPConsumptionRate);
-        end
-    end
     
-    % transcription and att-anti reactions
-    if ~mode.utr_attenuator_flag
-        txtl_addreaction(tube,transcriptionEq,'MassAction',{'TXTL_transcription_rate1',ktx});          
-    end
-    
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
     error('txtltoolbox:txtl_transcription:undefinedmode', ...
         'The possible modes are ''Setup Species'' and ''Setup Reactions''.');

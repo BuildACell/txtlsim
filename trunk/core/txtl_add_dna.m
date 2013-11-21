@@ -82,7 +82,9 @@ mode.prom_thio_flag = checkForStringInACellList(promData(1,:),'thio');
 
 [BooleanAtt1Present,indexesOfAtt1Present] = checkForStringInACellList(utrData(1,:),'att1');
 [BooleanAnti1Present,indexesOfAnti1Present] = checkForStringInACellList(utrData(1,:),'anti1');
-if length(indexesOfAtt1Present)==2
+if length(indexesOfAtt1Present)==2 
+    % %! TODO: VS 11/13/13 in the more general setup, the sim module exception should not need to be handled so exceptionally
+    % how to implement this generally? may be worth discussing.
     if indexesOfAtt1Present == [1 2]
         mode.sim_module_exception = true;
     end
@@ -99,20 +101,24 @@ end
 geneName = geneData{1,1}; %assuming the format is gene-lva-...-terminator
 %! TODO: VS 4/17/13 Is rbs always the last entry of utr? what about
 %spacer?
+
 rbsName = utrData{1,end}; % format is att-...-rbs.
-if mode.utr_antisense_flag || mode.no_protein_flag
+if mode.no_protein_flag
     protstr = ['protein ' geneStr];
     rnastr = ['RNA ' utrStr];
     dnastr = ['DNA ' promStr '--' utrStr];
-    % dont care what else is after the antisense. the sole purpose of
-    % antisense is to sequester the RNA att
+
 else
     protstr = ['protein ' geneStr]; % protstr looks something like 'protein tetR-lva-terminator'
     rnastr = ['RNA ' utrStr '--' geneStr];
     dnastr = ['DNA ' promStr '--' utrStr '--' geneStr];
 end
 
-
+    %! TODO: VS 11/13/13 Enable having anything after antisense. 
+% the steps here are to modify these flags here so the antisense can have
+% stuff after it, and in the tx_cascade file, the antisense att interaction
+% need not have the antisense the last thing on the RNA. as long as
+% antisense is present. this can be recognized using regexp. 
 
 
 promoterName = promData{1,end}; % assuming {'thio','junk','prom'}
@@ -136,6 +142,8 @@ if isempty(varargin)
     
     
     %% Protein properties, parameters and reactions %
+    %! TODO: VS 11/13/13 implement multiple proteins in genestring, which
+    %means this needs to change. 
     protein = txtl_addspecies(tube, protstr, 0, 'Internal');
     if exist(['txtl_protein_' geneName], 'file') == 2
         geneData = eval(['txtl_protein_' geneName '(mode, tube, protein, geneData)']);
@@ -144,6 +152,8 @@ if isempty(varargin)
     protein.UserData = genelenTot / 3;
     
     %% Untranslated Region properties, parameters and reactions %
+    %! TODO: VS 11/13/13 all this will need to be changed in the more
+    % general setting. need a file based system. 
     rna = txtl_addspecies(tube, rnastr, 0, 'Internal');
     if exist(['txtl_utr_' rbsName], 'file') == 2
         if mode.utr_rbs_flag 
@@ -151,6 +161,8 @@ if isempty(varargin)
             [Ribobound, utrlen] = eval(['txtl_utr_' rbsName '(mode, tube, rna, protein, utrData)']);
         else
             % no rbs present, no ribosome binds. (so far there are no files apart from txtl_utr_rbs
+            %! TODO: VS 11/13/13 can do this better, considering all the
+            %possible cases, and that rbs may not always be the last entry.
             [utrlen] = eval(['txtl_utr_' rbsName '(mode, tube, rna, protein, utrData)']);
         end
     else 
@@ -179,7 +191,9 @@ if isempty(varargin)
                 RNAlengthData.remaining = restOfRNALength;
             
         else
-        attenuatorLength = cell2mat(utrlen(2,1)); % assume att is always the first thing in the UTR
+        attenuatorLength = cell2mat(utrlen(2,1)); % assume att is always the first thing in the UTR 
+        %! TODO: VS 11/13/13 the abose assumption also not necessarily true
+        %anymore. all this needs changing!
         restOfRNALength = utrlenTot + genelenTot - attenuatorLength;
         RNAlengthData.att = attenuatorLength;
         RNAlengthData.remaining = restOfRNALength;
@@ -197,10 +211,12 @@ if isempty(varargin)
     dna_amount = dna_amount*stockMulti;
     dna = txtl_addspecies(tube, dnastr, dna_amount, 'Internal');
     % Transcription %%
-    if strcmp(promoterName, 'pJ23119')
-        promData = txtl_prom_pJ23119(mode, tube, dna, rna, promData, prom_spec, rbs_spec, gene_spec);
-    elseif exist(['txtl_prom_' promoterName], 'file') == 2
-        promData = eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, promData)']);
+    if exist(['txtl_prom_' promoterName], 'file') == 2 
+        if mode.utr_attenuator_flag
+        promData = eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, promData, prom_spec, rbs_spec, gene_spec)']);
+        else
+            promData = eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, promData)']);
+        end
     else
         warning(['TXTL: can''t find txtl_prom_' promoterName ...
             '; using default promoter params']);
@@ -278,10 +294,12 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
     
     dna = sbioselect(tube, 'Name', dnastr);
     % Transcription %%
-    if strcmp(promoterName, 'pJ23119')
-        txtl_prom_pJ23119(mode, tube, dna, rna, prom_spec, rbs_spec, gene_spec);
-    elseif exist(['txtl_prom_' promoterName], 'file') == 2
-        eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies)']);
+    if exist(['txtl_prom_' promoterName], 'file') == 2 
+        if mode.utr_attenuator_flag
+        eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies,prom_spec, rbs_spec, gene_spec)']);
+        else
+            eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies)']);
+        end
     else
         warning(['TXTL: can''t find txtl_prom_' promoterName ...
             '; using default promoter params']);

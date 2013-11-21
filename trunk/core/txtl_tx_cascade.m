@@ -1,4 +1,4 @@
-function varargout = txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec)
+function varargout = txtl_tx_cascade(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec, varargin)
 % txtl_tx_cascade.m - RNA circuit set-up file
 % VS 7-25-2013
 %
@@ -64,19 +64,23 @@ end
 
 %% Setup Species
 if strcmp(mode.add_dna_driver, 'Setup Species')
-    
+    RNAPbound_term = ['term_' RNAPbound];
     if nargin == 9
         if mode.double_antisense
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound], ['RNA ' att],['RNA ' att '-anti1'],['RNA ' att '-anti1-anti1'], RNAP};
-            
+            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, ['RNA ' att],['RNA ' att '-anti1'],['RNA ' att '-anti1-anti1'], RNAP};
         elseif mode.sim_module_exception
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound], ['RNA att1_SIM'],'RNA att1-att1', RNAP};
+            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, 'RNA att1_SIM','RNA att1-att1', RNAP};
         else
-            
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound], ['RNA ' att], RNAP};
+            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, ['RNA ' att], RNAP}; 
+            %! TODO 11/13/13 what sets up RNA anti? is it something in
+            %txtl_add_dna? so normal transcription takes care of it? well
+            %now we want this one to handle that case. or do we?
         end
+    elseif nargin == 10
+        extraSpecies=varargin{1};
+        coreSpecies = [{'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, ['RNA ' att], RNAP},extraSpecies]; 
     else
-        error('the number of argument should be at 9, not %d',nargin);
+        error('the number of argument should be at 9 ot 10, not %d',nargin);
     end
     varargout{1} = coreSpecies;
     %% Setup Reactions
@@ -87,13 +91,14 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     %if there are two sources of RNA att1, like DNA prom--att1-rbs--rfp and
     %DNA prom--att1-att1-rbs--gfp, then the two RNA att1 from these two
     %will be indistinguishable. they need to be distinguishable. 
+    RNAPbound_term = ['term_' RNAPbound];
     if nargin ==9
-        
         if mode.double_antisense % 
             transcriptionEq1 = ...
             ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
             transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound ' + RNA ' att '-anti1 + RNA ' att '-anti1-anti1'];
+                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + RNA ' att '-anti1 + RNA ' att '-anti1-anti1'];
+            
             ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.att'); % rna.UserData.att defined in txtl_add_dna
             ktxExpression2 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
@@ -107,7 +112,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
             transcriptionEq2 = ...
                 ['[NTP:' RNAPbound ':RNA att1_SIM] -> [' RNAPbound ':RNA att1-att1]'];
             transcriptionEq3 = ...
-                ['[NTP:' RNAPbound ':RNA att1-att1] -> '  RNAPbound ' + ' rna.Name];
+                ['[NTP:' RNAPbound ':RNA att1-att1] -> '  RNAPbound_term ' + ' rna.Name];
             
             ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.attFirst');
@@ -123,16 +128,37 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
             transcriptionEq1 = ...
             ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
             transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound ' + ' rna.Name];
+                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + ' rna.Name];
             ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.att'); % rna.UserData.att defined in txtl_add_dna
             ktxExpression2 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.remaining'); % rna.UserData.remaining defined in txtl_add_dna
             ktx1 = eval(ktxExpression1);
             ktx2 = eval(ktxExpression2);
+            txtl_addreaction(tube,['[' RNAPbound_term '] -> ' RNAP  ' + ' dna.Name],...
+            'MassAction',{'TXTL_RNAPBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.RNAPbound_termination_rate});
         end
+    elseif nargin==10
+        extraSpecies = varargin{1};
+            % processing the extraSpecies
+            extraStr = extraSpecies{1};
+            for k=2:size(extraSpecies,2)
+                extraStr = [extraStr '+' extraSpecies{k}];
+            end
+        transcriptionEq1 = ...
+            ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
+            transcriptionEq2 = ...
+                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + ' rna.Name];
+            ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
+                'RNA_Length','rna.UserData.att'); % rna.UserData.att defined in txtl_add_dna
+            ktxExpression2 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
+                'RNA_Length','rna.UserData.remaining'); % rna.UserData.remaining defined in txtl_add_dna
+            ktx1 = eval(ktxExpression1);
+            ktx2 = eval(ktxExpression2);
+            txtl_addreaction(tube,['[' RNAPbound_term '] -> ' RNAP  ' + ' dna.Name ' + ' extraStr],...
+            'MassAction',{'TXTL_RNAPBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.RNAPbound_termination_rate}); % change this rate to correct variable
     else
-        error('the number of argument should be at 9, not %d',nargin);
+        error('the number of argument should be at 9 or 10, not %d',nargin);
     end
     
     
@@ -165,64 +191,29 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
         NTPConsumptionRate3 = {'TXTL_NTP_consumption2',(ntpcnt3-1)*ktx3};
         txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
             'MassAction',NTPConsumptionRate1);
-        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att1_SIM] -> ' dna.Name ' +  ' RNAP ' + RNA att1_SIM'],...
+        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att1_SIM] -> [' RNAPbound ':RNA att1_SIM]'],...
             'MassAction',NTPConsumptionRate2);
-        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att1-att1] -> ' dna.Name ' +  ' RNAP ' + RNA att1-att1' ],...
+        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att1-att1] -> [' RNAPbound ':RNA att1_att1]'],...
             'MassAction',NTPConsumptionRate3);
     else
         ntpcnt1 = ceil(rna.UserData.att/100);   	% get number of NTP blocks
         ntpcnt2 = ceil(rna.UserData.remaining/100);	% get number of NTP blocks
         NTPConsumptionRate1 = {'TXTL_NTP_consumption1',(ntpcnt1-1)*ktx1};
         NTPConsumptionRate2 = {'TXTL_NTP_consumption2',(ntpcnt2-1)*ktx2};
-        txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
+        txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' RNAPbound],...
             'MassAction',NTPConsumptionRate1);
-        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA ' att '] -> ' dna.Name ' +  ' RNAP ' + RNA ' att ],...
+        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA ' att '] -> [' RNAPbound ':RNA ' att ']' ],...
             'MassAction',NTPConsumptionRate2);
     end
     
-    %re bind RNAP to DNA (and RNA att) --- check this with Richard
-    promoterName = promData{1,end};
-    paramObj = txtl_component_config(promoterName);
-    parameters = {'TXTL_P70_RNAPbound_F',paramObj.RNAPbound_Forward;...
-        'TXTL_P70_RNAPbound_R',paramObj.RNAPbound_Reverse};
-    
-    if mode.sim_module_exception  % SIM module exception
-        txtl_addreaction(tube,[dna.Name ' + ' RNAP ' + [RNA att1_SIM] <-> ' RNAPbound ':RNA att1_SIM'],...
-            'MassAction',parameters);
-        txtl_addreaction(tube,[dna.Name ' + ' RNAP ' + [RNA att1-att1] <-> ' RNAPbound ':RNA att1-att1' ],...
-            'MassAction',parameters);
-    else
-                txtl_addreaction(tube,[dna.Name ' + ' RNAP ' + [RNA ' att '] <-> ' RNAPbound ':RNA ' att ],...
-            'MassAction',parameters);
-    end
-    
-% % New version of the NTP consumption
-%     
-%     % dummy reaction for NTP consumption
-%     if mode.sim_module_exception  % SIM module exception
-%         ntpcnt1 = ceil(rna.UserData.attFirst/100);   	% get number of NTP blocks
-%         ntpcnt2 = ceil(rna.UserData.attSecond/100);   	% get number of NTP blocks
-%         ntpcnt3 = ceil(rna.UserData.remaining/100);	% get number of NTP blocks
-%         NTPConsumptionRate3 = {'TXTL_NTP_consumption2',(ntpcnt3-1)*ktx3};
-%         txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att1-att1] -> ' RNAPbound ':RNA att1-att1' ],...
-%             'MassAction',NTPConsumptionRate3); 
-%     else
-%         ntpcnt1 = ceil(rna.UserData.att/100);   	% get number of NTP blocks
-%         ntpcnt2 = ceil(rna.UserData.remaining/100);	% get number of NTP blocks
-%     end
-%          NTPConsumptionRate1 = {'TXTL_NTP_consumption1',(ntpcnt1-1)*ktx1};
-%         NTPConsumptionRate2 = {'TXTL_NTP_consumption2',(ntpcnt2-1)*ktx2};
-%         txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' RNAPbound],...
-%             'MassAction',NTPConsumptionRate1);
-%         txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA ' att '] -> ' RNAPbound ':RNA ' att ],...
-%             'MassAction',NTPConsumptionRate2);
-%         
-        
     %att anti reactions
     attnumber = att(end);
     [~,listOfSpecies] = getstoichmatrix(tube);
-    matchStr = regexp(listOfSpecies,['(^RNA .*anti' attnumber '$)'],'tokens','once');
-    listOfantisense = vertcat(matchStr{:});
+    matchStr = regexp(listOfSpecies,['(^RNA .*anti' attnumber '.*)'],'tokens','once'); % this end-anchoring of anti must be removed to allow for anti to be in the middle
+    tempList = vertcat(matchStr{:});
+     matchStr2 = regexp(tempList,':');
+    antiIdx = cellfun(@isempty, matchStr2);
+    listOfantisense = tempList(antiIdx);
     attanti = ['att' attnumber '_anti' attnumber];
     
     if mode.sim_module_exception
@@ -369,15 +360,16 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
         txtl_addreaction(tube,transcriptionEq2,'MassAction',{'TXTL_transcription_rate2',ktx2});
         txtl_addreaction(tube,transcriptionEq3,'MassAction',{'TXTL_transcription_rate2',ktx3});
         % Auto-Termination att1_auto_termination_rate
-        txtl_addreaction(tube,['[' RNAPbound ':RNA att1_SIM] -> ' dna.Name ' + [RNA att1_SIM] + ' RNAP],...
+        txtl_addreaction(tube,['[' RNAPbound ':RNA att1_SIM] -> '  RNAPbound ' + [RNA att1_SIM]'],...
             'MassAction',auto_termination_rate);
-        txtl_addreaction(tube,['[' RNAPbound ':RNA att1-att1] -> ' dna.Name ' + [RNA att1-att1] + ' RNAP],...
+        txtl_addreaction(tube,['[' RNAPbound ':RNA att1-att1] -> '  RNAPbound ' + [RNA att1-att1]'],...
             'MassAction',auto_termination_rate);
+        
     else
         % transcription
         txtl_addreaction(tube,transcriptionEq1,'MassAction',{'TXTL_transcription_rate1',ktx1});
         txtl_addreaction(tube,transcriptionEq2,'MassAction',{'TXTL_transcription_rate2',ktx2});
-        txtl_addreaction(tube,['[' RNAPbound ':RNA ' att '] -> ' dna.Name ' + [RNA ' att '] + ' RNAP],...
+        txtl_addreaction(tube,['[' RNAPbound ':RNA ' att '] -> [RNA ' att '] + ' RNAPbound],...
             'MassAction',auto_termination_rate);
     end
     

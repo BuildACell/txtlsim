@@ -56,8 +56,15 @@ function varargout= txtl_prom_pBAD_ptet(mode, tube, dna, rna, varargin)
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
-
+    
     promoterData = varargin{1};
+   if nargin==8
+    prom_spec = varargin{2};
+    rbs_spec = varargin{3};
+    gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
     defaultBasePairs = {'pBAD_ptet','junk','thio';150,500,0};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
@@ -65,22 +72,32 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     varargout{1} = promoterData;
     
     coreSpecies = {RNAP,RNAPbound,P1,P2, AraCbound, P3};
-    % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)),'Internal');
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2}); %lowest rate
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' AraCbound ],{AraCbound}); %highest rate
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ':' AraCbound ],{P2, AraCbound}); %slightly higher than 1. 
+    % empty cellarray for amount => zero amount
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ], prom_spec, rbs_spec, {P2} );
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' AraCbound ], prom_spec, rbs_spec, gene_spec,{AraCbound} );
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ':' AraCbound ], prom_spec, rbs_spec, gene_spec,{P2, AraCbound} );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2}); %lowest rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' AraCbound ],{AraCbound}); %highest rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ':' AraCbound ],{P2, AraCbound}); %slightly higher than 1.
+    end
+
     %(check agains shaobin results. the parameters here should be tuned to
     %get the shaobin curves. translation/degradation etc should be standard.)
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
-    
+    if nargin==8
+    prom_spec = varargin{2};
+    rbs_spec = varargin{3};
+    gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
     % Parameters that describe this promoter (this is where the variation
     % in the promoter strength comes in. 
     parameters = {'TXTL_PBADPTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
@@ -89,8 +106,6 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
     %
-    % nominal transcription
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
 
 
     %% Set up bindig reaction for tetR
@@ -184,15 +199,18 @@ Robj9 = addreaction(tube, [RNAPbound ':' AraCbound  ' + ' P2 ' <-> [' RNAPbound 
     set(Kobj11, 'ParameterVariableNames', {'kf', 'kr'});    
     
     %%
-   
-    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2}); %lowest rate
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' AraCbound ],{AraCbound}); %highest rate
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ':' AraCbound ],{P2, AraCbound}); %slightly higher than 1.
 
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ], prom_spec, rbs_spec, {P2} );
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' AraCbound ], prom_spec, rbs_spec, gene_spec,{AraCbound} );
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ':' AraCbound ], prom_spec, rbs_spec, gene_spec,{P2, AraCbound} );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2}); %lowest rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' AraCbound ],{AraCbound}); %highest rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ':' AraCbound ],{P2, AraCbound}); %slightly higher than 1.
+    end
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
 else

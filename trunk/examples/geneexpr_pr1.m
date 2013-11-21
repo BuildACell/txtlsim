@@ -38,20 +38,8 @@ simulationTime = 14*60*60;
 
 %% plot the result
 
-% DNA and mRNA plot
-dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'ALL_DNA'}; 
-dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
 
-% Gene Expression Plot
-dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein deGFP*','[protein deGFP]_tot'};
-dataGroups{2,3} = {'g','g--','r-','g--','b-.'};
-
-% Resource Plot
-dataGroups{3,1} = 'Resource usage';
-
-txtl_plot(t_ode,x_ode,Mobj,dataGroups);
+txtl_plot(t_ode,x_ode,Mobj);
 
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:

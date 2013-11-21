@@ -32,4 +32,4 @@ NTP_Reverse,Expression, 10 * log(2) / 0.1, Km of 100 for NTP usage 500uM,
 NTP_Concentration, Expression, 4*(12000)*0.45, 4 types of NTPs, 17% usability 0.035
 AA_Concentration, Expression, 20*15000*0.6, 20 tyes of AAs, 20% usability
 ,,,,
-
+RNAPbound_termination_rate, Numeric, 0.05,
