@@ -20,18 +20,18 @@ numOfChannels = size(expFile{1}.channels,1);
 backGround = cellfun(@(x) x.Data(:,x.Bgwell,:),expFile,'UniformOutput',false);
 % rawData
 rawData = cellfun(@(x,y) x.Data(:,y,:),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
-[rawData_mean rawData_std] = getStdMean(rawData);
+[rawData_mean, rawData_std] = getStdMean(rawData);
 % no background
 noBackgroundData = cellfun(@(x,y) x.noBg(:,y,:),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
-[noBackgroundData_mean noBackgroundData_std] = getStdMean(noBackgroundData);
+[noBackgroundData_mean, noBackgroundData_std] = getStdMean(noBackgroundData);
 % rate
 rates = cellfun(@(x,y) x.rate(y,:),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
 ratesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels),rates,'UniformOutput',false);
-[rates_mean rates_std] = getStdMean(ratesProcessed);
+[rates_mean, rates_std] = getStdMean(ratesProcessed);
 % endTime
 endTimes = cellfun(@(x,y) x.endTime(y,:),expFile,num2cell(wellsToCompare,2),'UniformOutput',false);
-endTimesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels),rates,'UniformOutput',false);
-[endTimes_mean endTimes_std] = getStdMean(endTimesProcessed);
+endTimesProcessed = cellfun(@(x) reshape(cell2mat(x),1,numOfWells,numOfChannels),endTimes,'UniformOutput',false);
+[endTimes_mean, endTimes_std] = getStdMean(endTimesProcessed);
 
 
 
@@ -41,7 +41,7 @@ mergedExpFile = getDefaultMergedExpFileStruct();
 mergedExpFile.expFiles     = expFile;
 mergedExpFile.channels     = expFile{1}.channels;
 mergedExpFile.bgWells   = backGround;
-mergedExpFile.t_vec        = expFile{1}.t_vec;
+mergedExpFile.t_vec        = expFile{1}.t_vec(1:size(noBackgroundData_mean,1));
 mergedExpFile.Data_mean    = rawData_mean;
 mergedExpFile.Data_std     = rawData_std;
 mergedExpFile.noBg_mean    = noBackgroundData_mean;
