@@ -35,7 +35,7 @@ t_vec = whole_exp_file.t_vec(1:size(dataMtx,1))/60;
 disp(sprintf('calculating the int(MG) for individual wells in %s...',fileName));
 
 tic
-interval = 20;
+interval = 5;
 intPoints = round(size(t_vec,1)/interval);
 for k = 1:intPoints
     if interval*k > size(t_vec,1);
