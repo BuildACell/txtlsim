@@ -51,9 +51,9 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
         error('the number of argument should be at least 6, not %d',nargin);
     elseif nargin > 6
         extraSpecies = varargin{6};
-        coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term,RNAP,extraSpecies{:}};
+        coreSpecies = {'CUTP', 'AGTP',RNAPbound,['CUTP:AGTP:' RNAPbound],RNAPbound_term,RNAP,extraSpecies{:}};
     else
-        coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term,RNAP};
+        coreSpecies = {'CUTP', 'AGTP',RNAPbound,['CUTP:AGTP:' RNAPbound],RNAPbound_term,RNAP};
     end
     
     % empty cellarray for amount => zero amount
@@ -63,7 +63,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     RNAPbound_term = ['term_' RNAPbound];
     transcriptionEq = ...
-        ['[NTP:' RNAPbound '] -> ' RNAPbound_term ' + ' rna.Name];
+        ['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound_term ' + ' rna.Name];
     if nargin < 6
         error('the number of argument should be at least 6, not %d',nargin);
     elseif nargin > 6
@@ -85,31 +85,23 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % parameter values
     NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward;
         'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse};
+    NTPparameters_fast = {'TXTL_NTP_RNAP_F', 1000*tube.UserData.ReactionConfig.NTP_Forward;
+        'TXTL_NTP_RNAP_R', 1000*tube.UserData.ReactionConfig.NTP_Reverse};
     
+    txtl_addreaction(tube,['[' RNAPbound '] + AGTP <-> [AGTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters_fast);
+    txtl_addreaction(tube,['[' RNAPbound '] + CUTP <-> [CUTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters_fast);
+    txtl_addreaction(tube,['[AGTP:' RNAPbound '] + CUTP <-> [CUTP:AGTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters);
+    txtl_addreaction(tube,['[CUTP:' RNAPbound '] + AGTP <-> [CUTP:AGTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters);
+    ntpcnt = rna.UserData/4;
+    NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
     
-    % NTP consumption models
-    if tube.UserData.ReactionConfig.NTPmodel == 1
-        % Compute the number of NTPs required, in 100 NTP blocks
-        ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
-        if (ntpcnt == 0)
-            ntpstr = '';
-        else
-            ntpstr = int2str(ntpcnt);
-        end
-        
-        txtl_addreaction(tube,['[' RNAPbound '] + ' ntpstr ' NTP <-> [NTP:' RNAPbound ']'],...
-            'MassAction',NTPparameters);
-    else
-        % to deal with stiffness due to high reaction-order
-        txtl_addreaction(tube,['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']'],...
-            'MassAction',NTPparameters);
-        %dummy raction
-        ntpcnt = floor(rna.UserData/100);	% get number of NTP blocks
-        NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
-        
-        txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
-            'MassAction',NTPConsumptionRate);
-    end
+    txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
+        'MassAction',NTPConsumptionRate);
+    
     
     
     txtl_addreaction(tube,transcriptionEq,'MassAction',{'TXTL_transcription_rate1',ktx});

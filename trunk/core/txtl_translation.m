@@ -36,7 +36,7 @@ function txtl_translation(mode, tube, dna, rna, protein, Ribobound)
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
      % Set up the species for translation 
-    coreSpecies = {'AA',['AA:ATP:' Ribobound.Name],'Ribo'};
+    coreSpecies = {'AA',['AA:AGTP:' Ribobound.Name],'Ribo'};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
@@ -68,20 +68,20 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     else
         
         txtl_addreaction(tube, ...
-            ['[' Ribobound.Name '] + AA + ATP <-> [AA:ATP:' Ribobound.Name ']'],...
+            ['[' Ribobound.Name '] + AA + AGTP <-> [AA:AGTP:' Ribobound.Name ']'],...
             'MassAction',AAparameters);
         
         aacnt = floor(protein.UserData/100);
         aa_consump_rate = (aacnt-1)*ktl_rbs;
         
         txtl_addreaction(tube, ...
-            ['[AA:ATP:' Ribobound.Name '] -> ' rna.Name ' +  Ribo + ATP'],...
+            ['[AA:AGTP:' Ribobound.Name '] -> ' rna.Name ' +  Ribo + ATP'],...
             'MassAction',{'TXTL_TL_AA_consumption',aa_consump_rate});
     end
     
     % Translation
     txtl_addreaction(tube, ...
-     ['[AA:ATP:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo'],...
+     ['[AA:AGTP:' Ribobound.Name '] -> ' rna.Name ' + ' protein.Name ' +  Ribo'],...
      'MassAction',{'TXTL_TL_rate',ktl_rbs});
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    

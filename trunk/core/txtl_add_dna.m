@@ -76,7 +76,7 @@ mode.prot_term_flag = checkForStringInACellList(geneData(1,:),'terminator');
 mode.no_protein_flag = checkForStringInACellList(geneData(1,:),'no_protein');
 mode.utr_attenuator_flag = checkForStringInACellList(utrData(1,:),{'att1', 'att2'});
 mode.utr_antisense_flag = checkForStringInACellList(utrData(1,:),{'anti1', 'anti2'});
-mode.utr_rbs_flag = checkForStringInACellList(utrData(1,:),'rbs');
+mode.utr_rbs_flag = checkForStringInACellList(utrData(1,:),{'rbs','rbs1','rbs2','rbs3','rbs4','rbs5','rbs6'});
 [mode.prom_junk_flag, junkIndex] = checkForStringInACellList(promData(1,:),'junk');
 mode.prom_thio_flag = checkForStringInACellList(promData(1,:),'thio');
 

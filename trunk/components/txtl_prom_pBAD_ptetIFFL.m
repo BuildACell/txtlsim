@@ -113,7 +113,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % promoter binds to tetR
     Robj1 = addreaction(tube, [dna.Name ' + ' P2 ' <-> ' dna.Name ':' P2 ]);
     Kobj1 = addkineticlaw(Robj1, 'MassAction');
-    Pobj1f = addparameter(Kobj1, 'kf', 8.86e-1);
+    Pobj1f = addparameter(Kobj1, 'kf', 8.86e-2);
     Pobj1r = addparameter(Kobj1, 'kr', 0.11e-4);
     set(Kobj1, 'ParameterVariableNames', {'kf', 'kr'});
     
@@ -122,7 +122,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % P2 binding to RNAPbound expels the PNAP, redusing transcription.
     Robj2 = addreaction(tube, [RNAPbound  ' + ' P2 ' <-> ' RNAPbound ':' P2 ]);
     Kobj2 = addkineticlaw(Robj2, 'MassAction');
-    Pobj2f = addparameter(Kobj2, 'kf', 8.86e-1);
+    Pobj2f = addparameter(Kobj2, 'kf', 8.86e-2);
     Pobj2r = addparameter(Kobj2, 'kr', 0.11e-4);
     set(Kobj2, 'ParameterVariableNames', {'kf', 'kr'});
     % 

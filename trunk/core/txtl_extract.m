@@ -50,7 +50,7 @@ tube.UserData.ReactionConfig = TXTLconfig;
 addspecies(tube, 'RNAP', stockMulti*100);	% 100 nM based on VN's paper
 sigma70 = addspecies(tube, 'protein sigma70', stockMulti*35); % 35 nM based on VN's paper
 sigma28 = addspecies(tube, 'protein sigma28', stockMulti*20); % <20 nM based on VN's paper
-addspecies(tube, 'Ribo', stockMulti*1000);	% 2300 nM based on VN's paper
+addspecies(tube, 'Ribo', stockMulti*30);	% 
 
 % Add RNAP+Sigma70 <-> RNAP70 reaction
 % Set up the reaction
@@ -59,7 +59,7 @@ addspecies(tube, 'Ribo', stockMulti*1000);	% 2300 nM based on VN's paper
                    'TXTL_RNAP_S70_R',tube.UserData.ReactionConfig.RNAP_S70_R});               
 
 % % Add in RNA degradation
-addspecies(tube, 'RNase', stockMulti*100);	% 1 nM
+addspecies(tube, 'RNase', stockMulti*100);	% 100 nM
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

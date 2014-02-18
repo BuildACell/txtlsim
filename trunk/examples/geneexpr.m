@@ -7,8 +7,8 @@
 close all
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+tube1 = txtl_extract('E30');
+tube2 = txtl_buffer('E30');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('gene_expression');
@@ -16,7 +16,7 @@ tube3 = txtl_newtube('gene_expression');
 % Define the DNA strands (defines TX-TL species + reactions)
 dna_deGFP = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
-   1, ...					% concentration (nM)
+   30, ...					% concentration (nM)
   'plasmid');					% type
 
 % Mix the contents of the individual tubes
@@ -30,6 +30,10 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 % and plot our results!
 %
 
+
+
+cs = getconfigset(Mobj);
+set(cs.RuntimeOptions, 'StatesToLog', 'all');
 tic
 [simData] = txtl_runsim(Mobj,14*60*60);
 toc

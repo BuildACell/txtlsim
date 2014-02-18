@@ -1,13 +1,12 @@
-% txtl_prom_pBAD.m - promoter information for pBAD promoter
-% Zoltan Tuza, Oct 2012
+% txtl_prom_plasR.m - promoter information for plasR
+% VS Dec 2013
 %
-% This file contains a description of the p28 and ptet combinatorial promoter.
-% Calling the function txtl_prom_pBAD() will set up the reactions for
+% This file contains a description of the plasR promoter, which is activated by the lasR protein. .
+% Calling the function txtl_prom_plasR() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
 % 
 % 
-
-% Written by Zoltan Tuza, Oct 2012
+% Written by Richard Murray, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -38,7 +37,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout= txtl_prom_pBAD(mode, tube, dna, rna, varargin)
+function varargout= txtl_prom_plasR(mode, tube, dna, rna, varargin)
 
 
     % Create strings for reactants and products
@@ -48,11 +47,11 @@ function varargout= txtl_prom_pBAD(mode, tube, dna, rna, varargin)
     RNAPbound = ['RNAP70:' dna.Name];
     P1 = 'protein sigma70';
     
-    P3 = 'protein AraC';
-    AraCbound = ['arabinose:' P3 ];
+    P3 = 'protein lasR';
+    
     
     % importing the corresponding parameters
-    paramObj = txtl_component_config('pBAD');
+    paramObj = txtl_component_config('lasR');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
@@ -65,29 +64,23 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    defaultBasePairs = {'pBAD','junk','thio';150,500,0};
+    defaultBasePairs = {'plasR','junk','thio';150,500,0};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
     varargout{1} = promoterData;
     
-    coreSpecies = {RNAP,RNAPbound,P1, P3, AraCbound};
+    coreSpecies = {RNAP,RNAPbound,P1, P3};
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     % empty cellarray for amount => zero amount
     if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); %leaky slow rate
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' AraCbound ],prom_spec, rbs_spec, gene_spec,{AraCbound} );  %lowest rate
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} );  
     else
-        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
-        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' AraCbound ],{AraCbound});  %lowest rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3}); 
     end
     
-    
-     
-    %(check agains shaobin results. the parameters here should be tuned to
-    %get the shaobin curves. translation/degradation etc should be standard. also, the params modifies are the 
-    %RNAP binding affinities, given below. so, nothing in tx: if RNAP is bound, tx proceeds as normal 
-    %(what effects will this have for future work?))
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
@@ -100,33 +93,27 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     end
     % Parameters that describe this promoter (this is where the variation
     % in the promoter strength comes in. 
-    parameters = {'TXTL_PBAD_RNAPbound_F',paramObj.RNAPbound_Forward;...
-                  'TXTL_PBAD_RNAPbound_R',paramObj.RNAPbound_Reverse};
+    parameters = {'TXTL_PLASR_RNAPbound_F',paramObj.RNAPbound_Forward;...
+                  'TXTL_PLASR_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
-    %
-    % nominal transcription
-
-
-    %% AraC
-    %
-    % set up binding reactions for AraC:arabinose. 
-    Robj4 = addreaction(tube, [dna.Name ' + ' AraCbound ' <-> ' dna.Name ':' AraCbound ]);
+    % 
+    Robj4 = addreaction(tube, [dna.Name ' + ' P3 ' <-> ' dna.Name ':' P3 ]);
     Kobj4 = addkineticlaw(Robj4, 'MassAction');
     Pobj4f = addparameter(Kobj4, 'kf', 2.86e-3);
     Pobj4r = addparameter(Kobj4, 'kr', 0.11e-4);
     set(Kobj4, 'ParameterVariableNames', {'kf', 'kr'});
     
-
-    Robj5 = addreaction(tube, [RNAPbound  ' + ' AraCbound ' <-> [' RNAPbound ':' AraCbound ']']);
+    Robj5 = addreaction(tube, [RNAPbound  ' + ' P3 ' <-> [' RNAPbound ':' P3 ']']);
     Kobj5 = addkineticlaw(Robj5, 'MassAction');
     Pobj5f = addparameter(Kobj5, 'kf', 2.86e-3);
     Pobj5r = addparameter(Kobj5, 'kr', 0.11e-4);
     set(Kobj5, 'ParameterVariableNames', {'kf', 'kr'});
     % 
-
-    Robj6 = addreaction(tube, [dna.Name ':' AraCbound ' + ' RNAP ' <-> [' RNAPbound ':' AraCbound ']' ]);
+    % Set up binding reaction for tetR. notice that the DNA-RNAP-P2 complex
+    % is v unstable, and expels the RNAP readily. 
+    Robj6 = addreaction(tube, [dna.Name ':' P3 ' + ' RNAP ' <-> [' RNAPbound ':' P3 ']' ]);
     Kobj6 = addkineticlaw(Robj6, 'MassAction');
     Pobj6f = addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward*50);
     Pobj6r = addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse);
@@ -136,18 +123,18 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     %%
     if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' AraCbound ],prom_spec, rbs_spec, gene_spec,{AraCbound} ); 
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); 
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} );  
     else
         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
-        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' AraCbound ],{AraCbound});  
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3});  
     end
     
 
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
 else
-    error('txtltoolbox:txtl_prom_pBAD:undefinedmode', ...
+    error('txtltoolbox:txtl_prom_plasR:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
 

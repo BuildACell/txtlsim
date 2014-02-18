@@ -290,7 +290,7 @@ for k = 1:numOfGroups
         %%%%%%%%%%% Resource usage plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     elseif(strcmp(dataGroups(k).plotName,'Resource usage'))
         
-        listOfResources = {'NTP','AA','RNAP','Ribo'};
+        listOfResources = {'AGTP', 'CUTP', 'AA','RNAP','Ribo'};
         dataX = getDataForSpecies(currModelObj,x_ode,listOfResources);
         
         % ---- Calling the txtl_plot standalone -> figure is generated -------%
@@ -306,11 +306,12 @@ for k = 1:numOfGroups
             t_ode/60, dataX(:, 1)/dataX(1, 1), 'b-', ...
             t_ode/60, dataX(:, 2)/dataX(1, 2), 'r-', ...
             t_ode/60, dataX(:, 3)/dataX(1, 3), 'b--', ...
-            t_ode/60, dataX(:, 4)/dataX(1, 4), 'r--');
+            t_ode/60, dataX(:, 4)/dataX(1, 4), 'r--', ...
+            t_ode/60, dataX(:, 5)/dataX(1, 5), 'g--');
         
         title(currentHandler,'Resource usage');
         lgh = legend(currentHandler,...
-            {'NTP [mM]', 'AA [mM]', 'RNAP [nM]', 'Ribo [nM]'}, ...
+            {'AGTP [nM]', 'CUTP [nM]', 'AA [mM]', 'RNAP [nM]', 'Ribo [nM]'}, ...
             'Location', 'Best');
         legend(lgh, 'boxoff');
         ylabel(currentHandler,'Species amounts [normalized]');

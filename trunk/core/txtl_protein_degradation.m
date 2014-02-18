@@ -86,7 +86,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
         'MassAction',{'TXTL_prot_unfold',9.2611e-07});
   
     txtl_addreaction(tube,['protein ClpX* -> null'],...
-        'MassAction',{'TXTL_clpx_deg',4.7022e-04}); % 0.001
+        'MassAction',{'TXTL_clpx_deg',1.7022e-04}); % 0.001
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

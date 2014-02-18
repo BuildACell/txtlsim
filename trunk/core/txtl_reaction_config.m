@@ -25,7 +25,8 @@ classdef txtl_reaction_config
         RNase_R;
         NTP_Forward;
         NTP_Reverse;
-        NTP_Concentration;
+        AGTP_Concentration;
+        CUTP_Concentration;
         AA_Concentration;
         RNAPbound_termination_rate;
       

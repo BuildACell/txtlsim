@@ -1,28 +1,32 @@
 function txtl_mrna_degradation(mode, tube, dna, rna, rbs_spec)
+% Vipul Singhal Feb 13 2014
+% We model RNA degradation as an enzymatic step reaction, as described in
+% Vincent Noireaux's 2011 PRL paper 
+% "Coarse-Grained Dynamics of Protein Synthesis in a Cell-Free System"
+% 200 nM of radioactively labelled 960bases long RNA decause exponentially
+% with a half life of 12 min. This means that the RNAse does not get
+% saturated at this concentration of mRNA. 
 
 
-% since RNase is only used in the JLucks RNA circuits, figure out if an att
-% or anti is present in ANY of the DNAs. if so, then set up degradations using RNase. 
-includeRNase = false;
-BooleanAtt1Present = false;
-BooleanAtt2Present = false;
-BooleanAnti1Present = false;
-BooleanAnti2Present = false;
-for i = 1: length(tube.userdata.DNAinfo)
-    UTR = tube.userdata.DNAinfo{i}{2};
-    [utrData, utrStr] = txtl_parsespec(UTR);
-    [BooleanAtt1Present,indexesOfAtt1Present] = checkForStringInACellList(utrData(1,:),'att1');
-    [BooleanAnti1Present,indexesOfAnti1Present] = checkForStringInACellList(utrData(1,:),'anti1');
-        [BooleanAtt2Present,indexesOfAtt2Present] = checkForStringInACellList(utrData(1,:),'att2');
-    [BooleanAnti2Present,indexesOfAnti2Present] = checkForStringInACellList(utrData(1,:),'anti2');
-if BooleanAtt1Present || BooleanAtt2Present || BooleanAnti1Present || BooleanAnti2Present
-    includeRNase = true;
-end
-end
+% includeRNase = false;
+% BooleanAtt1Present = false;
+% BooleanAtt2Present = false;
+% BooleanAnti1Present = false;
+% BooleanAnti2Present = false;
+% for i = 1: length(tube.userdata.DNAinfo)
+%     UTR = tube.userdata.DNAinfo{i}{2};
+%     [utrData, utrStr] = txtl_parsespec(UTR);
+%     [BooleanAtt1Present,indexesOfAtt1Present] = checkForStringInACellList(utrData(1,:),'att1');
+%     [BooleanAnti1Present,indexesOfAnti1Present] = checkForStringInACellList(utrData(1,:),'anti1');
+%         [BooleanAtt2Present,indexesOfAtt2Present] = checkForStringInACellList(utrData(1,:),'att2');
+%     [BooleanAnti2Present,indexesOfAnti2Present] = checkForStringInACellList(utrData(1,:),'anti2');
+% if BooleanAtt1Present || BooleanAtt2Present || BooleanAnti1Present || BooleanAnti2Present
+%     includeRNase = true;
+% end
+% end
 
+includeRNase = true;
 
-
-if includeRNase
     complexF = tube.UserData.ReactionConfig.RNase_F;
     complexR = tube.UserData.ReactionConfig.RNase_R;
     degRate = tube.UserData.ReactionConfig.RNA_deg;
@@ -45,19 +49,6 @@ if includeRNase
             'TXTL_RNAdeg_R',complexR});
         txtl_addreaction(tube,['RNA ' att ':RNase -> RNase'],...
             'MassAction',{'TXTL_RNAdeg_F',degRate});
-        if mode.sim_module_exception
-            txtl_addreaction(tube,'RNA att1-att1 + RNase <-> RNA att1-att1:RNase',...
-                'MassAction',{'TXTL_RNAdeg_F',complexF;...
-                'TXTL_RNAdeg_R',complexR});
-            txtl_addreaction(tube,'RNA att1-att1:RNase -> RNase',...
-                'MassAction',{'TXTL_RNAdeg_F',degRate});
-        elseif mode.double_antisense
-            txtl_addreaction(tube,'RNA att2-anti1 + RNase <-> RNA att2-anti1:RNase',...
-                'MassAction',{'TXTL_RNAdeg_F',complexF;...
-                'TXTL_RNAdeg_R',complexR});
-            txtl_addreaction(tube,'RNA att2-anti1:RNase -> RNase',...
-                'MassAction',{'TXTL_RNAdeg_F',degRate});
-        end
     end
     
     
@@ -74,15 +65,6 @@ if includeRNase
         txtl_addreaction(tube,['Ribo:' rna.Name ':RNase -> Ribo + RNase'],...
             'MassAction',{'TXTL_RNAdeg_F',degRate});
     end
-else
-        txtl_addreaction(tube,[rna.Name ' -> null'],...
-        'MassAction',{'TXTL_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
-        txtl_addreaction(tube,['AA:ATP:Ribo:' rna.Name ' -> AA + ATP + Ribo'],...
-            'MassAction',{'TXTL_AA_ATP_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
-        txtl_addreaction(tube,['Ribo:' rna.Name ' -> Ribo'],...
-            'MassAction',{'TXTL_Ribo_RNAdeg_F',tube.UserData.ReactionConfig.RNA_deg});
-end
-
 
 end
 

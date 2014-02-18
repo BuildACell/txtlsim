@@ -1,7 +1,9 @@
-% txtl_extract.m - function to create a tube of TX-TL buffer
-%! TODO: add documentation
+% txtl_protein_lasR.m - protein information for lasR
+% VS Dec 2013
+% This is the activator protein for the plasR promoter.
+%
 
-% Written by Richard Murray, Sep 2012
+% Written by Richard Murray, 9 Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -32,22 +34,36 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_buffer(name)
-tube = txtl_newtube(name);
-TXTLconfig = txtl_reaction_config(name);
+function varargout = txtl_protein_lasR(mode, tube, protein, varargin)
+% in 'setup Species' mode, it returns an array of gene lengths, having
+% added defaults in places where the lengths are missing. 
 
-% Add in NTPs and amino acids
-% Buffer contents
-%    NTP: ATP 1.5mM, GTP 1.5mM, CTP 0.9mM, UTP 0.9mM
-%    AA: 1.5mM (for each amino acid)
-% due to limiting factors only 20% percent can be utilized, c.f. V Noireaux
-% 2003. 
-%
-% Buffer is 41% of the 10ul reaction volume
-stockMulti = 10/4.1666; 
- addspecies(tube, 'AGTP', stockMulti*TXTLconfig.AGTP_Concentration);		
- addspecies(tube, 'CUTP', stockMulti*(TXTLconfig.CUTP_Concentration));		
- addspecies(tube, 'AA',  stockMulti*TXTLconfig.AA_Concentration);
+% importing the corresponding parameters
+paramObj = txtl_component_config('lasR'); 
+
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(mode.add_dna_driver, 'Setup Species')
+
+    geneData = varargin{1};
+    defaultBasePairs = {'lasR','lva','terminator';
+        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
+    geneData = txtl_setup_default_basepair_length(tube,geneData,...
+        defaultBasePairs);
+    
+    varargout{1} = geneData;
+    
+    coreSpecies = {'protein lasR'}; 
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
+   
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
+elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
+else
+    error('txtltoolbox:txtl_protein_lasR:undefinedmode', ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end
 
 
 

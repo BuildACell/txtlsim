@@ -3,7 +3,7 @@ function txtl_enzyme_resource_degradation(modelObj)
 % RNAP degradation in batch mode
 if modelObj.UserData.Vesicule == 0
 % RNAP degration as a first order reaction
-RNAP_deg = 0.0011;
+RNAP_deg = 0.0011; % changed from 0.0011
 %
 % % RNAP degradation
 txtl_addreaction(modelObj,'RNAP -> null',...
@@ -16,12 +16,22 @@ txtl_addreaction(modelObj,'RNAP28 -> protein sigma28',...
 end
 
 %
-% After 3hours because of the ATP regeneration stops the remaining ATP
-% becomes unusable c.f. V Noireaux 2003.
-atp_deg = 0.00003;
+% After 3hours, ATP regeneration stops, leading to an overall decrease in 
+% ATP concentrations.
+% c.f. V Noireaux 2003.
+parameterObj = addparameter(modelObj, 'AGTPdeg_F', 0, 'ConstantValue', false);
+% speciesObj = sbioselect(Mobj, 'Type', 'species', 'Name', 'AGTP');
+% set(speciesObj, 'InitialAmount', 3000000);
+% evt1 = addevent(modelObj, 'time <= 180*60', 'AGTP = 3000000');
+evt2 = addevent(modelObj, 'time <= 180*60', 'AGTPdeg_F = 0');
+evt3 = addevent(modelObj, 'time > 180*60', 'AGTPdeg_F = 0.00012');
 
-txtl_addreaction(modelObj,'ATP -> ATP_UNUSE',...
-    'MassAction',{'ATPdeg_F',atp_deg});
+reactionObj = addreaction(modelObj,'AGTP -> AGTP_UNUSE');
+kineticlawObj = addkineticlaw(reactionObj, 'MassAction');
+set(kineticlawObj, 'ParameterVariableName', 'AGTPdeg_F');
+% agtp_deg_param = modelObj.addparameter('agtp_deg', 'ConstantValue', 0);
+
+% !TODO Vipul 17 Feb 14: Ask Zoltan what he was trying to do here. 
 % txtl_addreaction(modelObj,'AA:ATP:Ribo:RNA rbs--deGFP -> ATP_UNUSE + AA + Ribo:RNA rbs--deGFP',...
 %     'MassAction',{'ATPdeg_F',atp_deg});
 % txtl_addspecies(modelObj, 'ATP_REGEN_SUP',1);

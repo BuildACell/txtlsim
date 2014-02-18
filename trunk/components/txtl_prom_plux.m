@@ -52,7 +52,7 @@ function varargout= txtl_prom_plux(mode, tube, dna, rna, varargin)
     LuxRbound = ['AHL:' P3 ];
     
     % importing the corresponding parameters
-    paramObj = txtl_component_config('plux');
+    paramObj = txtl_component_config('LuxR');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')

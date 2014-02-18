@@ -84,7 +84,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
                        'TXTL_INDUCER_ARAC_ARABINOSE_R',paramObj.Protein_Inducer_Reverse});
     % degrade the aTc inducer
      txtl_addreaction(tube,'arabinose -> null',...
-      'MassAction',{'TXTL_INDUCER_DEGRADATION_ARABINOSE',0.000267});%paramObj.Inducer_Degradation
+      'MassAction',{'TXTL_INDUCER_DEGRADATION_ARABINOSE',0.0000267});%paramObj.Inducer_Degradation
 
 %     % set up a reaction for protein dimerization
 %     txtl_dimerize(mode, tube,protein, ...

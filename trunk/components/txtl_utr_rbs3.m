@@ -1,5 +1,8 @@
-% txtl_extract.m - function to create a tube of TX-TL buffer
-%! TODO: add documentation
+% txtl_utr_rbs3.m - promoter information for variant 3 of the rbs
+% VS Dec 2013
+%
+% This file contains a description of a ribosome binding site.
+% It has a different ribosome binding affinity.
 
 % Written by Richard Murray, Sep 2012
 %
@@ -32,23 +35,40 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function tube = txtl_buffer(name)
-tube = txtl_newtube(name);
-TXTLconfig = txtl_reaction_config(name);
+function varargout = txtl_utr_rbs3(mode, tube, rna, protein, varargin)
+RBSnum = '3';
+ribo_f = 0.00001;
+ribo_r = 1;
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if strcmp(mode.add_dna_driver, 'Setup Species')
 
-% Add in NTPs and amino acids
-% Buffer contents
-%    NTP: ATP 1.5mM, GTP 1.5mM, CTP 0.9mM, UTP 0.9mM
-%    AA: 1.5mM (for each amino acid)
-% due to limiting factors only 20% percent can be utilized, c.f. V Noireaux
-% 2003. 
-%
-% Buffer is 41% of the 10ul reaction volume
-stockMulti = 10/4.1666; 
- addspecies(tube, 'AGTP', stockMulti*TXTLconfig.AGTP_Concentration);		
- addspecies(tube, 'CUTP', stockMulti*(TXTLconfig.CUTP_Concentration));		
- addspecies(tube, 'AA',  stockMulti*TXTLconfig.AA_Concentration);
+    utrRbsData = varargin{1};
+    defaultBasePairs = {['rbs' RBSnum],'spacer'; 20,200};
+    utrRbsData = txtl_setup_default_basepair_length(tube,utrRbsData,defaultBasePairs);
+    
 
+    RiboBound = ['Ribo:' rna.Name];
+    coreSpecies = {'Ribo',RiboBound};
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
+    
+    varargout{1} = sbioselect(tube, 'Name', RiboBound);
+    varargout{2} = utrRbsData;
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
+
+    listOfSpecies = get(tube.species, 'name');
+    
+    % Set up the binding reaction
+        txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
+            'MassAction',{['TXTL_UTR_RBS' RBSnum '_F'],ribo_f*tube.UserData.ReactionConfig.Ribosome_Binding_F;
+            ['TXTL_UTR_RBS' RBSnum '_R'],ribo_r*tube.UserData.ReactionConfig.Ribosome_Binding_R});
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
+else
+    error(['txtltoolbox:txtl_utr_rbs' RBSnum ':undefinedmode'], ...
+      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end    
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
