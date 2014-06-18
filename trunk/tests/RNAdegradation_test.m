@@ -6,13 +6,13 @@
 
 % Nominal Parameters
 close all; clear all; clc
-tube1 = txtl_extract('E30');
-tube2 = txtl_buffer('E30');
+tube1 = txtl_extract('E31VNPRL');
+tube2 = txtl_buffer('E31VNPRL');
 tube3 = txtl_newtube('gene_expression');
 dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 0, 'plasmid');
 
 Mobj = txtl_combine([tube1, tube2, tube3]);
-txtl_addspecies(Mobj, 'RNA rbs--deGFP', 300);
+txtl_addspecies(Mobj, 'RNA rbs--deGFP', 200);
 
 
 
@@ -21,9 +21,9 @@ t_ode = simData.Time;
 x_ode = simData.Data;
 RNA1 = findspecies(Mobj, 'RNA rbs--deGFP');
 RNA2 = findspecies(Mobj, 'Ribo:RNA rbs--deGFP');
-RNA3 = findspecies(Mobj, 'AA:ATP:Ribo:RNA rbs--deGFP') ;
+RNA3 = findspecies(Mobj, 'AA:AGTP:Ribo:RNA rbs--deGFP') ;
 RNA4 = findspecies(Mobj, 'RNA rbs--deGFP:RNase')       ;                   
-RNA5 = findspecies(Mobj, 'AA:ATP:Ribo:RNA rbs--deGFP:RNase')  ;                
+RNA5 = findspecies(Mobj, 'AA:AGTP:Ribo:RNA rbs--deGFP:RNase')  ;                
 RNA6 = findspecies(Mobj, 'Ribo:RNA rbs--deGFP:RNase')   ;   
 
 figure

@@ -69,10 +69,6 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
-    %
-    % Now put in the reactions for the utilization of NTPs
-    % Use an enzymatic reaction to proper rate limiting
-    % 
     if mode.utr_attenuator_flag
         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
     else
@@ -94,10 +90,7 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
-    %
-    % Now put in the reactions for the utilization of NTPs
-    % Use an enzymatic reaction to proper rate limiting
-    % 
+   
     if mode.utr_attenuator_flag
         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
     else

@@ -17,11 +17,11 @@
 %   1. Redistributions of source code must retain the above copyright
 %      notice, this list of conditions and the following disclaimer.
 %
-%   2. Redistributions in binary form must reproduce the above copyright 
-%      notice, this list of conditions and the following disclaimer in the 
+%   2. Redistributions in binary form must reproduce the above copyright
+%      notice, this list of conditions and the following disclaimer in the
 %      documentation and/or other materials provided with the distribution.
 %
-%   3. The name of the author may not be used to endorse or promote products 
+%   3. The name of the author may not be used to endorse or promote products
 %      derived from this software without specific prior written permission.
 %
 % THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
@@ -38,13 +38,13 @@
 
 function varargout = txtl_prom_ptet(mode, tube, dna, rna,varargin)
 
-    % Create strings for reactants and products
-    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
-    RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'RNAP70';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP70:' dna.Name];
-    % importing the corresponding parameters
-    paramObj = txtl_component_config('tetR'); 
+% Create strings for reactants and products
+DNA = ['[' dna.Name ']'];		% DNA species name for reactions
+RNA = ['[' rna.Name ']'];		% RNA species name for reactions
+RNAP = 'RNAP70';			% RNA polymerase name for reactions
+RNAPbound = ['RNAP70:' dna.Name];
+% importing the corresponding parameters
+paramObj = txtl_component_config('tetR');
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,9 +52,9 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     promoterData = varargin{1};
     if nargin==8
-    prom_spec = varargin{2};
-    rbs_spec = varargin{3};
-    gene_spec = varargin{4};
+        prom_spec = varargin{2};
+        rbs_spec = varargin{3};
+        gene_spec = varargin{4};
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
@@ -68,46 +68,40 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     coreSpecies = {RNAP,RNAPbound};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    
-    %
-    % Now put in the reactions for the utilization of NTPs
-    % Use an enzymatic reaction to proper rate limiting
-   if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
-    else
-        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-   end
-    
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
-elseif strcmp(mode.add_dna_driver,'Setup Reactions')
-    listOfSpecies = varargin{1};
-    if nargin==8
-    prom_spec = varargin{2};
-    rbs_spec = varargin{3};
-    gene_spec = varargin{4};
-    elseif nargin~=5
-        error('the number of argument should be 5 or 8, not %d',nargin);
-    end
-    % Parameters that describe this promoter
-    parameters = {'TXTL_PTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
-                  'TXTL_PTET_RNAPbound_R',paramObj.RNAPbound_Reverse};
-    % Set up binding reaction
-    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
-        'MassAction',parameters);
-    %
-    
     if mode.utr_attenuator_flag
         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
     else
         txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
     end
-    % nominal transcription
+    
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
+    listOfSpecies = varargin{1};
+    if nargin==8
+        prom_spec = varargin{2};
+        rbs_spec = varargin{3};
+        gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
+    % Parameters that describe this promoter
+    parameters = {'TXTL_PTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
+        'TXTL_PTET_RNAPbound_R',paramObj.RNAPbound_Reverse};
+    % Set up binding reaction
+    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+        'MassAction',parameters);
+   
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
     
     
-    matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once'); 
+    matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once');
     listOftetRdimer = vertcat(matchStr{:});
     
-
+    
     %! TODO make all these reactions conditional on specie availability
     %! TODO has this todo been accomplished? Vipul 2/10/13
     
@@ -116,16 +110,16 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         for k = 1:size(listOftetRdimer,1)
             txtl_addreaction(tube,...
                 [DNA ' + ' listOftetRdimer{k} ' <-> [' dna.name ':' listOftetRdimer{k} ']'],...
-            'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
-                          'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
+                'MassAction',{'ptet_sequestration_F',getDNASequestrationRates(paramObj,'F');...
+                'ptet_sequestration_R',getDNASequestrationRates(paramObj,'R')});
             
         end
     end
-   
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
     error('txtltoolbox:txtl_prom_ptet:undefinedmode', ...
-      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+        'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end
 end
 

@@ -5,6 +5,8 @@ classdef txtl_component_config
     properties
         RNAPbound_Forward
         RNAPbound_Reverse
+        RNAPbound_Forward_2
+        RNAPbound_Reverse_2
         Promoter_Length
         Thio_Length
         Junk_Length
@@ -18,6 +20,9 @@ classdef txtl_component_config
         Protein_Inducer_Forward
         Protein_Inducer_Reverse
         Inducer_Degradation
+        Protein_Inducer_Forward_2
+        Protein_Inducer_Reverse_2
+        Inducer_Degradation_2
         % N*2 matrix for possible promoter-protein complex interaction
         % we assume that there is 
         %   - N possible protein complex can bind to the promoter sites 
@@ -26,6 +31,8 @@ classdef txtl_component_config
         Protein_Protein_Forward
         Protein_Protein_Reverse
         Protein_Maturation
+        activation_F
+        activation_R
     end
     
     methods

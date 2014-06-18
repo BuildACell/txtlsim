@@ -75,7 +75,6 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
-    
     listOfSpecies = varargin{1};
     if nargin==8
     prom_spec = varargin{2};
@@ -91,7 +90,6 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
 
-    % nominal transcription
     if mode.utr_attenuator_flag
         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
     else

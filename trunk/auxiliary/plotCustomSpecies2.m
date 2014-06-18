@@ -40,7 +40,7 @@ if iscell(mobj)
                 hold on
                 set(h(k), 'color', colororder3(k,:), 'linewidth', 1.5);
             end
-            title(cellofspecies{i,jj},'fontsize', 7);
+            title(cellofspecies{i,jj},'fontsize', 10);
 %             
 %             suplabel('time/min');
 %             suplabel('conc or rfu','y');
@@ -48,7 +48,7 @@ if iscell(mobj)
     end
     if ~isempty(legendList)
         lgh = legend(h, legendList, 'Location', 'NorthEast');
-        set(lgh,'FontSize',8);
+        set(lgh,'FontSize',10);
         
     end
     

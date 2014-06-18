@@ -1,5 +1,6 @@
 % txtl_prom_p28_ptet.m - promoter information for p28 and ptet combinatorial promoter
 % Zoltan Tuza, Oct 2012
+% Vipul Singhal Jun 2014
 %
 % This file contains a description of the p28 and ptet combinatorial promoter.
 % Calling the function txtl_prom_p28_ptet() will set up the reactions for
@@ -57,6 +58,13 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
 
     
     promoterData = varargin{1};
+    if nargin==8
+        prom_spec = varargin{2};
+        rbs_spec = varargin{3};
+        gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
     defaultBasePairs = {'p28_ptet','junk','thio';150,500,0};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
@@ -66,10 +74,13 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     coreSpecies = {RNAP,RNAPbound,P1,P2};
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
-    
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2});
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); %leaky slow rate
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ],prom_spec, rbs_spec, gene_spec,{P2} );  %lowest rate
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2});  %lowest rate
+    end
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
@@ -80,9 +91,6 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
-    %
-    % nominal transcription
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
 
     % 
     % Set up bindig reaction for both sigma28 and tetR
@@ -105,7 +113,13 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     Pobj2r = addparameter(Kobj2, 'kr', paramObj.RNAPbound_Reverse*1000);
     set(Kobj2, 'ParameterVariableNames', {'kf', 'kr'});
 
-    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2});
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); %leaky slow rate
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P2 ],prom_spec, rbs_spec, gene_spec,{P2} );  %lowest rate
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
+        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P2 ],{P2});  %lowest rate
+    end
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
 else

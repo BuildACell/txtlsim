@@ -1,5 +1,6 @@
 % txtl_prom_pBAD_ptet.m - promoter information for pBAD and ptet combinatorial promoter
 % Zoltan Tuza, Oct 2012
+% Vipul Singhal Jun 2014
 %
 % This file contains a description of the pBAD and ptet combinatorial promoter.
 % Calling the function txtl_prom_pBAD_ptet() will set up the reactions for

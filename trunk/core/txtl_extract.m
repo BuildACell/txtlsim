@@ -50,7 +50,7 @@ tube.UserData.ReactionConfig = TXTLconfig;
 addspecies(tube, 'RNAP', stockMulti*100);	% 100 nM based on VN's paper
 sigma70 = addspecies(tube, 'protein sigma70', stockMulti*35); % 35 nM based on VN's paper
 sigma28 = addspecies(tube, 'protein sigma28', stockMulti*20); % <20 nM based on VN's paper
-addspecies(tube, 'Ribo', stockMulti*30);	% 
+addspecies(tube, 'Ribo', stockMulti*50);	% 
 
 % Add RNAP+Sigma70 <-> RNAP70 reaction
 % Set up the reaction

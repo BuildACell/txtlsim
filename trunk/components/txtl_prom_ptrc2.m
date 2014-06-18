@@ -53,6 +53,13 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
 
     
     promoterData = varargin{1};
+    if nargin==8
+    prom_spec = varargin{2};
+    rbs_spec = varargin{3};
+    gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
     defaultBasePairs = {'placI','junk','thio';...
         paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
@@ -64,7 +71,11 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
 
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
 
 
 
@@ -72,7 +83,13 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
     listOfSpecies = varargin{1};
-    
+    if nargin==8
+    prom_spec = varargin{2};
+    rbs_spec = varargin{3};
+    gene_spec = varargin{4};
+    elseif nargin~=5
+        error('the number of argument should be 5 or 8, not %d',nargin);
+    end
     % Parameters that describe this promoter
     parameters = {'TXTL_PTRC2_RNAPbound_F',paramObj.RNAPbound_Forward;...
                   'TXTL_PTRC2_RNAPbound_R',paramObj.RNAPbound_Reverse};
@@ -80,9 +97,11 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
 
-    % nominal transcription
-    txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
     
     matchStr = regexp(listOfSpecies,'(^protein lacI.*dimer$)','tokens','once'); % ^ matches RNA if it occust at the beginning of an input string
     listOflacIdimers = vertcat(matchStr{:});

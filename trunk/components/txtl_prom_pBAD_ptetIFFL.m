@@ -1,5 +1,6 @@
 % txtl_prom_pBAD_ptet.m - promoter information for pBAD and ptet combinatorial promoter
-% Zoltan Tuza, Oct 2012
+
+% Vipul Singhal Jun 2014
 %
 % This file contains a description of the pBAD and ptet combinatorial promoter.
 % Calling the function txtl_prom_pBAD_ptet() will set up the reactions for
@@ -38,7 +39,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout= txtl_prom_pBAD_ptet(mode, tube, dna, rna, varargin)
+function varargout= txtl_prom_pBAD_ptetIFFL(mode, tube, dna, rna, varargin)
 
 
     % Create strings for reactants and products

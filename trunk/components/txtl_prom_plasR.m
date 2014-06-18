@@ -47,7 +47,7 @@ function varargout= txtl_prom_plasR(mode, tube, dna, rna, varargin)
     RNAPbound = ['RNAP70:' dna.Name];
     P1 = 'protein sigma70';
     
-    P3 = 'protein lasR';
+    P3 = 'OC12HSL:protein lasR';
     
     
     % importing the corresponding parameters
@@ -74,10 +74,10 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     % empty cellarray for amount => zero amount
     if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} );  
     else
-        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
+%         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3}); 
     end
     
@@ -95,38 +95,48 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     % in the promoter strength comes in. 
     parameters = {'TXTL_PLASR_RNAPbound_F',paramObj.RNAPbound_Forward;...
                   'TXTL_PLASR_RNAPbound_R',paramObj.RNAPbound_Reverse};
+              
+    Robj3 = addreaction(tube, [dna.Name ' + ' P3 ' <-> [' dna.Name ':' P3 ']' ]);
+    Kobj3 = addkineticlaw(Robj3, 'MassAction');
+    Pobj3f = addparameter(Kobj3, 'kf', paramObj.activation_F);
+    Pobj3r = addparameter(Kobj3, 'kr', paramObj.activation_R);
+    set(Kobj3, 'ParameterVariableNames', {'kf', 'kr'});
+     
+    Robj6 = addreaction(tube, [dna.Name ':' P3 ' + ' RNAP ' <-> [' RNAPbound ':' P3 ']' ]);
+    Kobj6 = addkineticlaw(Robj6, 'MassAction');
+    Pobj6f = addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward);
+    Pobj6r = addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse);
+    set(Kobj6, 'ParameterVariableNames', {'kf', 'kr'});
+    %%         
+%{
+              
     % Set up binding reaction
-    txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
-        'MassAction',parameters);
+%     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+%         'MassAction',parameters);
     % 
-    Robj4 = addreaction(tube, [dna.Name ' + ' P3 ' <-> ' dna.Name ':' P3 ]);
-    Kobj4 = addkineticlaw(Robj4, 'MassAction');
-    Pobj4f = addparameter(Kobj4, 'kf', 2.86e-3);
-    Pobj4r = addparameter(Kobj4, 'kr', 0.11e-4);
-    set(Kobj4, 'ParameterVariableNames', {'kf', 'kr'});
-    
-    Robj5 = addreaction(tube, [RNAPbound  ' + ' P3 ' <-> [' RNAPbound ':' P3 ']']);
-    Kobj5 = addkineticlaw(Robj5, 'MassAction');
-    Pobj5f = addparameter(Kobj5, 'kf', 2.86e-3);
-    Pobj5r = addparameter(Kobj5, 'kr', 0.11e-4);
-    set(Kobj5, 'ParameterVariableNames', {'kf', 'kr'});
+%     Robj4 = addreaction(tube, [dna.Name ' + ' P3 ' <-> ' dna.Name ':' P3 ]);
+%     Kobj4 = addkineticlaw(Robj4, 'MassAction');
+%     Pobj4f = addparameter(Kobj4, 'kf', 2.86e-3);
+%     Pobj4r = addparameter(Kobj4, 'kr', 0.11e-4);
+%     set(Kobj4, 'ParameterVariableNames', {'kf', 'kr'});
+%     
+%     Robj5 = addreaction(tube, [RNAPbound  ' + ' P3 ' <-> [' RNAPbound ':' P3 ']']);
+%     Kobj5 = addkineticlaw(Robj5, 'MassAction');
+%     Pobj5f = addparameter(Kobj5, 'kf', 2.86e-3);
+%     Pobj5r = addparameter(Kobj5, 'kr', 0.11e-4);
+%     set(Kobj5, 'ParameterVariableNames', {'kf', 'kr'});
     % 
     % Set up binding reaction for tetR. notice that the DNA-RNAP-P2 complex
     % is v unstable, and expels the RNAP readily. 
-    Robj6 = addreaction(tube, [dna.Name ':' P3 ' + ' RNAP ' <-> [' RNAPbound ':' P3 ']' ]);
-    Kobj6 = addkineticlaw(Robj6, 'MassAction');
-    Pobj6f = addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward*50);
-    Pobj6r = addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse);
-    set(Kobj6, 'ParameterVariableNames', {'kf', 'kr'});
     
-        
+    %}
     
-    %%
+    
     if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); 
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} );  
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); 
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3],prom_spec, rbs_spec, gene_spec,{P3} );  
     else
-        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
+%         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3});  
     end
     

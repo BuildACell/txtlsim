@@ -61,6 +61,15 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
+    ktxExpression =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
+        'RNA_Length','rna.UserData');
+    ktx = eval(ktxExpression);
+    
+    ntpcnt = rna.UserData/4;
+    NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
+    
+    
+    
     RNAPbound_term = ['term_' RNAPbound];
     transcriptionEq = ...
         ['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound_term ' + ' rna.Name];
@@ -73,15 +82,22 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         for k=2:size(extraSpecies,2)
             extraStr = [extraStr ' + ' extraSpecies{k}];
         end
+        txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAP  ' + ' dna.Name ' + ' extraStr],...
+        'MassAction',NTPConsumptionRate);
         txtl_addreaction(tube,['[' RNAPbound_term '] -> ' RNAP  ' + ' dna.Name ' + ' extraStr],...
             'MassAction',{'TXTL_RNAPBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.RNAPbound_termination_rate});
+        
     else
+        txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAP  ' + ' dna.Name],...
+        'MassAction',NTPConsumptionRate);
         txtl_addreaction(tube,['[' RNAPbound_term '] -> ' RNAP  ' + ' dna.Name],...
             'MassAction',{'TXTL_RNAPBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.RNAPbound_termination_rate});
     end
-    ktxExpression =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
-        'RNA_Length','rna.UserData');
-    ktx = eval(ktxExpression);
+    
+    
+    
+    
+    
     % parameter values
     NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward;
         'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse};
@@ -96,11 +112,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         'MassAction',NTPparameters);
     txtl_addreaction(tube,['[CUTP:' RNAPbound '] + AGTP <-> [CUTP:AGTP:' RNAPbound ']'],...
         'MassAction',NTPparameters);
-    ntpcnt = rna.UserData/4;
-    NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
     
-    txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
-        'MassAction',NTPConsumptionRate);
     
     
     

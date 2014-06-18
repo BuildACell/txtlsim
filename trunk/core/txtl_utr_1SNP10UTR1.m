@@ -1,9 +1,8 @@
-% txtl_protein_lasR.m - protein information for lasR
-% VS Dec 2013
-% This is the activator protein for the plasR promoter.
-%
+% txtl_utr_1SNP10UTR1.m - promoter information for standard RBS
+% VS Mar 2014
 
-% Written by Richard Murray, 9 Sep 2012
+
+% Written by Richard Murray, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -34,41 +33,52 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_protein_lasR(mode, tube, protein, varargin)
-% in 'setup Species' mode, it returns an array of gene lengths, having
-% added defaults in places where the lengths are missing. 
-
-% importing the corresponding parameters
-paramObj = txtl_component_config('lasR'); 
-
+function varargout = txtl_utr_1SNP10UTR1(mode, tube, rna, protein, varargin)
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
 
-    geneData = varargin{1};
-    defaultBasePairs = {'lasR','lva','terminator';
-        paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
-    geneData = txtl_setup_default_basepair_length(tube,geneData,...
-        defaultBasePairs);
+    utrRbsData = varargin{1};
+    defaultBasePairs = {'att', 'anti', 'SNP10UTR1','spacer';10, 10, 20,200};
+    utrRbsData = txtl_setup_default_basepair_length(tube,utrRbsData,defaultBasePairs);
     
-    varargout{1} = geneData;
+    if mode.utr_rbs_flag % ribosome only binds to the RNA if the rbs is present
+        RiboBound = ['Ribo:' rna.Name];
+        coreSpecies = {'Ribo',RiboBound};
+    else
+        coreSpecies = {'Ribo'};
+    end
     
-    coreSpecies = {'protein lasR'}; 
+    % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-   
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
-elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
-  
-        txtl_addreaction(tube,'[protein lasR] + OC12HSL <-> [OC12HSL:protein lasR]',...
-            'MassAction',{'TXTL_INDUCER_LASR_OC12HSL_F',paramObj.Protein_Inducer_Forward;...
-                       'TXTL_INDUCER_LASR_OC12HSL_R',paramObj.Protein_Inducer_Reverse});
     
+   
+    %TODO! 12/8/12 zoltuz - find out why we need the RiboBound here!
+    if mode.utr_rbs_flag
+        varargout{1} = sbioselect(tube, 'Name', RiboBound);
+        varargout{2} = utrRbsData;
+    else
+    varargout{1} = utrRbsData;    
+    end
+    
+    
+
+%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
+elseif strcmp(mode.add_dna_driver,'Setup Reactions')
+
+    if mode.utr_rbs_flag
+        % Set up the binding reaction
+        txtl_addreaction(tube,['[' rna.Name '] + Ribo <-> [Ribo:' rna.Name ']'],...
+            'MassAction',{'TXTL_UTR_RBS_F',tube.UserData.ReactionConfig.Ribosome_Binding_F;
+            'TXTL_UTR_RBS_R',tube.UserData.ReactionConfig.Ribosome_Binding_R});
+    end
+    
+
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_lasR:undefinedmode', ...
+    error('txtltoolbox:txtl_utr_rbs:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end
-
+end    
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
