@@ -6,14 +6,14 @@
 
 
 close all
-clear all
+ clear all
 
 %% no clpX
 % Set up the standard TXTL tubes
 
 
-tube1 = txtl_extract('E9_SGIFFL');
-tube2 = txtl_buffer('E9_SGIFFL');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 tube3 = txtl_newtube('circuit_closed_loop_withClpX');
 
@@ -40,6 +40,7 @@ iClpX = findspecies(Mobj, 'protein ClpX');
 x_ode(end,iClpX) = x_ode(end,iClpX)+ClpXToAdd;%
 
  simulationTime = 8*60*60;
+ %!TODO: vs 06/18/14 found a bug in runsim here. line 224. look into this. 
  [t_ode,x_ode] = txtl_runsim(Mobj,simulationTime, t_ode,x_ode);
 
 defaultGroups = txtl_getDefaultPlotDataStruct();
@@ -89,8 +90,8 @@ iATC = cell(nParam,1);
 
 
 %Run code
-tube1 = txtl_extract('E9');
-tube2 = txtl_buffer('E9');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 
 

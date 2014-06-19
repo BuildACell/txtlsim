@@ -21,8 +21,8 @@ ptet_DNA = 4; % nM
 placI_DNA = 1; % nM
 
 % set up the tubes
-tube1 = txtl_extract('E9');
-tube2 = txtl_buffer('E9');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('genetics_switch');
 
 % add dna to tube3
