@@ -47,18 +47,12 @@ simulationTime = 12*60*60;
 
 %% plot the result
 close all
+
 % DNA and mRNA plot
-dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'ALL_DNA'}; 
-dataGroups{1,3} = {'b-','r-','b--','r--','y-','c-','g-','g--'};
 
-% Gene Expression Plot
-dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein ClpX*'};
-dataGroups{2,3} = {'g','g--','r-','k--','b-.','k'};
+dataGroups = txtl_getDefaultPlotDataStruct();
+dataGroups(2).SpeciesToPlot   = {'protein ClpX*'};
 
-% Resource Plot
-dataGroups{3,1} = 'Resource usage';
 
 txtl_plot(t_ode,x_ode,Mobj,dataGroups);
 

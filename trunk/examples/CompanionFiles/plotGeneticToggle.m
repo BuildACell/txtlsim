@@ -44,23 +44,23 @@ legend('tetR', 'tetRdimer', 'Location', 'NorthEastOutside')
 
 %plot resources
 subplot(4, 2, 3)
-iATP = findspecies(Mobj{i}, 'ATP');
-iNTP = findspecies(Mobj{i}, 'NTP');
+iAGTP = findspecies(Mobj{i}, 'AGTP');
+iCUTP = findspecies(Mobj{i}, 'CUTP');
 iAA = findspecies(Mobj{i}, 'AA');
 iClpX = findspecies(Mobj{i}, 'protein ClpX*');
-plot(t_ode{i}/3600, x_ode{i}(:,iATP), 'k', t_ode{i}/3600, x_ode{i}(:,iNTP), 'k--',...
+plot(t_ode{i}/3600, x_ode{i}(:,iAGTP), 'k', t_ode{i}/3600, x_ode{i}(:,iCUTP), 'k--',...
     t_ode{i}/3600, x_ode{i}(:,iAA), 'k.-', t_ode{i}/3600, x_ode{i}(:,iClpX), 'r')
-legend('ATP', 'NTP', 'AA', 'ClpX', 'Location', 'NorthEastOutside')
+legend('AGTP', 'CUTP', 'AA', 'ClpX', 'Location', 'NorthEastOutside')
 subplot(4, 2, 4)
 
 itetR_DNA1 = findspecies(Mobj{i}, 'DNA placI2--rbs--tetR2-lva');
 itetR_DNA2 = findspecies(Mobj{i}, 'RNAP70:DNA placI2--rbs--tetR2-lva');
-itetR_DNA3 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA placI2--rbs--tetR2-lva');
+itetR_DNA3 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA placI2--rbs--tetR2-lva');
 itetR_DNA_repressed = findspecies(Mobj{i}, 'DNA placI2--rbs--tetR2-lva:protein lacI2-lvatetramer');
 
 ilacI_DNA1 = findspecies(Mobj{i}, 'DNA ptet2--rbs--lacI2-lva');
 ilacI_DNA2 = findspecies(Mobj{i}, 'RNAP70:DNA ptet2--rbs--lacI2-lva');
-ilacI_DNA3 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA ptet2--rbs--lacI2-lva');
+ilacI_DNA3 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA ptet2--rbs--lacI2-lva');
 ilacI_DNA_repressed = findspecies(Mobj{i}, 'DNA ptet2--rbs--lacI2-lva:protein tetR2-lvadimer');
 
 plot(t_ode{i}/3600, x_ode{i}(:,itetR_DNA1)+x_ode{i}(:,itetR_DNA2)+x_ode{i}(:,itetR_DNA3), 'k', t_ode{i}/3600, x_ode{i}(:,itetR_DNA_repressed), 'k--',...
@@ -93,10 +93,10 @@ subplot(4, 2, 7)
 iRNAP = findspecies(Mobj{i}, 'RNAP');
 iRNAP70 = findspecies(Mobj{i}, 'RNAP70');
 iRNAP_lacI1 = findspecies(Mobj{i}, 'RNAP70:DNA ptet2--rbs--lacI2-lva');
-iRNAP_lacI2 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA ptet2--rbs--lacI2-lva');
+iRNAP_lacI2 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA ptet2--rbs--lacI2-lva');
 iRNAP_tetR1 = findspecies(Mobj{i}, 'RNAP70:DNA placI2--rbs--tetR2-lva');
-iRNAP_tetR2 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA placI2--rbs--tetR2-lva');
-iRNAP_ClpX1 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA p70--rbs--ClpX');
+iRNAP_tetR2 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA placI2--rbs--tetR2-lva');
+iRNAP_ClpX1 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA p70--rbs--ClpX');
 iRNAP_ClpX2 = findspecies(Mobj{i}, 'RNAP70:DNA p70--rbs--ClpX');
 plot(t_ode{i}/3600, x_ode{i}(:,iRNAP), 'k-',t_ode{i}/3600, x_ode{i}(:,iRNAP70), 'k--',...
     t_ode{i}/3600, x_ode{i}(:,iRNAP_lacI1)+x_ode{i}(:,iRNAP_lacI2), 'g',...

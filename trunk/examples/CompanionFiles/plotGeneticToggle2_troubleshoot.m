@@ -3,8 +3,8 @@ close all
 %set(0,'DefaultFigureVisible','off');
 set(0,'DefaultFigureVisible','on');
 scrsz = get(0,'ScreenSize');
-mainDir = pwd;
-mkdir([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% mainDir = pwd;
+% mkdir([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
 figure('Position',[50 50 scrsz(3)/1.1 scrsz(4)/1.3])%,'Name','Simulation Plot Window','NumberTitle','off')
 hold on
 
@@ -20,10 +20,10 @@ for i = 1:numel(a)
 %     end
 end
 title('tetR (x axis) and lacI (y axis)')
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study'])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) 'PP'])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_PP.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study'])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) 'PP'])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_PP.fig'])
+% cd(mainDir)
 close 
 
 %y axis maxima for plot subplot 1 and 4:
@@ -90,18 +90,18 @@ for i = 1:numel(a)
     plotTime= find(t_ode{i}<15*3600) % 15 hours, 1, 'last'
     figure('Position',[50 50 scrsz(3)/1.1 scrsz(4)/1.3])
     subplot(2, 1, 1)
-iATP = findspecies(Mobj{i}, 'ATP');
-plot(t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iATP))
-legend('ATP', 'Location', 'NorthEastOutside')
+iAGTP = findspecies(Mobj{i}, 'AGTP');
+plot(t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iAGTP))
+legend('AGTP', 'Location', 'NorthEastOutside')
 
 subplot(2, 1, 2)
 iRNAP = findspecies(Mobj{i}, 'RNAP');
 iRNAP70 = findspecies(Mobj{i}, 'RNAP70');
 iRNAP_lacI1 = findspecies(Mobj{i}, 'RNAP70:DNA ptet3--rbs--lacI3-lva');
-iRNAP_lacI3 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA ptet3--rbs--lacI3-lva');
+iRNAP_lacI3 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA ptet3--rbs--lacI3-lva');
 iRNAP_tetR1 = findspecies(Mobj{i}, 'RNAP70:DNA placI3--rbs--tetR3-lva');
-iRNAP_tetR3 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA placI3--rbs--tetR3-lva');
-iRNAP_ClpX1 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA p70--rbs--ClpX');
+iRNAP_tetR3 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA placI3--rbs--tetR3-lva');
+iRNAP_ClpX1 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA p70--rbs--ClpX');
 iRNAP_ClpX2 = findspecies(Mobj{i}, 'RNAP70:DNA p70--rbs--ClpX');
 plot(t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iRNAP), 'k-',t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iRNAP70), 'k--',...
     t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iRNAP_lacI1)+x_ode{i}(plotTime,iRNAP_lacI3), 'g',...
@@ -110,15 +110,15 @@ plot(t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iRNAP), 'k-',t_ode{i}(plotTime)/
     
 legend('RNAP', 'RNAP70', 'RNAP\_lacI', 'RNAP\_tetR', 'RNAP\_ClpX', 'Location', 'NorthEastOutside')%, 'Location', 'NorthEastOutside'
 h = suptitle(['init tetR monomer = ' num2str(c(i,1)) ', init lacI monomer = ' num2str(c(i,2))]);
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Resources_Sim_' num2str(SimNumber) '_' num2str(i)])
-saveas(gcf, ['Resources_Sim_' num2str(SimNumber) '_' num2str(i) '.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Resources_Sim_' num2str(SimNumber) '_' num2str(i)])
+% saveas(gcf, ['Resources_Sim_' num2str(SimNumber) '_' num2str(i) '.fig'])
+% cd(mainDir)
 close
 
 figure('Position',[50 50 scrsz(3)/1.1 scrsz(4)/1.3])
 subplot(4, 1, 4)
-iNTP = findspecies(Mobj{i}, 'NTP');
+iAGTP = findspecies(Mobj{i}, 'AGTP');
 iAA = findspecies(Mobj{i}, 'AA');
 iGFP = findspecies(Mobj{i}, 'protein deGFP*');
 iRFP = findspecies(Mobj{i}, 'protein RFP*');
@@ -143,11 +143,11 @@ legend('tetR', 'tetRdimer','lacI', 'lacIdimer', 'lacItetramer', 'Location', 'Nor
 subplot(4, 1, 2)
 itetR_DNA1 = findspecies(Mobj{i}, 'DNA placI3--rbs--tetR3-lva');
 itetR_DNA2 = findspecies(Mobj{i}, 'RNAP70:DNA placI3--rbs--tetR3-lva');
-itetR_DNA3 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA placI3--rbs--tetR3-lva');
+itetR_DNA3 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA placI3--rbs--tetR3-lva');
 itetR_DNA_repressed = findspecies(Mobj{i}, 'DNA placI3--rbs--tetR3-lva:protein lacI3-lvatetramer');
 ilacI_DNA1 = findspecies(Mobj{i}, 'DNA ptet3--rbs--lacI3-lva');
 ilacI_DNA2 = findspecies(Mobj{i}, 'RNAP70:DNA ptet3--rbs--lacI3-lva');
-ilacI_DNA3 = findspecies(Mobj{i}, 'NTP:RNAP70:DNA ptet3--rbs--lacI3-lva');
+ilacI_DNA3 = findspecies(Mobj{i}, 'CUTP:AGTP:RNAP70:DNA ptet3--rbs--lacI3-lva');
 ilacI_DNA_repressed = findspecies(Mobj{i}, 'DNA ptet3--rbs--lacI3-lva:protein tetR3-lvadimer');
 
 plot(t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,itetR_DNA1)+x_ode{i}(plotTime,itetR_DNA2)+x_ode{i}(plotTime,itetR_DNA3), 'k', t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,itetR_DNA_repressed), 'k--',...
@@ -186,10 +186,10 @@ h = suptitle(['init tetR monomer = ' num2str(c(i,1)) ', init lacI monomer = ' nu
 [ax2,h2]=suplabel('conc/nM','y');
 figureHandle = gcf;
 set(findall(figureHandle,'type','text'),'fontSize',8)
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_' num2str(i)])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_' num2str(i) '.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_' num2str(i)])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_' num2str(i) '.fig'])
+% cd(mainDir)
 % , 'k', t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iNTP), 'k--',...
 %     t_ode{i}(plotTime)/3600, x_ode{i}(plotTime,iAA), 'k-.'
 % , 'NTP', 'AA',
@@ -266,10 +266,10 @@ surf(initial_tetR,initial_lacI,  d)
 xlabel('tetR inital')
 ylabel('lacI initial')
 zlabel('final tetR conc')
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_tetR endpoint'])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_tetR endpoint.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_tetR endpoint'])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_tetR endpoint.fig'])
+% cd(mainDir)
 
 % tetRdimer
 for i = 1:numel(a)
@@ -282,10 +282,10 @@ surf(initial_tetR,initial_lacI,  d)
 xlabel('tetR inital')
 ylabel('lacI initial')
 zlabel('final tetR dimer conc')
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_tetR dimer endpoint'])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_tetR dimer endpoint.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_tetR dimer endpoint'])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_tetR dimer endpoint.fig'])
+% cd(mainDir)
 % lacI
 for i = 1:numel(a)
     dataArray(i) = x_ode{i}(end, ilacI);
@@ -297,10 +297,10 @@ surf(initial_tetR,initial_lacI,  d)
 xlabel('tetR inital')
 ylabel('lacI initial')
 zlabel('final lacI conc')
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_lacI endpoint'])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_lacI endpoint.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_lacI endpoint'])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_lacI endpoint.fig'])
+% cd(mainDir)
 % lacI tetramer
 for i = 1:numel(a)
     dataArray(i) = x_ode{i}(end, ilacItetramer);
@@ -312,10 +312,10 @@ surf(initial_tetR,initial_lacI,  d)
 xlabel('tetR inital')
 ylabel('lacI initial')
 zlabel('final lacI tetramer conc')
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_lacI tetramer endpoint'])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_lacI tetramer endpoint.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_lacI tetramer endpoint'])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_lacI tetramer endpoint.fig'])
+% cd(mainDir)
 % GFP
 for i = 1:numel(a)
     dataArray(i) = x_ode{i}(end, iGFP);
@@ -327,10 +327,10 @@ surf(initial_tetR,initial_lacI,  d)
 xlabel('tetR inital')
 ylabel('lacI initial')
 zlabel('final GFP conc')
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_GFP endpoint'])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_GFP endpoint.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_GFP endpoint'])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_GFP endpoint.fig'])
+% cd(mainDir)
 % RFP
 
 for i = 1:numel(a)
@@ -343,8 +343,8 @@ surf(initial_tetR,initial_lacI,  d)
 xlabel('tetR inital')
 ylabel('lacI initial')
 zlabel('final RFP conc')
-cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
-print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_RFP endpoint'])
-saveas(gcf, ['Sim_' num2str(SimNumber) '_RFP endpoint.fig'])
-cd(mainDir)
+% cd([mainDir '\examples\Vipul\Genetic Toggle\2013_manual_parameter_study\Sim' num2str(SimNumber)])
+% print('-dtiff','-r130',['Sim_' num2str(SimNumber) '_RFP endpoint'])
+% saveas(gcf, ['Sim_' num2str(SimNumber) '_RFP endpoint.fig'])
+% cd(mainDir)
 

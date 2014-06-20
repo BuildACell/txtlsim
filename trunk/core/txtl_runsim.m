@@ -83,6 +83,7 @@ if nargin >1
     end
 end
 if ~verLessThan('Matlab','8')
+    configsetObj = getconfigset(modelObj, 'active');
     Sopt = get(configsetObj,'SolverOptions');
     set(Sopt,'AbsoluteToleranceScaling',false);
 end
@@ -220,8 +221,19 @@ if ~isempty(configsetObj)
         x_ode = simData.Data;
         t_ode = simData.Time;
     else
+        %simData.Data also contains the time series for nonconstant
+        %parameters 
+        %(ie, it has 'AGTPdeg_F' data too, and this is a parameter, not a species). 
+        %So we need to explicitly pick out just the species.
+        newData = zeros(length(simData.Time), size(modelObj.species,1));
+        for i = 1:size(modelObj.species,1)
+        idx = strcmp(simData.DataNames, modelObj.species(i).Name);
+        newData(:,i) = simData.Data(:,idx);
+        end
+        
+        
         t_ode = [time_vector; simData.Time+time_vector(end)];
-        x_ode = [prevData;simData.Data];
+        x_ode = [prevData;newData];
     end
     
     % TODO zoltuz 03/05/13 we need a new copyobject for simData -> merge

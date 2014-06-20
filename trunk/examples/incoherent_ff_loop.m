@@ -6,7 +6,6 @@
 
 
 close all
- clear all
 
 %% no clpX
 % Set up the standard TXTL tubes

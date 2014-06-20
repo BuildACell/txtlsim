@@ -24,9 +24,9 @@ x_ode{i} = simData{i}.Data;
 end
 
 cellOfSpecies = {'protein deGFP*', 'protein deGFP'
-                 'AA:ATP:Ribo:RNA rbs--deGFP','Ribo:RNA rbs--deGFP'
-                 'NTP:RNAP70:DNA p70--rbs--deGFP', 'RNAP70:DNA p70--rbs--deGFP'
-                 'NTP', 'ATP'};
+                 'AA:AGTP:Ribo:RNA rbs--deGFP','Ribo:RNA rbs--deGFP'
+                 'CUTP:AGTP:RNAP70:DNA p70--rbs--deGFP', 'RNAP70:DNA p70--rbs--deGFP'
+                 'CUTP', 'AGTP'};
 plotCustomSpecies2(Mobj(1:length(initialDNA)), x_ode(1:length(initialDNA)),...
     t_ode(1:length(initialDNA)), cellOfSpecies)
 
@@ -41,14 +41,14 @@ dna_deGFP = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'deGFP(1000)', initialDNA(i-length(initialDNA)),'linear');
 Mobj{i} = txtl_combine([tube1, tube2, tube3]);
 txtl_addspecies(Mobj{i},'protein gamS',25);
-[simData{i}] = txtl_runsim(Mobj{i},14*60*60);
+[simData{i}] = txtl_runsim(Mobj{i},10*60*60);
 t_ode{i} = simData{i}.Time;
 x_ode{i} = simData{i}.Data;
 end
 cellOfSpecies = {'protein deGFP*', 'protein deGFP', 'RecBCD:gamS';
-                 'AA:ATP:Ribo:RNA rbs--deGFP','Ribo:RNA rbs--deGFP','protein gamS';
-                 'NTP:RNAP70:DNA p70--rbs--deGFP', 'RNAP70:DNA p70--rbs--deGFP','DNA p70--rbs--deGFP:RecBCD';
-                 'NTP','ATP','RecBCD'};
+                 'AA:AGTP:Ribo:RNA rbs--deGFP','Ribo:RNA rbs--deGFP','protein gamS';
+                 'CUTP:AGTP:RNAP70:DNA p70--rbs--deGFP', 'RNAP70:DNA p70--rbs--deGFP','DNA p70--rbs--deGFP:RecBCD';
+                 'CUTP','AGTP','RecBCD'};
 plotCustomSpecies2(Mobj(length(initialDNA)+1:2*length(initialDNA)),...
     x_ode(length(initialDNA)+1:2*length(initialDNA)), t_ode(length(initialDNA)+1:2*length(initialDNA)), cellOfSpecies)
 

@@ -49,7 +49,7 @@ txtl_addspecies(Mobj{i}, 'IPTG',0);
 txtl_addspecies(Mobj{i}, 'protein ClpX*',60);
 
 % simulate
-simulationTime = 40*60*60;
+simulationTime = 10*60*60;
 tic
 simData{i} = txtl_runsim(Mobj{i},simulationTime);
 toc

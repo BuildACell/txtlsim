@@ -63,14 +63,14 @@ for atc = levels
   % Run a simulation
   configsetObj = getconfigset(Mobj, 'active');
   set(configsetObj, 'StopTime', 14*60*60);
-  set(configsetObj, 'SolverType', 'ode23s'); 
+  %set(configsetObj, 'SolverType', 'ode23'); 
   [t_ode{count}, x_ode{count}, mObj, simData] = txtl_runsim(Mobj, configsetObj);
   
 
   
   % Add additional inducer for the next run
   if count < size(levels,2)
-  inducer = txtl_addspecies(Mobj, 'aTc', levels(count+1)-levels(count))
+  inducer = txtl_addspecies(Mobj, 'aTc', levels(count+1)-levels(count));
   count = count + 1;
   end
 end

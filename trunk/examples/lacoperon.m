@@ -56,21 +56,7 @@ set(configsetObj, 'SolverType', 'ode15s');
 
 %% plot the results
 
-
-% DNA and mRNA plot
-% This should go first to have auto name extraction
-dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'ALL_DNA'};
-dataGroups{1,3} = {'r-','b-','r--','b--'};
-
-% Gene Expression Plot
-dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'Lactose','alloLactose','protein lacItetramer','Glu+Gal'};
-dataGroups{2,3} = {'b-','g--','g-','r-','b--','b-.'};
-
-
-
-% Resource Plot
-dataGroups{3,1} = 'Resource usage';
+dataGroups = txtl_getDefaultPlotDataStruct();
+dataGroups(2).SpeciesToPlot   = {'Lactose','alloLactose','protein lacItetramer','Glu+Gal'};
 
 txtl_plot(t_ode,x_ode,well_a1,dataGroups);

@@ -55,22 +55,9 @@ x_ode_c1 = simData_c1.Data;
 
 %% plot the result
 
-% DNA and mRNA plot
-dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'ALL_DNA'};
-dataGroups{1,3} = {'b-','r-','k--','m--','y-','c-','m-','k-'};
 
-
-
-% Gene Expression Plot
-dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein deGFP*'};
-dataGroups{2,3} = {'b-','g-','r-','g--','b--','b-.','m-','k+'};
-
-
-
-% Resource Plot
-dataGroups{3,1} = 'Resource usage';
+dataGroups = txtl_getDefaultPlotDataStruct();
+dataGroups(2).SpeciesToPlot   = {'protein deGFP*'};
 
 txtl_plot(t_ode,x_ode,well_a1,dataGroups)
 txtl_plot(t_ode_b1,x_ode_b1,well_b1,dataGroups)

@@ -1,10 +1,6 @@
-% induction.m - gene expression with an inducer
+% induction.m - negative autoregulation with an inducer
 % R. M. Murray, 11 Sep 2012
-%
-% This file contains a simple example of setting up a TXTL simulation
-% for a negatively autoregulated gene.  The constants for this example
-% come from the Simbiology toolbox example page:
-%
+
 %    http://www.mathworks.com/help/toolbox/simbio/gs/fp58748.html
 %
 clear vars
