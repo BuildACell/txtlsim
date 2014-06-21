@@ -63,12 +63,16 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     ktxExpression =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
         'RNA_Length','rna.UserData');
-    ktx = eval(ktxExpression);
+    ktx = eval(ktxExpression); %kt/rna_length = 1.5(ntps^-1) / rnalength(ntp)
     
-    ntpcnt = rna.UserData/4;
+    ntpcnt = round(rna.UserData/2); 
+    %is this divided by 4 or is it to be divided by 2? Since the AGTP conc = ATP conc + GTP
+    %conc, so that at every step, when AGTP:CUTP gets used, actually only 2
+    %nucleotides are bing used. Maybe the solution is to set AGTP conc =
+    %ATP conc, and CUTP conc = CTP conc? think about this. Or actually I
+    %will just have ntpcnt = rna.length/2 above. That way we can keep AGTP
+    %= atp + gtp. 
     NTPConsumptionRate = {'TXTL_NTP_consumption',(ntpcnt-1)*ktx};
-    
-    
     
     RNAPbound_term = ['term_' RNAPbound];
     transcriptionEq = ...
@@ -83,13 +87,17 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
             extraStr = [extraStr ' + ' extraSpecies{k}];
         end
         txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAP  ' + ' dna.Name ' + ' extraStr],...
-        'MassAction',NTPConsumptionRate);
+        'MassAction',NTPConsumptionRate); 
+
         txtl_addreaction(tube,['[' RNAPbound_term '] -> ' RNAP  ' + ' dna.Name ' + ' extraStr],...
             'MassAction',{'TXTL_RNAPBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.RNAPbound_termination_rate});
         
     else
         txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAP  ' + ' dna.Name],...
         'MassAction',NTPConsumptionRate);
+    %notice that this is still the separation method. in the next release we will do 
+    %['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound], and recharacterize
+    %params. 
         txtl_addreaction(tube,['[' RNAPbound_term '] -> ' RNAP  ' + ' dna.Name],...
             'MassAction',{'TXTL_RNAPBOUND_TERMINATION_RATE', tube.UserData.ReactionConfig.RNAPbound_termination_rate});
     end
@@ -104,6 +112,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     NTPparameters_fast = {'TXTL_NTP_RNAP_F', 1000*tube.UserData.ReactionConfig.NTP_Forward;
         'TXTL_NTP_RNAP_R', 1000*tube.UserData.ReactionConfig.NTP_Reverse};
     
+    % bind nucleotides
     txtl_addreaction(tube,['[' RNAPbound '] + AGTP <-> [AGTP:' RNAPbound ']'],...
         'MassAction',NTPparameters_fast);
     txtl_addreaction(tube,['[' RNAPbound '] + CUTP <-> [CUTP:' RNAPbound ']'],...

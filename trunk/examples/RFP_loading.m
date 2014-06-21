@@ -33,7 +33,6 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', 6*60*60)
-set(configsetObj, 'SolverType', 'ode23s');
 [t_ode{count}, x_ode{count}, mObj, simData] = txtl_runsim(Mobj, configsetObj);
 count = count + 1;
 end
@@ -96,17 +95,17 @@ lgh = legend(labels, 'Location', 'Northwest');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure1'])
+%print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure1'])
 
 % 
 figure(2)
 for count = 1:size(RFPlevels,2)
   % Plot the time trace  
   subplot(2,2,1); hold on;
-  idx = findspecies(Mobj, 'NTP');
+  idx = findspecies(Mobj, 'AGTP');
   plot(t_ode{count}, x_ode{count}(:, idx), colors{count});
   labels{count} = [num2str(RFPlevels(count)) ' nM RFP plasmid'];
-  title('NTP')
+  title('AGTP')
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
@@ -155,7 +154,7 @@ lgh = legend(labels, 'Location', 'Northwest');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure2'])
+%print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure2'])
 
 figure(3)
 for count = 1:size(RFPlevels,2)
@@ -213,7 +212,7 @@ lgh = legend(labels, 'Location', 'Northwest');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure3'])
+%print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure3'])
 
 figure(4)
 for count = 1:size(RFPlevels,2)
@@ -243,7 +242,7 @@ lgh = legend(labels, 'Location', 'Northwest');
 legend(lgh, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
-print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure4'])
+%print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure4'])
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)
 % Local variables:

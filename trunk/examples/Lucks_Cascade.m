@@ -2,8 +2,8 @@
 close all
 simNumber = 6;
 figure
-tube1 = txtl_extract('E22_RNA_26Aug');
-tube2 = txtl_buffer('E22_RNA_26Aug');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 % import data
 rawdata_CSHL
@@ -50,13 +50,13 @@ scalefactor = mean(GFPsim_interp./plotthis');
 
 
 p = zeros(8,1);
-
+hold on
 for i = 1:4
     plotthis = mean(exp015(:,3*(i-1)+1:3*(i-1)+3),2)-exp015(:,13);
     hold on
     p(2*(i-1)+1) = plot(0:300:7200,plotthis);
     set(p(2*(i-1)+1), 'Color', colororder3(i,:), 'LineWidth', 1.5, 'LineStyle', '--')
-    
+    hold on
     iGFP = findspecies(Mobj{i}, 'protein sfGFP*');
     p(2*(i-1)+2) = plot(t_ode{i}, x_ode{i}(:,iGFP )/scalefactor);
     set(p(2*(i-1)+2), 'Color', colororder3(i,:), 'LineWidth', 1.5)
@@ -180,12 +180,12 @@ plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)
 
 cellOfSpecies = {'RNA anti2:RNase',              'RNA att2:RNase',   'Ribo:RNA att1-rbs--sfGFP:RNase'          
                      'RNA att2-anti1:RNase',         'RNA att1:RNase',   'RNA att1-rbs--sfGFP:RNase' 
-                     'RNA att2-anti1-anti1:RNase',   'RNA control:RNase','AA:ATP:Ribo:RNA att1-rbs--sfGFP:RNase'};                 
+                     'RNA att2-anti1-anti1:RNase',   'RNA control:RNase','AA:AGTP:Ribo:RNA att1-rbs--sfGFP:RNase'};                 
 plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)
 
-cellOfSpecies = {'RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1', 'NTP:RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1';
-                 'RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2','NTP:RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2';
-                 'ATP'                                           'NTP'};
+cellOfSpecies = {'RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1', 'CUTP:AGTP:RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1';
+                 'RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2','CUTP:AGTP:RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2';
+                 'AGTP'                                           'CUTP'};
 plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies) %,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'nascentDNA' 
 
 figure

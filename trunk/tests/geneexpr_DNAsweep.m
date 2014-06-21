@@ -6,7 +6,7 @@ tube2 = txtl_buffer('E31VNPRL');
 tube3 = txtl_newtube('gene_expression');
 dna_deGFP = txtl_add_dna(tube3,'p70(50)', 'rbs(20)', 'deGFP(1000)', 30,  'plasmid');				
 Mobj = txtl_combine([tube1, tube2, tube3]);
-[simData] = txtl_runsim(Mobj,8*60*60);
+[simData] = txtl_runsim(Mobj,14*60*60);
 txtl_plot(simData,Mobj);
 t_ode = simData.Time;
     x_ode = simData.Data;
@@ -35,16 +35,17 @@ end
 figure
 colororder = lines;
 for i = 1:6
-    iGFP = findspecies(Mobj{i}, 'protein deGFP*')
+    iGFP = findspecies(Mobj{i}, 'protein deGFP*');
     h(i) = plot(t_ode{i}/60, x_ode{i}(:,iGFP));
     hold on
     set(h(i), 'Color', colororder(i,:), 'LineWidth', 1.5);
     hold on
 end        
            axis([0 55 0 1350])
-        legend(h, {'0.5', '5', '10', '20', '30', '40'}, 'Location', 'NorthEastOutside')
-    
-
+        legend(h, {'0.5 nM', '5 nM', '10 nM', '20 nM', '30 nM', '40 nM'}, 'Location', 'NorthEastOutside')
+    title('deGFP expression as a function of initial DNA conc');
+xlabel('time, min')
+ylabel('protein conc nM')
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:
 % mode: matlab

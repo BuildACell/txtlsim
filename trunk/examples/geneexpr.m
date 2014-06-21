@@ -4,8 +4,8 @@
 % This file contains a simple example of setting up a TXTL simulation
 % for gene expression using the standard TXTL control plasmid.
 %
-close all
-clc
+
+
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
 tube1 = txtl_extract('E30VNPRL');

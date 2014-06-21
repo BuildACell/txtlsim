@@ -195,8 +195,8 @@ close all
 
 
 %%
-tube1 = txtl_extract('E22_RNAcascade_11Aug');
-tube2 = txtl_buffer('E22_RNAcascade_11Aug');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 RNAtoAdd = [0 2000]
 conc004 = [0 0];
 conc339 = 2*ones(size(RNAtoAdd));
@@ -251,7 +251,7 @@ titleString = {'protein sfGFP*';
 legends = {[num2str(array(1)) 'nM Anti'],[num2str(array(2)) 'nM Anti']};%,[num2str(array(3)) 'nM Anti'],[num2str(array(4)) 'nM Anti'],[num2str(array(5)) 'nM Anti'],num2str(array(5))
 plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends);
 
-cellOfSpecies ={'RNA att2','RNAP70:DNA pJ23119--att2-anti1:RNA att2','NTP:RNAP70:DNA pJ23119--att2-anti1:RNA att2';}
+cellOfSpecies ={'RNA att2','RNAP70:DNA pJ23119--att2-anti1:RNA att2','CUTP:AGTP:RNAP70:DNA pJ23119--att2-anti1:RNA att2';}
 
 titleString = {'RNA att2'};
 
@@ -280,8 +280,8 @@ plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
 % 
 % plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
 
-cellOfSpecies ={'RNA att1-rbs--RFP','Ribo:RNA att1-rbs--RFP','AA:ATP:Ribo:RNA att1-rbs--RFP'; 
-    'RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1','NTP:RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1',[];
+cellOfSpecies ={'RNA att1-rbs--RFP','Ribo:RNA att1-rbs--RFP','AA:AGTP:Ribo:RNA att1-rbs--RFP'; 
+    'RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1','CUTP:AGTP:RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1',[];
 'RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1:RNA att2-anti1',[],[];
 'RNA att2-anti1:RNA att1',[],[];};
 
@@ -298,8 +298,8 @@ titleString ={'RNA anti2';'RNA att2-anti1';
 
 cellOfSpecies = {'RNA anti2',[],[];
     'RNA att2-anti1',[],[];
-'RNA att1-att1-rbs--sfGFP','Ribo:RNA att1-att1-rbs--sfGFP','AA:ATP:Ribo:RNA att1-att1-rbs--sfGFP';
-'RNA att1-rbs--RFP','Ribo:RNA att1-rbs--RFP','AA:ATP:Ribo:RNA att1-rbs--RFP'};
+'RNA att1-att1-rbs--sfGFP','Ribo:RNA att1-att1-rbs--sfGFP','AA:AGTP:Ribo:RNA att1-att1-rbs--sfGFP';
+'RNA att1-rbs--RFP','Ribo:RNA att1-rbs--RFP','AA:AGTP:Ribo:RNA att1-rbs--RFP'};
 
 plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
 
@@ -358,12 +358,12 @@ title('FP levels for spike in experiment')
 %% plotting
 cellOfSpecies = {'RNAP70',[],[];
     'RNase', [],[];
-    'NTP', [],[];
-    'ATP', [],[];};
+    'CUTP', [],[];
+    'AGTP', [],[];};
 titleString = {'free RNAP70';
     'Free RNase';
-    'Free NTP';
-    'free ATP'} ;
+    'Free CUTP';
+    'free AGTP'} ;
 plotCustomSpecies(Mobj, x_ode, t_ode, cellOfSpecies, titleString, legends)
 
 
@@ -380,8 +380,8 @@ titleString = {'RNasebound aS2';
 plotCustomSpecies(Mobj, x_ode, t_ode, cellOfSpecies, titleString, legends)
 cellOfSpecies = {'RNA att1:RNase',[],[];
 'RNA att1-att1:RNase',[],[];
-'AA:ATP:Ribo:RNA att1-att1-rbs--sfGFP:RNase','Ribo:RNA att1-att1-rbs--sfGFP:RNase','RNA att1-att1-rbs--sfGFP:RNase';
-'RNA att1-rbs--RFP:RNase','AA:ATP:Ribo:RNA att1-rbs--RFP:RNase','Ribo:RNA att1-rbs--RFP:RNase';};
+'AA:AGTP:Ribo:RNA att1-att1-rbs--sfGFP:RNase','Ribo:RNA att1-att1-rbs--sfGFP:RNase','RNA att1-att1-rbs--sfGFP:RNase';
+'RNA att1-rbs--RFP:RNase','AA:AGTP:Ribo:RNA att1-rbs--RFP:RNase','Ribo:RNA att1-rbs--RFP:RNase';};
 titleString = {'RNasebound att1';
     'RNasebound att1-att1';
     'RNasebound Att1GFP';

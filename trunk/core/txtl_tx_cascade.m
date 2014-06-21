@@ -67,18 +67,18 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     RNAPbound_term = ['term_' RNAPbound];
     if nargin == 9
         if mode.double_antisense
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, ['RNA ' att],['RNA ' att '-anti1'],['RNA ' att '-anti1-anti1'], RNAP};
+            coreSpecies = {'CUTP', 'AGTP',RNAPbound,['CUTP:AGTP:' RNAPbound],RNAPbound_term, ['RNA ' att],['RNA ' att '-anti1'],['RNA ' att '-anti1-anti1'], RNAP};
         elseif mode.sim_module_exception
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, 'RNA att1_SIM','RNA att1-att1', RNAP};
+            coreSpecies = {'CUTP', 'AGTP',RNAPbound,['CUTP:AGTP:' RNAPbound],RNAPbound_term, 'RNA att1_SIM','RNA att1-att1', RNAP};
         else
-            coreSpecies = {'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, ['RNA ' att], RNAP}; 
+            coreSpecies = {'CUTP', 'AGTP',RNAPbound,['CUTP:AGTP:' RNAPbound],RNAPbound_term, ['RNA ' att], RNAP}; 
             %! TODO 11/13/13 what sets up RNA anti? is it something in
             %txtl_add_dna? so normal transcription takes care of it? well
             %now we want this one to handle that case. or do we?
         end
     elseif nargin == 10
         extraSpecies=varargin{1};
-        coreSpecies = [{'NTP',RNAPbound,['NTP:' RNAPbound],RNAPbound_term, ['RNA ' att], RNAP},extraSpecies]; 
+        coreSpecies = [{'CUTP', 'AGTP',RNAPbound,['CUTP:AGTP:' RNAPbound],RNAPbound_term, ['RNA ' att], RNAP},extraSpecies]; 
     else
         error('the number of argument should be at 9 ot 10, not %d',nargin);
     end
@@ -95,9 +95,9 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     if nargin ==9
         if mode.double_antisense % 
             transcriptionEq1 = ...
-            ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
+            ['[CUTP:AGTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
             transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + RNA ' att '-anti1 + RNA ' att '-anti1-anti1'];
+                ['[CUTP:AGTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + RNA ' att '-anti1 + RNA ' att '-anti1-anti1'];
             
             ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.att'); % rna.UserData.att defined in txtl_add_dna
@@ -108,11 +108,11 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
             
         elseif mode.sim_module_exception % SIM module exception
             transcriptionEq1 = ...
-            ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA att1_SIM]'];
+            ['[CUTP:AGTP:' RNAPbound '] -> [' RNAPbound ':RNA att1_SIM]'];
             transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA att1_SIM] -> [' RNAPbound ':RNA att1-att1]'];
+                ['[CUTP:AGTP:' RNAPbound ':RNA att1_SIM] -> [' RNAPbound ':RNA att1-att1]'];
             transcriptionEq3 = ...
-                ['[NTP:' RNAPbound ':RNA att1-att1] -> '  RNAPbound_term ' + ' rna.Name];
+                ['[CUTP:AGTP:' RNAPbound ':RNA att1-att1] -> '  RNAPbound_term ' + ' rna.Name];
             
             ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.attFirst');
@@ -126,9 +126,9 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
             
         else % NOMINAL
             transcriptionEq1 = ...
-            ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
+            ['[CUTP:AGTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
             transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + ' rna.Name];
+                ['[CUTP:AGTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + ' rna.Name];
             ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.att'); % rna.UserData.att defined in txtl_add_dna
             ktxExpression2 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
@@ -140,15 +140,17 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
         end
     elseif nargin==10
         extraSpecies = varargin{1};
-            % processing the extraSpecies
+            % processing the extraSpecies, no SIM modle or double antisense
+            % for now. we will rewrite all this in a more general form
+            % soon. 
             extraStr = extraSpecies{1};
             for k=2:size(extraSpecies,2)
                 extraStr = [extraStr '+' extraSpecies{k}];
             end
         transcriptionEq1 = ...
-            ['[NTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
+            ['[CUTP:AGTP:' RNAPbound '] -> [' RNAPbound ':RNA ' att ']'];
             transcriptionEq2 = ...
-                ['[NTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + ' rna.Name];
+                ['[CUTP:AGTP:' RNAPbound ':RNA ' att '] -> '  RNAPbound_term ' + ' rna.Name];
             ktxExpression1 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
                 'RNA_Length','rna.UserData.att'); % rna.UserData.att defined in txtl_add_dna
             ktxExpression2 =  strrep(tube.Userdata.ReactionConfig.Transcription_Rate,...
@@ -165,44 +167,80 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     % binding NTP
     NTPparameters = {'TXTL_NTP_RNAP_F', tube.UserData.ReactionConfig.NTP_Forward;
         'TXTL_NTP_RNAP_R', tube.UserData.ReactionConfig.NTP_Reverse};
+    NTPparameters_fast = {'TXTL_NTP_RNAP_F', 1000*tube.UserData.ReactionConfig.NTP_Forward;
+        'TXTL_NTP_RNAP_R', 1000*tube.UserData.ReactionConfig.NTP_Reverse};
     
     if mode.sim_module_exception  % SIM module exception
-        txtl_addreaction(tube,['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']'],...
+        txtl_addreaction(tube,['[' RNAPbound '] + AGTP <-> [AGTP:' RNAPbound ']'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[' RNAPbound '] + CUTP <-> [CUTP:' RNAPbound ']'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[AGTP:' RNAPbound '] + CUTP <-> [CUTP:AGTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters);
+        txtl_addreaction(tube,['[CUTP:' RNAPbound '] + AGTP <-> [CUTP:AGTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters);  
+    
+        txtl_addreaction(tube,['[' RNAPbound ':RNA att1_SIM] + AGTP <-> [AGTP:' RNAPbound ':RNA att1_SIM]'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[' RNAPbound ':RNA att1_SIM] + CUTP <-> [CUTP:' RNAPbound ':RNA att1_SIM]'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[AGTP:' RNAPbound ':RNA att1_SIM] + CUTP <-> [CUTP:AGTP:' RNAPbound ':RNA att1_SIM]'],...
             'MassAction',NTPparameters);
-        txtl_addreaction(tube,['[' RNAPbound ':RNA att1_SIM] + NTP <-> [NTP:' RNAPbound ':RNA att1_SIM]'],...
+        txtl_addreaction(tube,['[CUTP:' RNAPbound ':RNA att1_SIM] + AGTP <-> [CUTP:AGTP:' RNAPbound ':RNA att1_SIM]'],...
             'MassAction',NTPparameters);
-        txtl_addreaction(tube,['[' RNAPbound ':RNA att1-att1] + NTP <-> [NTP:' RNAPbound ':RNA att1-att1]'],...
+        
+        txtl_addreaction(tube,['[' RNAPbound ':RNA att1-att1] + AGTP <-> [AGTP:' RNAPbound ':RNA att1-att1]'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[' RNAPbound ':RNA att1-att1] + CUTP <-> [CUTP:' RNAPbound ':RNA att1-att1]'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[AGTP:' RNAPbound ':RNA att1-att1] + CUTP <-> [CUTP:AGTP:' RNAPbound ':RNA att1-att1]'],...
             'MassAction',NTPparameters);
+        txtl_addreaction(tube,['[CUTP:' RNAPbound ':RNA att1-att1] + AGTP <-> [CUTP:AGTP:' RNAPbound ':RNA att1-att1]'],...
+            'MassAction',NTPparameters);
+        
     else
-        txtl_addreaction(tube,['[' RNAPbound '] + NTP <-> [NTP:' RNAPbound ']'],...
-            'MassAction',NTPparameters);
-        txtl_addreaction(tube,['[' RNAPbound ':RNA ' att '] + NTP <-> [NTP:' RNAPbound ':RNA ' att ']'],...
-            'MassAction',NTPparameters);
+        txtl_addreaction(tube,['[' RNAPbound '] + AGTP <-> [AGTP:' RNAPbound ']'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[' RNAPbound '] + CUTP <-> [CUTP:' RNAPbound ']'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[AGTP:' RNAPbound '] + CUTP <-> [CUTP:AGTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters);
+        txtl_addreaction(tube,['[CUTP:' RNAPbound '] + AGTP <-> [CUTP:AGTP:' RNAPbound ']'],...
+        'MassAction',NTPparameters); 
+    
+        txtl_addreaction(tube,['[' RNAPbound ':RNA ' att '] + AGTP <-> [AGTP:' RNAPbound ':RNA ' att ']'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[' RNAPbound ':RNA ' att '] + CUTP <-> [CUTP:' RNAPbound ':RNA ' att ']'],...
+            'MassAction',NTPparameters_fast);
+        txtl_addreaction(tube,['[AGTP:' RNAPbound ':RNA ' att '] + CUTP <-> [CUTP:AGTP:' RNAPbound ':RNA ' att ']'],...
+        'MassAction',NTPparameters);
+        txtl_addreaction(tube,['[CUTP:' RNAPbound ':RNA ' att '] + AGTP <-> [CUTP:AGTP:' RNAPbound ':RNA ' att ']'],...
+        'MassAction',NTPparameters); 
     end
     
     
     % dummy reaction for NTP consumption
     if mode.sim_module_exception  % SIM module exception
-        ntpcnt1 = ceil(rna.UserData.attFirst/100);   	% get number of NTP blocks
-        ntpcnt2 = ceil(rna.UserData.attSecond/100);   	% get number of NTP blocks
-        ntpcnt3 = ceil(rna.UserData.remaining/100);	% get number of NTP blocks
+        ntpcnt1 = ceil(rna.UserData.attFirst/2);   	% get number of NTP blocks
+        ntpcnt2 = ceil(rna.UserData.attSecond/2);   	% get number of NTP blocks
+        ntpcnt3 = ceil(rna.UserData.remaining/2);	% get number of NTP blocks
         NTPConsumptionRate1 = {'TXTL_NTP_consumption1',(ntpcnt1-1)*ktx1};
         NTPConsumptionRate2 = {'TXTL_NTP_consumption2',(ntpcnt2-1)*ktx2};
         NTPConsumptionRate3 = {'TXTL_NTP_consumption2',(ntpcnt3-1)*ktx3};
-        txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' dna.Name ' +  ' RNAP],...
+        txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound],...
             'MassAction',NTPConsumptionRate1);
-        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att1_SIM] -> [' RNAPbound ':RNA att1_SIM]'],...
+        txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound ':RNA att1_SIM] -> [' RNAPbound ':RNA att1_SIM]'],...
             'MassAction',NTPConsumptionRate2);
-        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA att1-att1] -> [' RNAPbound ':RNA att1_att1]'],...
+        txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound ':RNA att1-att1] -> [' RNAPbound ':RNA att1_att1]'],...
             'MassAction',NTPConsumptionRate3);
     else
-        ntpcnt1 = ceil(rna.UserData.att/100);   	% get number of NTP blocks
-        ntpcnt2 = ceil(rna.UserData.remaining/100);	% get number of NTP blocks
+        ntpcnt1 = ceil(rna.UserData.att/2);   	% get number of NTP blocks
+        ntpcnt2 = ceil(rna.UserData.remaining/2);	% get number of NTP blocks
         NTPConsumptionRate1 = {'TXTL_NTP_consumption1',(ntpcnt1-1)*ktx1};
         NTPConsumptionRate2 = {'TXTL_NTP_consumption2',(ntpcnt2-1)*ktx2};
-        txtl_addreaction(tube,['[NTP:' RNAPbound '] -> ' RNAPbound],...
+        txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound '] -> ' RNAPbound],...
             'MassAction',NTPConsumptionRate1);
-        txtl_addreaction(tube,['[NTP:' RNAPbound ':RNA ' att '] -> [' RNAPbound ':RNA ' att ']' ],...
+        txtl_addreaction(tube,['[CUTP:AGTP:' RNAPbound ':RNA ' att '] -> [' RNAPbound ':RNA ' att ']' ],...
             'MassAction',NTPConsumptionRate2);
     end
     

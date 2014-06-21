@@ -2,8 +2,8 @@
 close all
 simNumber = 4;
 figure
-tube1 = txtl_extract('E22_RNA_26Aug');
-tube2 = txtl_buffer('E22_RNA_26Aug');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 % import data
 rawdata_CSHL
@@ -674,10 +674,10 @@ plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies) %,[], 'save', ['Sim' num2s
 
 cellOfSpecies = {'RNA anti2:RNase',              'RNA att2:RNase',   'Ribo:RNA att1-rbs--sfGFP:RNase'          
                      'RNA att2-anti1:RNase',         'RNA att1:RNase',   'RNA att1-rbs--sfGFP:RNase' 
-                     'RNA att2-anti1-anti1:RNase',   'RNA control:RNase','AA:ATP:Ribo:RNA att1-rbs--sfGFP:RNase'};                 
+                     'RNA att2-anti1-anti1:RNase',   'RNA control:RNase','AA:AGTP:Ribo:RNA att1-rbs--sfGFP:RNase'};                 
 plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)%,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'RNase' 
 
-cellOfSpecies = {'RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1', 'NTP:RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1';
-                 'RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2','NTP:RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2';
-                 'ATP'                                           'NTP'};
+cellOfSpecies = {'RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1', 'CUTP:AGTP:RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1';
+                 'RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2','CUTP:AGTP:RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2';
+                 'AGTP'                                           'CUTP'};
 plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)% ,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'nascentDNA' 
