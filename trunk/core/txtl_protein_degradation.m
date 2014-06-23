@@ -77,16 +77,16 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     Robj = addreaction(tube, [ protein.Name ' + protein ClpX* <-> [' protein.Name ':protein ClpX*]']);
     Kobj = addkineticlaw(Robj,'MassAction');
-    Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',2.5863e-05); % 0.0000012);
+    Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',1.0e-06); % 0.0000012);
     Pobjr = addparameter(Kobj, 'TXTL_PROT_DEGRAD_R',5.0118e-05); %0.00006);
     set(Kobj, 'ParameterVariableNames', {'TXTL_PROT_DEGRAD_F', 'TXTL_PROT_DEGRAD_F'});
     
 
-    txtl_addreaction(tube,['[' protein.Name ':protein ClpX*] + ATP -> [' protein.Name '**]  +  protein ClpX*'],...
-        'MassAction',{'TXTL_prot_unfold',9.2611e-07});
+    txtl_addreaction(tube,['[' protein.Name ':protein ClpX*] + AGTP -> [' protein.Name '**]  +  protein ClpX*'],...
+        'MassAction',{'TXTL_prot_unfold',9.2611e-09});
   
     txtl_addreaction(tube,['protein ClpX* -> null'],...
-        'MassAction',{'TXTL_clpx_deg',1.7022e-04}); % 0.001
+        'MassAction',{'TXTL_clpx_deg',1.7022e-08}); % 0.001
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

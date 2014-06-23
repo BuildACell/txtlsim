@@ -333,7 +333,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         % linear DNA protection by gamS
         txtl_addreaction(tube,'RecBCD + [protein gamS] <-> RecBCD:gamS',...
             'MassAction',{'GamS_RecBCD_f',tube.UserData.ReactionConfig.GamS_RecBCD_F;...
-            'GamS_RecBCD_r',tube.UserData.ReactionConfig.GamS_RecBCD_F/5});
+            'GamS_RecBCD_r',tube.UserData.ReactionConfig.GamS_RecBCD_R});
         
         txtl_dna_degradation(mode, tube, dna, [kDNA_recbcd_f, kDNA_recbcd_r, kDNA_complex_deg]);
     end

@@ -1,60 +1,85 @@
-% geneexpr.m - basic gene expression reaction
-% R. M. Murray, 9 Sep 2012
-%
-% This file contains a simple example of setting up a TXTL simulation
-% for gene expression using the standard TXTL control plasmid.
-%
+% protein_degradation Characterization
+% VS Jun 2014
 
-% Set up the standard TXTL tubes
-% These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+% This file recreates the ClpX characterization that Zach did. It is from
+% his powerpont presentaton 10/31/13. There is also on the biocircuits wiki
+% Parameter estimation page:
+% https://www.cds.caltech.edu/biocircuits/index.php/Modeling_Parameter_Estimation_Summary#ClpX_mediated_protein_Degradation
 
-% Now set up a tube that will contain our DNA
+
+%% Basic simulation: spike in GFP and ClpX (Zach slide 15 RHS)
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('protein_deg');
-
-% Define the DNA strands (defines TX-TL species + reactions)
-dna_clpx = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'ClpX(1269)', ...	% promoter, rbs, gene
- 1, ...					% concentration (nM)
-  'plasmid');					% type
-
-dna_deGFP = txtl_add_dna(tube3, ...
-  'p70(50)', 'rbs(20)', 'deGFP-lva(1000)', ...	% promoter, rbs, gene
- 2, ...					% concentration (nM)
-  'plasmid');					% type
-
-% Mix the contents of the individual tubes
+txtl_add_dna(tube3,'p70(50)', 'rbs(20)', 'ClpX(1269)',0, 'plasmid');	
+txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP-lva(1000)', 0, 'plasmid');
 Mobj = txtl_combine([tube1, tube2, tube3]);
-
-% txtl_addspecies(Mobj,'protein deGFP-lva*',3300, 'Internal');
-% txtl_addspecies(Mobj,'protein ClpX*',13, 'Internal');
-
-%
-% Run a simulaton
-%
-% At this point, the entire experiment is set up and loaded into 'Mobj'.
-% So now we just use standard Simbiology and MATLAB commands to run
-% and plot our results!
-%
-
-% Run a simulation
-
 simulationTime = 12*60*60;
+txtl_addspecies(Mobj,'protein ClpX*', 200);
+txtl_addspecies(Mobj,'protein deGFP-lva*', 4500);
+[t,x] = txtl_runsim(Mobj,simulationTime);
 
-% 1st run
-[t_ode,x_ode] = txtl_runsim(Mobj,simulationTime);
-
-%% plot the result
+% plot the result
 close all
 
-% DNA and mRNA plot
+dataGroups = txtl_getDefaultPlotDataStruct();
+dataGroups(2).SpeciesToPlot   = {'protein deGFP-lva*','protein ClpX*'};
+
+txtl_plot(t,x,Mobj,dataGroups);
+
+
+%% sweep for spike GFP and ClpX
+ct = 1;
+clpXconc = [0 12.5 25 50 100 200 400];
+t = cell(length(clpXconc),1);
+h = zeros(length(clpXconc),1);
+x = t;
+figure
+colororder1 = lines;
+for cc = clpXconc
+Mobj = txtl_combine([tube1, tube2, tube3]);
+simulationTime = 12*60*60;
+txtl_addspecies(Mobj,'protein ClpX*', cc);
+txtl_addspecies(Mobj,'protein deGFP-lva*', 4500);
+[t{ct},x{ct}] = txtl_runsim(Mobj,simulationTime);
+iGFP = findspecies(Mobj,'protein deGFP-lva*');
+h(ct) = plot(t{ct}/60, x{ct}(:,iGFP));
+hold on
+set(h(ct), 'color', colororder1(ct,:), 'linewidth', 2);
+ct = ct + 1;
+end
+
+legendList = {'0 nM', '12.5 nM', '25 nm', '50 nM', '100 nM', '200 nM', '400 nM'};
+lgh = legend(h, legendList, 'Location','NorthEastOutside');
+title('ClpX Mediated degradation: protein GFP @ 4500nM, protein ClpX vaying','fontsize', 14)
+xlabel('time/min','fontsize', 14)
+ylabel('deGFP conc/nM','fontsize', 14)
+set(gca,'fontsize', 14)
+
+
+%% Gene expression in the presence of ClpX
+clear all
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
+tube3 = txtl_newtube('protein_deg');
+txtl_add_dna(tube3,'p70(50)', 'rbs(20)', 'ClpX(1269)',0.001, 'plasmid');	
+txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP-lva(1000)', 30, 'plasmid');
+Mobj = txtl_combine([tube1, tube2, tube3]);
+simulationTime = 8*60*60;
+% txtl_addspecies(Mobj,'protein ClpX*', 200);
+% txtl_addspecies(Mobj,'protein deGFP-lva*', 4500);
+[t,x] = txtl_runsim(Mobj,simulationTime);
+
+% plot the result
+close all
 
 dataGroups = txtl_getDefaultPlotDataStruct();
-dataGroups(2).SpeciesToPlot   = {'protein ClpX*'};
+dataGroups(2).SpeciesToPlot   = {'protein deGFP-lva*','protein ClpX*'};
 
-
-txtl_plot(t_ode,x_ode,Mobj,dataGroups);
+txtl_plot(t,x,Mobj,dataGroups);
+cellofspecies = {'protein deGFP-lva***','protein ClpX*','protein ClpX';
+    'protein deGFP-lva','protein deGFP-lva*:protein ClpX*','protein deGFP-lva*'};
+plotCustomSpecies2({Mobj}, {x}, {t}, cellofspecies)
 
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:

@@ -16,6 +16,7 @@ classdef txtl_reaction_config
         RNAP_S70_F;
         RNAP_S70_R;
         GamS_RecBCD_F;
+        GamS_RecBCD_R;
         AA_Forward;
         AA_Reverse;
         Ribosome_Binding_F;
