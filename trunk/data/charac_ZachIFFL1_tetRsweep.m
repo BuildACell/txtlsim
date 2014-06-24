@@ -13,9 +13,11 @@ for tetRDNA = tetRDNAInitial
     tube3 = txtl_newtube('ZachIFFL1');
 dna_lasR = txtl_add_dna(tube3,  'placI(50)', 'rbs(20)', 'lasR(1000)',  1, 'plasmid'); % 163 in zach's index	
 dna_tetR = txtl_add_dna(tube3,  'plasR(50)', 'SNP10UTR1(20)', 'tetR(1000)', tetRDNA,'plasmid'); % 196
-dna_deGFP = txtl_add_dna(tube3,  'plasR_ptet(50)', 'rbs(20)', 'deGFP(1000)', 4,'plasmid');
+dna_deGFP = txtl_add_dna(tube3,  'plasR_ptet(50)', 'rbs(20)', 'deGFP(1000)-lva', 4,'plasmid');
     
     Mobj{count} = txtl_combine([tube1, tube2, tube3]);
+    
+txtl_addspecies(Mobj{count}, 'protein ClpX*', 100);
     txtl_addspecies(Mobj{count}, 'OC12HSL', 10000);
     [simData{count}] = txtl_runsim(Mobj{count},12*60*60);
     t_ode{count} = simData{count}.Time;
