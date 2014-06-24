@@ -118,8 +118,17 @@ txtl_addspecies(Mobj, 'aTc', 500); %try 10, 500 and 5000
 txtl_addspecies(Mobj, 'protein ClpX*', 100);
 tic
 [simData] = txtl_runsim(Mobj,10*60*60);
+
 toc
 txtl_plot(simData,Mobj);
+speciesToPlot = {'protein deGFP-lva*', 'protein deGFP-lva', 'protein deGFP-lva***'
+    'protein tetRdimer', '2 aTc:protein tetRdimer','aTc'
+    'protein lasR', 'OC12HSL:protein lasR', 'OC12HSL'};
+t_ode = simData.Time;
+x_ode = simData.Data;
+plotCustomSpecies2({Mobj}, {x_ode}, {t_ode}, speciesToPlot);
+
+
 %% IFFL with linear DNA
 tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
@@ -138,3 +147,9 @@ tic
 [simData] = txtl_runsim(Mobj,10*60*60);
 toc
 txtl_plot(simData,Mobj);
+speciesToPlot = {'protein deGFP-lva*', 'protein deGFP-lva', 'protein deGFP-lva***'
+    'protein tetRdimer', '2 aTc:protein tetRdimer','aTc'
+    'protein lasR', 'OC12HSL:protein lasR', 'OC12HSL'};
+t_ode = simData.Time;
+x_ode = simData.Data;
+plotCustomSpecies2({Mobj}, {x_ode}, {t_ode}, speciesToPlot);
