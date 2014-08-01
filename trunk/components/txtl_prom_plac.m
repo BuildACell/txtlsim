@@ -36,7 +36,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
+function varargout = txtl_prom_plac(mode, tube, dna, rna,varargin)
 
     % Create strings for reactants and products
     DNA = ['[' dna.Name ']'];		% DNA species name for reactions
@@ -44,7 +44,7 @@ function varargout = txtl_prom_placI(mode, tube, dna, rna,varargin)
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
     % importing the corresponding parameters
-    paramObj = txtl_component_config('lacI'); 
+    paramObj = txtl_component_config('plac'); 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')

@@ -44,7 +44,7 @@ RNA = ['[' rna.Name ']'];		% RNA species name for reactions
 RNAP = 'RNAP70';			% RNA polymerase name for reactions
 RNAPbound = ['RNAP70:' dna.Name];
 % importing the corresponding parameters
-paramObj = txtl_component_config('tetR');
+paramObj = txtl_component_config('ptet');
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%

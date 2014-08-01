@@ -41,7 +41,7 @@ function varargout = txtl_protein_LuxR(mode, tube, protein, varargin)
 % added defaults in places where the lengths are missing. 
 
 % importing the corresponding parameters
-paramObj = txtl_component_config('LuxR'); 
+paramObj = txtl_component_config('luxR'); 
 
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%

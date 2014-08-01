@@ -48,7 +48,7 @@ plotthis = mean(exp015(:,3*(4-1)+1:3*(4-1)+3),2)-exp015(:,13);
 scalefactor = mean(GFPsim_interp./plotthis');
 
 
-
+figure
 p = zeros(8,1);
 hold on
 for i = 1:4
@@ -134,6 +134,15 @@ hold off
 
 
 %% double cascade repression.
+
+simNumber = 6;
+figure
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
+
+% import data
+rawdata_CSHL
+
 anti1max = 2; anti2max = 18; att1GFP = 0.5;
 anti1_array = [0        0               anti1max        anti1max        anti1max        anti1max];
 anti2_array = [0        0               anti2max        10              4               0];
@@ -176,40 +185,40 @@ cellOfSpecies = {'RNA anti2','RNA anti2:RNA att2',           'RNAP70:DNA pJ23119
     'RNA att2-anti1-anti1',  'RNA att2-anti1-anti1:RNA att1','RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1:RNA att2-anti1-anti1'
     'RNA att1-rbs--sfGFP',   'RNA att2',                     'protein sfGFP*'
     'RNA control',           'RNA att1' ,                    'RNase'};
-plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)
-
-cellOfSpecies = {'RNA anti2:RNase',              'RNA att2:RNase',   'Ribo:RNA att1-rbs--sfGFP:RNase'          
-                     'RNA att2-anti1:RNase',         'RNA att1:RNase',   'RNA att1-rbs--sfGFP:RNase' 
-                     'RNA att2-anti1-anti1:RNase',   'RNA control:RNase','AA:AGTP:Ribo:RNA att1-rbs--sfGFP:RNase'};                 
-plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)
-
-cellOfSpecies = {'RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1', 'CUTP:AGTP:RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1';
-                 'RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2','CUTP:AGTP:RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2';
-                 'AGTP'                                           'CUTP'};
-plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies) %,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'nascentDNA' 
-
-figure
-% Extract out the relevant experimental data: plots 1 - 5 and 9.
-expid = [1:5 9]; % experiment ID
-for i = 1:6
-    plotthis = mean(exp013(:,3*(expid(i)-1)+1:3*(expid(i)-1)+3),2)-exp013(:,31);
-    hold on
-    p(i) = plot(0:300:7200,plotthis);
-    set(p(i), 'Color', colororder3(i,:), 'LineWidth', 1.5, 'LineStyle', '--')
-    iGFP = findspecies(Mobj{i}, 'protein sfGFP*');
-    p2(i) = plot(t_ode{i}, x_ode{i}(:,iGFP )/scalefactor);
-    set(p2(i), 'Color', colororder3(i,:), 'LineWidth', 1.5)
-end
-
-legend(p2,['Att1GFP=' num2str(att1GFP)],...
-    ['Att1GFP=' num2str(att1GFP)                                                                        ' C=' num2str(ctrl_array(2))],...
-    ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(3)) ' AS2=' num2str(anti2_array(3))],...
-    ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(4)) ' AS2=' num2str(anti2_array(4))    ' C=' num2str(ctrl_array(4))],...
-    ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(5)) ' AS2=' num2str(anti2_array(5))    ' C=' num2str(ctrl_array(5))],...
-    ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(6))                                    ' C=' num2str(ctrl_array(6))],...
-    'Location', 'Northwest')
-
-title('Cascade, Dashed = Exp, Solid = Sim')
-xlabel('time/s')
-ylabel('RFU')
-clear p p2
+plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies,{'a','b','c','d','e','f'})
+% 
+% cellOfSpecies = {'RNA anti2:RNase',              'RNA att2:RNase',   'Ribo:RNA att1-rbs--sfGFP:RNase'          
+%                      'RNA att2-anti1:RNase',         'RNA att1:RNase',   'RNA att1-rbs--sfGFP:RNase' 
+%                      'RNA att2-anti1-anti1:RNase',   'RNA control:RNase','AA:AGTP:Ribo:RNA att1-rbs--sfGFP:RNase'};                 
+% plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies)
+% 
+% cellOfSpecies = {'RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1', 'CUTP:AGTP:RNAP70:DNA pJ23119--att1-rbs--sfGFP:RNA att1';
+%                  'RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2','CUTP:AGTP:RNAP70:DNA pJ23119--att2-anti1-anti1:RNA att2';
+%                  'AGTP'                                           'CUTP'};
+% plotCustomSpecies2(Mobj, x_ode, t_ode, cellOfSpecies) %,[], 'save', ['Sim' num2str(simNumber) 'RNA'],'nascentDNA' 
+% 
+% figure
+% % Extract out the relevant experimental data: plots 1 - 5 and 9.
+% expid = [1:5 9]; % experiment ID
+% for i = 1:6
+%     plotthis = mean(exp013(:,3*(expid(i)-1)+1:3*(expid(i)-1)+3),2)-exp013(:,31);
+%     hold on
+%     p(i) = plot(0:300:7200,plotthis);
+%     set(p(i), 'Color', colororder3(i,:), 'LineWidth', 1.5, 'LineStyle', '--')
+%     iGFP = findspecies(Mobj{i}, 'protein sfGFP*');
+%     p2(i) = plot(t_ode{i}, x_ode{i}(:,iGFP )/scalefactor);
+%     set(p2(i), 'Color', colororder3(i,:), 'LineWidth', 1.5)
+% end
+% 
+% legend(p2,['Att1GFP=' num2str(att1GFP)],...
+%     ['Att1GFP=' num2str(att1GFP)                                                                        ' C=' num2str(ctrl_array(2))],...
+%     ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(3)) ' AS2=' num2str(anti2_array(3))],...
+%     ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(4)) ' AS2=' num2str(anti2_array(4))    ' C=' num2str(ctrl_array(4))],...
+%     ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(5)) ' AS2=' num2str(anti2_array(5))    ' C=' num2str(ctrl_array(5))],...
+%     ['Att1GFP=' num2str(att1GFP) ' Att2AS1=' num2str(anti1_array(6))                                    ' C=' num2str(ctrl_array(6))],...
+%     'Location', 'Northwest')
+% 
+% title('Cascade, Dashed = Exp, Solid = Sim')
+% xlabel('time/s')
+% ylabel('RFU')
+% clear p p2

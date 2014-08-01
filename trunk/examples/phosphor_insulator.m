@@ -3,8 +3,8 @@
 
 close all
 
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 tube3 = txtl_newtube('gene_expression');
 
@@ -41,7 +41,7 @@ txtl_add_dna(tube3, ...
 
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
-
+txtl_addspecies(Mobj, 'protein gamS',1000)
 tic
 [simData] = txtl_runsim(Mobj,14*60*60);
 toc

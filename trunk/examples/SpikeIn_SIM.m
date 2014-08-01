@@ -279,7 +279,7 @@ plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
 % 'two att 2 anti term';};
 % 
 % plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
-
+close all
 cellOfSpecies ={'RNA att1-rbs--RFP','Ribo:RNA att1-rbs--RFP','AA:AGTP:Ribo:RNA att1-rbs--RFP'; 
     'RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1','CUTP:AGTP:RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1',[];
 'RNAP70:DNA pJ23119--att1-rbs--RFP:RNA att1:RNA att2-anti1',[],[];

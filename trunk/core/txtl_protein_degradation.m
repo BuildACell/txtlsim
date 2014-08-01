@@ -49,7 +49,7 @@ maturedVersion = findspecies(tube,[protein.name '*']);
 if maturedVersion ~=0
     protein = tube.Species(maturedVersion);
 end
-
+paramObj = txtl_component_config('ClpX');
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
     %{
@@ -77,20 +77,20 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     Robj = addreaction(tube, [ protein.Name ' + protein ClpX* <-> [' protein.Name ':protein ClpX*]']);
     Kobj = addkineticlaw(Robj,'MassAction');
-    Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',1.0e-06); % 0.0000012);
-    Pobjr = addparameter(Kobj, 'TXTL_PROT_DEGRAD_R',5.0118e-05); %0.00006);
+    Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',paramObj.prot_deg_F); % 0.0000012);
+    Pobjr = addparameter(Kobj, 'TXTL_PROT_DEGRAD_R',paramObj.prot_deg_R); %0.00006);
     set(Kobj, 'ParameterVariableNames', {'TXTL_PROT_DEGRAD_F', 'TXTL_PROT_DEGRAD_F'});
     
 
     txtl_addreaction(tube,['[' protein.Name ':protein ClpX*] + AGTP -> [' protein.Name '**]  +  protein ClpX*'],...
-        'MassAction',{'TXTL_prot_unfold',9.2611e-09});
+        'MassAction',{'TXTL_prot_unfold',paramObj.prot_deg_unfold});
   
     txtl_addreaction(tube,['protein ClpX* -> null'],...
-        'MassAction',{'TXTL_clpx_deg',1.7022e-08}); % 0.001
+        'MassAction',{'TXTL_clpx_deg',paramObj.ClpX_deg}); %1.7022e-08 older->0.001
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_protein_lacI:undefinedmode', ...
+    error('txtltoolbox:txtl_protein_degradation:undefinedmode', ...
         'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end
 

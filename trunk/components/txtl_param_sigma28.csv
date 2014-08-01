@@ -8,5 +8,5 @@ Gene_Length, Numeric, 1000
 LVA_tag_Length, Numeric, 40 
 Terminator_Length, Numeric, 100
 
-Protein_Protein_Forward, Numeric, 100, nM^-1s^-1
-Protein_Protein_Reverse, Numeric, 0.1, s^-1
+non_s70_factor_Forward, Numeric, 100, nM^-1s^-1
+non_s70_factor_Reverse, Numeric, 0.1, s^-1

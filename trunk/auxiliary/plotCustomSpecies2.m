@@ -47,7 +47,7 @@ if iscell(mobj)
         end
     end
     if ~isempty(legendList)
-        lgh = legend(h, legendList, 'Location', 'NorthEast');
+        lgh = legend(h, legendList, 'Location', 'NorthEastOutside');
         set(lgh,'FontSize',10);
         
     end

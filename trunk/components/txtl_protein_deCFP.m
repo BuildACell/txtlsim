@@ -1,8 +1,5 @@
 % txtl_protein_deCFP.m - protein information for deCFP
 % VS, 4 March 2013
-
-
-
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.

@@ -27,7 +27,7 @@ txtl_addspecies(Mobj, 'protein ClpX*', 100);
 txtl_plot(simData,Mobj);
 
 %% Negative Autoreg with plasmid vs linear DNA
-clear all; close all; clc
+%clear all; close all; clc
 % Plasmid DNA
 tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
@@ -41,7 +41,7 @@ txtl_addspecies(Mobj, 'aTc', 500);
 [simData] = txtl_runsim(Mobj,14*60*60);
 txtl_plot(simData,Mobj);
 
-% linear unprotected DNA
+%% linear unprotected DNA
 tube3 = txtl_newtube('negautoreg_linear_noGamS');
 txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
     'tetR(1200)', 1, 'linear');
@@ -52,7 +52,7 @@ txtl_addspecies(Mobj, 'aTc', 500);
 [simData] = txtl_runsim(Mobj,14*60*60);
 txtl_plot(simData,Mobj);
 
-%linear protected DNA
+%% linear protected DNA
 tube3 = txtl_newtube('negautoreg_linear_GamS');
 txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
     'tetR(1200)', 1, 'linear');

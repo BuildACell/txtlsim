@@ -56,10 +56,10 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
 
     % Set up the maturation reaction
     txtl_addreaction(tube,['[' protein.Name '] + protein NRI-p  <-> [' protein.Name ':protein NRI-p]'],...
-     'MassAction',{'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION_F',0.1;'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION_R',0.1});
+     'MassAction',{'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION_F',paramObj.generic_rate3;'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION_R',paramObj.generic_rate3});
  
     txtl_addreaction(tube,['[' protein.Name ':protein NRI-p ] -> [' protein.Name '] + [protein NRI]'],...
-     'MassAction',{'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION',0.1});
+     'MassAction',{'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION',paramObj.generic_rate3});
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else

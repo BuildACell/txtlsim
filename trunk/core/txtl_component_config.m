@@ -5,6 +5,8 @@ classdef txtl_component_config
     properties
         RNAPbound_Forward
         RNAPbound_Reverse
+        RNAPbound_Forward_actv
+        RNAPbound_Reverse_actv
         RNAPbound_Forward_2
         RNAPbound_Reverse_2
         Promoter_Length
@@ -28,11 +30,20 @@ classdef txtl_component_config
         %   - N possible protein complex can bind to the promoter sites 
         %   - forward & reverse reaction rates
         DNA_Sequestration
-        Protein_Protein_Forward
-        Protein_Protein_Reverse
+        non_s70_factor_Forward
+        non_s70_factor_Reverse
         Protein_Maturation
         activation_F
         activation_R
+        generic_rate1 
+        generic_rate2 
+        generic_rate3
+        %used for special reactions one may want to add that are only present 
+        %in a couple of parts, like phosphorylation.
+        prot_deg_F
+        prot_deg_R
+        prot_deg_unfold
+        ClpX_deg
     end
     
     methods

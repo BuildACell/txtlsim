@@ -101,8 +101,9 @@ switch nargin
         data =  [];
     case 3
         simData = varargin{3};
-        time_vector = simData.Time;
-        data = simData.Data;
+        [time_vector, prelimData, metaData] = getdata(simData, 'nummetadata');
+        species_ind = cellfun(@(x) strcmp(x.Type,'species'), metaData);
+        data = prelimData(:,species_ind);
     case 4
         time_vector = varargin{3};
         data = varargin{4};
@@ -218,22 +219,25 @@ if ~isempty(configsetObj)
     simData = sbiosimulate(modelObj, configsetObj);
     
     if isempty(time_vector)
-        x_ode = simData.Data;
-        t_ode = simData.Time;
+        [t_ode, prelimData, metaData] = getdata(simData, 'nummetadata');
+        species_ind = cellfun(@(x) strcmp(x.Type,'species'), metaData);
+        x_ode = prelimData(:,species_ind);
     else
-        %simData.Data also contains the time series for nonconstant
-        %parameters 
-        %(ie, it has 'AGTPdeg_F' data too, and this is a parameter, not a species). 
-        %So we need to explicitly pick out just the species.
-        newData = zeros(length(simData.Time), size(modelObj.species,1));
-        for i = 1:size(modelObj.species,1)
-        idx = strcmp(simData.DataNames, modelObj.species(i).Name);
-        newData(:,i) = simData.Data(:,idx);
-        end
+%         %simData.Data also contains the time series for nonconstant
+%         %parameters 
+%         %(ie, it has 'AGTPdeg_F' data too, and this is a parameter, not a species). 
+%         %So we need to explicitly pick out just the species.
+%         newData = zeros(length(simData.Time), size(modelObj.species,1));
+%         for i = 1:size(modelObj.species,1)
+%         idx = strcmp(simData.DataNames, modelObj.species(i).Name);
+%         newData(:,i) = simData.Data(:,idx);
+%         end
+        [new_Time, prelimData, metaData] = getdata(simData, 'nummetadata');
+        species_ind = cellfun(@(x) strcmp(x.Type,'species'), metaData);
+        new_Data = prelimData(:,species_ind);
         
-        
-        t_ode = [time_vector; simData.Time+time_vector(end)];
-        x_ode = [prevData;newData];
+        t_ode = [time_vector; new_Time+time_vector(end)];
+        x_ode = [prevData;new_Data];
     end
     
     % TODO zoltuz 03/05/13 we need a new copyobject for simData -> merge

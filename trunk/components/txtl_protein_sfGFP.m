@@ -1,4 +1,4 @@
-% txtl_protein_deGFP.m - protein information for deGFP
+% txtl_protein_sfGFP.m - protein information for sfGFP
 % VS, 4 March 2013
 
 

@@ -24,7 +24,7 @@ parameterObj = addparameter(modelObj, 'AGTPdeg_F', 0, 'ConstantValue', false);
 % set(speciesObj, 'InitialAmount', 3000000);
 % evt1 = addevent(modelObj, 'time <= 180*60', 'AGTP = 3000000');
 evt2 = addevent(modelObj, 'time <= 150*60', 'AGTPdeg_F = 0');
-evt3 = addevent(modelObj, 'time > 150*60', 'AGTPdeg_F = 0.00016');
+evt3 = addevent(modelObj, 'time > 150*60', 'AGTPdeg_F = 0.00016');%  VS July 10, repressilator test
 
 reactionObj = addreaction(modelObj,'AGTP -> AGTP_UNUSE');
 kineticlawObj = addkineticlaw(reactionObj, 'MassAction');

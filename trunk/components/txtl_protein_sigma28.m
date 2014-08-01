@@ -60,8 +60,8 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     
     %sequestration of RNAP by sigma28 factor
         txtl_addreaction(tube,['RNAP + [' protein.Name '] <-> RNAP28'],...
-         'MassAction',{'Sigma28_RNAP_F',paramObj.Protein_Protein_Forward;...
-                       'Sigma28_RNAP_R',paramObj.Protein_Protein_Reverse});
+         'MassAction',{'Sigma28_RNAP_F',paramObj.non_s70_factor_Forward;...
+                       'Sigma28_RNAP_R',paramObj.non_s70_factor_Reverse});
                    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

@@ -1,9 +1,6 @@
 % txtl_prom_pGlnA.m - promoter information for glnA promoter file
 % Zoltan Tuza, Sep 2013
 %
-% 
-% 
-
 % Written by Zoltan Tuza, Sep 2013
 %
 % Copyright (c) 2013 by California Institute of Technology
@@ -95,11 +92,11 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
         'MassAction',parameters);
     % NRI-p 
     txtl_addreaction(tube,[dna.Name ' + ' P3 ' <-> ' dna.Name ':' P3 ],...
-     'MassAction',{'TXTL_DNA_NRI-p_F',2.86e-3;'TXTL_DNA_NRI-p_R',0.11e-4});
+     'MassAction',{'TXTL_DNA_NRI-p_F',paramObj.activation_F;'TXTL_DNA_NRI-p_R',paramObj.activation_R});
      txtl_addreaction(tube,[RNAPbound  ' + ' P3 ' <-> [' RNAPbound ':' P3 ']'],...
-     'MassAction',{'TXTL_RNAPbound_NRI-p_F',2.86e-3;'TXTL_RNAPbound_NRI-p_R',0.11e-4});
+     'MassAction',{'TXTL_RNAPbound_NRI-p_F',paramObj.activation_F;'TXTL_RNAPbound_NRI-p_R',paramObj.activation_R});
      txtl_addreaction(tube,[dna.Name ':' P3 ' + ' RNAP ' <-> [' RNAPbound ':' P3 ']' ],...
-     'MassAction',{'TXTL_DNA_NRI-p_RNAPbound_F',paramObj.RNAPbound_Forward*50;'TXTL_DNA_NRI-p_RNAPbound_R',paramObj.RNAPbound_Reverse});
+     'MassAction',{'TXTL_DNA_NRI-p_RNAPbound_F',paramObj.RNAPbound_Forward_actv;'TXTL_DNA_NRI-p_RNAPbound_R',paramObj.RNAPbound_Reverse_actv});
    
     if mode.utr_attenuator_flag
         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); %leaky slow rate

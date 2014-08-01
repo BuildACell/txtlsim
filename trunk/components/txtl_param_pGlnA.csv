@@ -8,11 +8,9 @@ Gene_Length, Numeric, 647
 LVA_tag_Length, Numeric, 40 
 Terminator_Length, Numeric, 100
 
+activation_F, Numeric, 2.86e-3
+activation_R, Numeric, 0.11e-4
 
-Dimmerization_Forward, Numeric, 1, V. Sotiropoulos 2007 BMC Sys Bio Table 1 
-Dimmerization_Reverse, Numeric, 10, V. Sotiropoulos 2007 BMC Sys Bio Table 1 
-
-Protein_Inducer_Forward, Numeric, 2e-3, V. Sotiropoulos 2007 BMC Sys Bio Table 1
-Protein_Inducer_Reverse, Numeric, 0.001, V. Sotiropoulos 2007 BMC Sys Bio Table 1
-Inducer_Degradation, Numeric, 2.67e-3, 
+RNAPbound_Forward_actv, Numeric, 0.006*50
+RNAPbound_Reverse_actv, Numeric, 5
 

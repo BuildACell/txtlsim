@@ -1,8 +1,8 @@
-% txtl_prom_plasR.m - promoter information for plasR
+% txtl_prom_plas.m - promoter information for plas
 % VS Dec 2013
 %
 % This file contains a description of the plasR promoter, which is activated by the lasR protein. .
-% Calling the function txtl_prom_plasR() will set up the reactions for
+% Calling the function txtl_prom_plas() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
 % 
 % 
@@ -37,7 +37,7 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout= txtl_prom_plasR(mode, tube, dna, rna, varargin)
+function varargout= txtl_prom_plas(mode, tube, dna, rna, varargin)
 
 
     % Create strings for reactants and products
@@ -51,7 +51,7 @@ function varargout= txtl_prom_plasR(mode, tube, dna, rna, varargin)
     
     
     % importing the corresponding parameters
-    paramObj = txtl_component_config('lasR');
+    paramObj = txtl_component_config('plas');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
@@ -64,7 +64,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    defaultBasePairs = {'plasR','junk','thio';150,500,0};
+    defaultBasePairs = {'plas','junk','thio';150,500,0};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
@@ -104,34 +104,10 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
      
     Robj6 = addreaction(tube, [dna.Name ':' P3 ' + ' RNAP ' <-> [' RNAPbound ':' P3 ']' ]);
     Kobj6 = addkineticlaw(Robj6, 'MassAction');
-    Pobj6f = addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward);
-    Pobj6r = addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse);
+    Pobj6f = addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward_actv);
+    Pobj6r = addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse_actv);
     set(Kobj6, 'ParameterVariableNames', {'kf', 'kr'});
-    %%         
-%{
-              
-    % Set up binding reaction
-%     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
-%         'MassAction',parameters);
-    % 
-%     Robj4 = addreaction(tube, [dna.Name ' + ' P3 ' <-> ' dna.Name ':' P3 ]);
-%     Kobj4 = addkineticlaw(Robj4, 'MassAction');
-%     Pobj4f = addparameter(Kobj4, 'kf', 2.86e-3);
-%     Pobj4r = addparameter(Kobj4, 'kr', 0.11e-4);
-%     set(Kobj4, 'ParameterVariableNames', {'kf', 'kr'});
-%     
-%     Robj5 = addreaction(tube, [RNAPbound  ' + ' P3 ' <-> [' RNAPbound ':' P3 ']']);
-%     Kobj5 = addkineticlaw(Robj5, 'MassAction');
-%     Pobj5f = addparameter(Kobj5, 'kf', 2.86e-3);
-%     Pobj5r = addparameter(Kobj5, 'kr', 0.11e-4);
-%     set(Kobj5, 'ParameterVariableNames', {'kf', 'kr'});
-    % 
-    % Set up binding reaction for tetR. notice that the DNA-RNAP-P2 complex
-    % is v unstable, and expels the RNAP readily. 
-    
-    %}
-    
-    
+ 
     if mode.utr_attenuator_flag
 %         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); 
         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3],prom_spec, rbs_spec, gene_spec,{P3} );  
@@ -144,7 +120,7 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
 else
-    error('txtltoolbox:txtl_prom_plasR:undefinedmode', ...
+    error('txtltoolbox:txtl_prom_plas:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
 

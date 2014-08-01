@@ -99,8 +99,8 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    % Parameters that describe this promoter (this is where the variation
-    % in the promoter strength comes in. 
+    
+    % parameters for leaky transcription
     parameters = {'TXTL_PBADPTET_RNAPbound_F',paramObj.RNAPbound_Forward;...
                   'TXTL_PBADPTET_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
