@@ -32,6 +32,13 @@ txtl_add_dna(tube3, ...
    1, ...					% concentration (nM)
   'linear');					% type
 
+%just for test
+txtl_add_dna(tube3, ...
+  'p70(50)', 'rbs(20)', 'NRI-p-lva(1410)', ...	% promoter, rbs, gene
+   1, ...					% concentration (nM)
+  'linear');					% type
+
+
 txtl_add_dna(tube3, ...
   'pGlnA(308)', 'rbs(20)', 'deGFP(1000)', ...	% promoter, rbs, gene
    1, ...					% concentration (nM)
@@ -41,7 +48,7 @@ txtl_add_dna(tube3, ...
 
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
-txtl_addspecies(Mobj, 'protein gamS',1000)
+txtl_addspecies(Mobj, 'protein gamS',1000);
 tic
 [simData] = txtl_runsim(Mobj,14*60*60);
 toc

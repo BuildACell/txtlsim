@@ -2,7 +2,7 @@ RNAPbound_Forward, Expression, 0.001, estimate
 RNAPbound_Reverse, Expression, 10, estimate
 
 RNAPbound_Forward_actv, Expression, 20, estimate 
-RNAPbound_Reverseactv, Expression, 400, estimate
+RNAPbound_Reverse_actv, Expression, 400, estimate
 
 Promoter_Length, Numeric, 100
 Thio_Length, Numeric, 500

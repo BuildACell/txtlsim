@@ -48,12 +48,13 @@ function varargout= txtl_prom_pBAD_ptet(mode, tube, dna, rna, varargin)
     RNAP = 'RNAP70';			% RNA polymerase name for reactions
     RNAPbound = ['RNAP70:' dna.Name];
     P1 = 'protein sigma70';
-    P2 = 'protein tetRdimer';
-    P3 = 'protein AraC';
-    AraCbound = ['arabinose:' P3];
+    
+%     P2 = 'protein tetRdimer';
+%     P3 = 'protein AraC';
+%     AraCbound = ['arabinose:' P3];
     
     % importing the corresponding parameters
-    paramObj = txtl_component_config('pBAD_tetR');
+    paramObj = txtl_component_config('pBAD_tetO');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')

@@ -48,18 +48,32 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     varargout{1} = geneData;
     
     coreSpecies = {protein.Name};
-    % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
-
-    % Set up the maturation reaction
-    txtl_addreaction(tube,['[' protein.Name '] + protein NRI  <-> [' protein.Name ':protein NRI]'],...
+    
+    listOfSpecies = varargin{1};
+    p1 = regexp(listOfSpecies,'^protein NRI-p(-lva)?$', 'match');
+    listOfNRIp = vertcat(p1{:});
+    listOfNRI = regexprep(listOfNRIp, '^protein NRI-p', 'protein NRI');
+    for k = 1:size(listOfNRI,1)
+    txtl_addspecies(tube, listOfNRI{k}, cell(1,1), 'Internal');
+    end
+    listOfSpecies = get(tube.species,'Name');
+    
+    % Need to search again over listOfSPecies because what was just set up may not be all the
+    % proteins there are. 
+    p2 = regexp(listOfSpecies,'^protein NRI(-lva)?$', 'match');
+    listOfProtein = vertcat(p2{:});
+    replacedProtein = regexprep(listOfProtein, '^protein NRI', 'protein NRI-p');
+    
+    for k = 1:size(listOfProtein,1)
+    txtl_addreaction(tube,['[' protein.Name '] + ' listOfProtein{k} '  <-> [' protein.Name ':' listOfProtein{k} ']'],...
      'MassAction',{'TXTL_PROT_NRII_L16R_PHOSPHORILATION_F',paramObj.generic_rate1;'TXTL_PROT_NRII_L16R_PHOSPHORILATION_R',paramObj.generic_rate2});
- 
-    txtl_addreaction(tube,['[' protein.Name ':protein NRI ] -> [' protein.Name '] + [protein NRI-p]'],...
+    txtl_addreaction(tube,['[' protein.Name ':' listOfProtein{k} ' ] -> [' protein.Name '] + [' replacedProtein{k} ']'],...
      'MassAction',{'TXTL_PROT_NRII_L16R_PHOSPHORILATION',paramObj.generic_rate3});
+    end
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else

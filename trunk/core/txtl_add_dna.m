@@ -142,8 +142,6 @@ if isempty(varargin)
     
     
     %% Protein properties, parameters and reactions %
-    %! TODO: VS 11/13/13 implement multiple proteins in genestring, which
-    %means this needs to change. 
     protein = txtl_addspecies(tube, protstr, 0, 'Internal');
     if exist(['txtl_protein_' geneName], 'file') == 2
         geneData = eval(['txtl_protein_' geneName '(mode, tube, protein, geneData)']);
@@ -298,7 +296,7 @@ elseif strcmp(varargin{1}, 'Setup Reactions')
         if mode.utr_attenuator_flag
         eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies,prom_spec, rbs_spec, gene_spec)']);
         else
-            eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies)']);
+            eval(['txtl_prom_' promoterName '(mode, tube, dna, rna, listOfSpecies,prom_spec, rbs_spec, gene_spec)']);
         end
     else
         warning(['TXTL: can''t find txtl_prom_' promoterName ...

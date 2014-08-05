@@ -41,8 +41,7 @@ function varargout = txtl_prom_t7(mode, tube, dna, rna, varargin)
     % Create strings for reactants and products
     DNA = ['[' dna.Name ']'];		% DNA species name for reactions
     RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'protein t7RNAP';			% RNA polymerase name for reactions
-    RNAPbound = ['protein t7RNAP:' dna.Name];	% Name of bound complex
+
     
     % importing the corresponding parameters
     paramObj = txtl_component_config('t7prom');
@@ -64,16 +63,6 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
         defaultBasePairs);
     
     varargout{1} = promoterData;
-    
-    coreSpecies = {RNAP,RNAPbound};
-    % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    
-    if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
-    else
-        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
-    end
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%     
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
@@ -92,11 +81,22 @@ elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
 
+    p = regexp(listOfSpecies,'^protein t7RNAP(-lva)?$', 'match');
+    listOfProtein = vertcat(p{:});
+    
+for k = 1:size(listOfProtein,1)
     if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+        mode.add_dna_driver = 'Setup Species';
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, listOfProtein{k}, [listOfProtein{k} ':' dna.Name], prom_spec, rbs_spec, gene_spec );
+        mode.add_dna_driver = 'Setup Reactions';
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, listOfProtein{k}, [listOfProtein{k} ':' dna.Name], prom_spec, rbs_spec, gene_spec );
     else
-        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+        mode.add_dna_driver = 'Setup Species';
+        txtl_transcription(mode, tube, dna, rna, listOfProtein{k}, [listOfProtein{k} ':' dna.Name]);
+        mode.add_dna_driver = 'Setup Reactions';
+        txtl_transcription(mode, tube, dna, rna, listOfProtein{k}, [listOfProtein{k} ':' dna.Name]);
     end
+end
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%    
 else 

@@ -55,7 +55,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     varargout{1} = geneData;
     
-    coreSpecies = {'arabinose', 'arabinose:protein AraC'}; %for now, no variations on AraC, ie, no lva
+    coreSpecies = {'arabinose', ['arabinose:' protein.Name], protein.Name}; %for now, no variations on AraC, ie, no lva
     % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
@@ -64,25 +64,17 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
    
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
-%    listOfSpecies = get(tube.species, 'name');
-  
-    % Set up the binding reaction for all protein variants
-%     matchStr = regexp(listOfSpecies,'(^protein AraC.*)','tokens','once'); 
-%     listOfAraC = vertcat(matchStr{:});
-% 
-%     for k = 1:size(listOfAraC,1)
-%         txtl_addreaction(tube, ...
-%          ['[' listOfAraC{k} '] + arabinose <-> [arabinose:' listOfAraC{k} ']'],...
-%          'MassAction',{'TXTL_INDUCER_ARAC_ARABINOSE_F',paramObj.Protein_Inducer_Forward;...
-%                        'TXTL_INDUCER_ARAC_ARABINOSE_R',paramObj.Protein_Inducer_Reverse});
-%    end
-
-
+listOfSpecies = varargin{1};
+p = regexp(listOfSpecies,'^protein AraC(-lva)?$', 'match');
+listOfProtein = vertcat(p{:});
+for k = 1:size(listOfProtein,1)
         txtl_addreaction(tube, ...
-         ['[protein AraC] + arabinose <-> [arabinose:protein AraC]'],...
+         ['[' listOfProtein{k} '] + arabinose <-> [arabinose:' listOfProtein{k} ']'],...
          'MassAction',{'TXTL_INDUCER_ARAC_ARABINOSE_F',paramObj.Protein_Inducer_Forward;...
                        'TXTL_INDUCER_ARAC_ARABINOSE_R',paramObj.Protein_Inducer_Reverse});
-    % degrade the aTc inducer
+end
+
+    % degrade the arabinose inducer
      txtl_addreaction(tube,'arabinose -> null',...
       'MassAction',{'TXTL_INDUCER_DEGRADATION_ARABINOSE',0.0000267});%paramObj.Inducer_Degradation
 

@@ -53,14 +53,29 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
  
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
+    listOfSpecies = varargin{1};
+    p = regexp(listOfSpecies,'^protein NRI(-lva)?$', 'match');
+    listOfNRI = vertcat(p{:});
+    listOfNRIp = regexprep(listOfNRI, '^protein NRI', 'protein NRI-p');
+    for k = 1:size(listOfNRIp,1)
+    txtl_addspecies(tube, listOfNRIp{k}, cell(1,1), 'Internal');
+    end
+    listOfSpecies = get(tube.species,'Name');
+    % Need to search again over listOfSPecies because what was just set up may not be all the
+    % proteins there are. 
+    p = regexp(listOfSpecies,'^protein NRI-p(-lva)?$', 'match');
+    listOfProtein = vertcat(p{:});
+    replacedProtein = regexprep(listOfProtein, '^protein NRI-p', 'protein NRI');
+    
+    for k = 1:size(listOfProtein,1)
 
     % Set up the maturation reaction
-    txtl_addreaction(tube,['[' protein.Name '] + protein NRI-p  <-> [' protein.Name ':protein NRI-p]'],...
+    txtl_addreaction(tube,['[' protein.Name '] + ' listOfProtein{k} '  <-> [' protein.Name ':' listOfProtein{k} ']'],...
      'MassAction',{'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION_F',paramObj.generic_rate3;'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION_R',paramObj.generic_rate3});
  
-    txtl_addreaction(tube,['[' protein.Name ':protein NRI-p ] -> [' protein.Name '] + [protein NRI]'],...
+    txtl_addreaction(tube,['[' protein.Name ':' listOfProtein{k} ' ] -> [' protein.Name '] + [' replacedProtein{k} ']'],...
      'MassAction',{'TXTL_PROT_NRII_H139N_DEPHOSPHORILATION',paramObj.generic_rate3});
-    
+    end
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%% 
 else
     error('txtltoolbox:txtl_protein_NRII_H139N:undefinedmode', ...

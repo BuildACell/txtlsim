@@ -101,10 +101,6 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     matchStr = regexp(listOfSpecies,'(^protein tetR.*dimer$)','tokens','once');
     listOftetRdimer = vertcat(matchStr{:});
     
-    
-    %! TODO make all these reactions conditional on specie availability
-    %! TODO has this todo been accomplished? Vipul 2/10/13
-    
     % repression of ptet by tetR dimer
     if ~isempty(listOftetRdimer)
         for k = 1:size(listOftetRdimer,1)

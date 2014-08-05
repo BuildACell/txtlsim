@@ -51,9 +51,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     varargout{1} = geneData;
     
-    coreSpecies = {'IPTG'}; %,['IPTG:' protein.Name] 
-    % !TODO: VS 3 April 13. Not sure, but i think IPTG does NOT bind with the multimerized protein. 
-    % empty cellarray for amount => zero amount
+    coreSpecies = {'IPTG'}; 
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
     
     

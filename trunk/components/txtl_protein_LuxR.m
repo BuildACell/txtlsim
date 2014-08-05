@@ -1,9 +1,9 @@
 % txtl_protein_LuxR.m - protein information for LuxR
 % VS Nov 2013
 %
-% This file contains a description of the protein produced by tetR.
-% Calling the function txtl_protein_AraC() will set up the reactions for
-% sequestration by the inducer aTc.
+% This file contains a description of the protein produced by luxR.
+% Calling the function txtl_protein_LuxR() will set up the reactions for
+% activation by the inducer AHL.
 
 % Written by Vipul Singhal nov 2013
 %
@@ -52,21 +52,24 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
         paramObj.Gene_Length,paramObj.LVA_tag_Length,paramObj.Terminator_Length};
     geneData = txtl_setup_default_basepair_length(tube,geneData,...
         defaultBasePairs);
-    
     varargout{1} = geneData;
     
-    coreSpecies = {'AHL', 'AHL:protein LuxR'}; 
+    coreSpecies = {'AHL', ['AHL:' protein.Name]}; 
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
  
-   
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
+  listOfSpecies = varargin{1};
   
-        txtl_addreaction(tube, ...
-         '[protein LuxR] + AHL <-> [AHL:protein LuxR]',...
-         'MassAction',{'TXTL_INDUCER_LuxR_AHL_F',paramObj.Protein_Inducer_Forward;...
-                       'TXTL_INDUCER_LuxR_AHL_R',paramObj.Protein_Inducer_Reverse});
-    % degrade the aTc inducer
+    p = regexp(listOfSpecies,'^protein LuxR(-lva)?$', 'match');
+    listOfProtein = vertcat(p{:});
+
+for k = 1:size(listOfProtein,1)
+       txtl_addreaction(tube,['[' listOfProtein{k} '] + AHL <-> [AHL:' listOfProtein{k} ']'],...
+            'MassAction',{'TXTL_INDUCER_LUXR_AHL_F',paramObj.Protein_Inducer_Forward;...
+            'TXTL_INDUCER_LUXR_AHL_R',paramObj.Protein_Inducer_Reverse});     
+end
+    % degrade the AHL inducer
      txtl_addreaction(tube,'AHL -> null',...
       'MassAction',{'TXTL_INDUCER_DEGRADATION_AHL',0.000267});%paramObj.Inducer_Degradation
 

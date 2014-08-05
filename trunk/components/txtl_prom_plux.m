@@ -1,10 +1,9 @@
 % txtl_prom_plux.m - promoter information for plux and plux combinatorial promoter
 % Vipul Singhal 2013
 %
-% This file contains a description of the p28 and ptet combinatorial promoter.
-% Calling the function txtl_prom_pBAD_ptet() will set up the reactions for
+% This file contains a description of the plux promoter.
+% Calling the function txtl_prom_plux() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
-% 
 % 
 
 % Written by Vipul Singhal, Nov 2013
@@ -48,8 +47,8 @@ function varargout= txtl_prom_plux(mode, tube, dna, rna, varargin)
     RNAPbound = ['RNAP70:' dna.Name];
     P1 = 'protein sigma70';
     
-    P3 = 'protein LuxR';
-    LuxRbound = ['AHL:' P3 ];
+%     P3 = 'protein LuxR';
+%     LuxRbound = ['AHL:' P3 ];
     
     % importing the corresponding parameters
     paramObj = txtl_component_config('plux');
@@ -71,26 +70,23 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     varargout{1} = promoterData;
     
-    coreSpecies = {RNAP,RNAPbound,P1, P3, LuxRbound};
-    % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); %leaky slow rate
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' LuxRbound ],prom_spec, rbs_spec, gene_spec,{LuxRbound} );  %lowest rate
-    else
-        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
-        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' LuxRbound ],{LuxRbound});  %lowest rate
-    end
- 
+    coreSpecies = {RNAP,RNAPbound,P1};
     
-     
-    %(check agains shaobin results. the parameters here should be tuned to
-    %get the shaobin curves. translation/degradation etc should be standard. also, the params modifies are the 
-    %RNAP binding affinities, given below. so, nothing in tx: if RNAP is bound, tx proceeds as normal 
-    %(what effects will this have for future work?))
+    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
+    
+    %need to do setup species in th setup reactions! Need to fix somehow. 
+    
+%     if mode.utr_attenuator_flag
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); %leaky slow rate
+%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' LuxRbound ],prom_spec, rbs_spec, gene_spec,{LuxRbound} );  %lowest rate
+%     else
+%         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
+%         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' LuxRbound ],{LuxRbound});  %lowest rate
+%     end
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
+    listOfSpecies = varargin{1};
     if nargin==8
     prom_spec = varargin{2};
     rbs_spec = varargin{3};
@@ -98,61 +94,65 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    % Parameters that describe this promoter (this is where the variation
-    % in the promoter strength comes in. 
+    % Parameters that describe this promoter. Leaky basal expression. 
     parameters = {'TXTL_PLUX_RNAPbound_F',paramObj.RNAPbound_Forward;...
                   'TXTL_PLUX_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
-    %
-
-
-    %% AraC
-    %
-    % set up binding reactions for AraC:arabinose. 
-    Robj4 = addreaction(tube, [dna.Name ' + ' LuxRbound ' <-> ' dna.Name ':' LuxRbound ]);
-    Kobj4 = addkineticlaw(Robj4, 'MassAction');
-    Pobj4f = addparameter(Kobj4, 'kf', 2.86e-3);
-    Pobj4r = addparameter(Kobj4, 'kr', 0.11e-4);
-    set(Kobj4, 'ParameterVariableNames', {'kf', 'kr'});
     
-    % the binding of P2 to the DNA-RNAP complex. note that due to the reaction
-    % below, this binding means that RNAP will soon leave the DNA.  Hence,
-    % P2 binding to RNAPbound expels the PNAP, redusing transcription.
-    Robj5 = addreaction(tube, [RNAPbound  ' + ' LuxRbound ' <-> [' RNAPbound ':' LuxRbound ']']);
-    Kobj5 = addkineticlaw(Robj5, 'MassAction');
-    Pobj5f = addparameter(Kobj5, 'kf', 2.86e-3);
-    Pobj5r = addparameter(Kobj5, 'kr', 0.11e-4);
-    set(Kobj5, 'ParameterVariableNames', {'kf', 'kr'});
-    % 
-    % Set up binding reaction for tetR. notice that the DNA-RNAP-P2 complex
-    % is v unstable, and expels the RNAP readily. 
-    Robj6 = addreaction(tube, [dna.Name ':' LuxRbound ' + ' RNAP ' <-> [' RNAPbound ':' LuxRbound ']' ]);
-    Kobj6 = addkineticlaw(Robj6, 'MassAction');
-    Pobj6f = addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward*50);
-    Pobj6r = addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse);
-    set(Kobj6, 'ParameterVariableNames', {'kf', 'kr'});
-    
-        
-    
-    %%
-   
-    if mode.utr_attenuator_flag
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); %leaky slow rate
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,[RNAPbound ':' LuxRbound ], prom_spec, rbs_spec, gene_spec,{LuxRbound} );  %lowest rate
-    else
-        txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); %leaky slow rate
-        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' LuxRbound ],{LuxRbound});  %lowest rate
+p = regexp(listOfSpecies,'^AHL:protein LuxR(-lva)?$', 'match');
+    TF = vertcat(p{:});
+    for k = 1:size(TF,1)
+        setup_promoter_reactions(mode, tube, dna, rna, RNAP,RNAPbound,...
+            prom_spec, rbs_spec, gene_spec,TF{k}, paramObj)
     end
-
+    
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
 else
     error('txtltoolbox:txtl_prom_plux:undefinedmode', ...
       'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end 
+end
 
+
+function setup_promoter_reactions(mode, tube, dna,rna, RNAP, RNAPbound,...
+    prom_spec, rbs_spec, gene_spec, TF, paramObj)
+
+txtl_addreaction(tube, ...
+    [dna.Name ' + ' TF ' <-> [' dna.Name ':' TF ']' ],...
+    'MassAction',{'TXTL_PLUX_TFBIND_F',paramObj.activation_F;...
+    'TXTL_PLUX_TFBIND_R',paramObj.activation_R});
+
+txtl_addreaction(tube, ...
+    [dna.Name ':' TF ' + ' RNAP ' <-> [' RNAPbound ':' TF ']' ],...
+    'MassAction',{'TXTL_PLUX_TFRNAPbound_F',paramObj.RNAPbound_Forward_actv;...
+    'TXTL_PLUX_TFRNAPbound_R',paramObj.RNAPbound_Reverse_actv});
+
+txtl_addreaction(tube, ...
+    [RNAPbound '+' TF ' <-> [' RNAPbound ':' TF ']' ],...
+    'MassAction',{'TXTL_PLUX_TFBIND_F',paramObj.activation_F;...
+    'TXTL_PLUX_TFBIND_R',paramObj.activation_R});
+
+
+if mode.utr_attenuator_flag
+    mode.add_dna_driver = 'Setup Species';
+    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec);
+    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
+    mode.add_dna_driver = 'Setup Reactions';
+    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
+    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ], prom_spec, rbs_spec, gene_spec,{TF} );  
+        
+else
+    mode.add_dna_driver = 'Setup Species';
+    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
+    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
+    mode.add_dna_driver = 'Setup Reactions';
+    txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
+    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF],{TF});  
+end
+end
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

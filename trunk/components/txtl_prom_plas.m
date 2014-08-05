@@ -4,8 +4,8 @@
 % This file contains a description of the plasR promoter, which is activated by the lasR protein. .
 % Calling the function txtl_prom_plas() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
-% 
-% 
+%
+%
 % Written by Richard Murray, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
@@ -18,11 +18,11 @@
 %   1. Redistributions of source code must retain the above copyright
 %      notice, this list of conditions and the following disclaimer.
 %
-%   2. Redistributions in binary form must reproduce the above copyright 
-%      notice, this list of conditions and the following disclaimer in the 
+%   2. Redistributions in binary form must reproduce the above copyright
+%      notice, this list of conditions and the following disclaimer in the
 %      documentation and/or other materials provided with the distribution.
 %
-%   3. The name of the author may not be used to endorse or promote products 
+%   3. The name of the author may not be used to endorse or promote products
 %      derived from this software without specific prior written permission.
 %
 % THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
@@ -40,27 +40,28 @@
 function varargout= txtl_prom_plas(mode, tube, dna, rna, varargin)
 
 
-    % Create strings for reactants and products
-    DNA = ['[' dna.Name ']'];		% DNA species name for reactions
-    RNA = ['[' rna.Name ']'];		% RNA species name for reactions
-    RNAP = 'RNAP70';			% RNA polymerase name for reactions
-    RNAPbound = ['RNAP70:' dna.Name];
-    P1 = 'protein sigma70';
-    
-    P3 = 'OC12HSL:protein lasR';
-    
-    
-    % importing the corresponding parameters
-    paramObj = txtl_component_config('plas');
-    
+% Create strings for reactants and products
+DNA = ['[' dna.Name ']'];		% DNA species name for reactions
+RNA = ['[' rna.Name ']'];		% RNA species name for reactions
+RNAP = 'RNAP70';			% RNA polymerase name for reactions
+RNAPbound = ['RNAP70:' dna.Name];
+P1 = 'protein sigma70';
+
+%P3 = 'OC12HSL:protein lasR'; %wont yet know if the lva version of this
+%was added or not.
+
+
+% importing the corresponding parameters
+paramObj = txtl_component_config('plas');
+
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
-
+    
     promoterData = varargin{1};
     if nargin==8
-    prom_spec = varargin{2};
-    rbs_spec = varargin{3};
-    gene_spec = varargin{4};
+        prom_spec = varargin{2};
+        rbs_spec = varargin{3};
+        gene_spec = varargin{4};
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
@@ -70,59 +71,94 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     
     varargout{1} = promoterData;
     
-    coreSpecies = {RNAP,RNAPbound,P1, P3};
+    coreSpecies = {RNAP,RNAPbound,P1};
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    % empty cellarray for amount => zero amount
-    if mode.utr_attenuator_flag
-%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} );  
-    else
-%         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
-        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3}); 
-    end
+    %{
+    % !TODO: VS Aug 2014: dont yet know what form of P3 exists: is lasR lva/ssrA bound or not?
+    % (and in the future more variations could exist) So we cannot actually
+    % do txtl_transcription just yet! Functionally this is not a problem
+    % because: Lets say we do not introduce the activated RNAPbound at this
+    % (Setup Species) stage. because P3, which is the protein bound to the
+    % inducer, *will* get set up in the 'setup species' of the protein file
+    % (if the file is present and the protein SHOULD be set up), and so
+    % will be available for the setup reactions stage to search and call in
+    % the transcription step. If there is no protein file, then the search
+    % returns no results, and so the transcription is not set up, or only
+    % leaky transcription is set up. One thing to note is that, to set up
+    % the species (the AGTP:CUTP:RNAPbound species), might need to call 'setup species' mode of
+    % txtl_transcription in the Setup Reactions mode of this promoter file!
+    % But maybe if we dont set up that species no error will be trown.
+    % We'll see.
     
-
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%    
+    % VS Aug 2014: Comment txtl_transcription for now.
+    %     if mode.utr_attenuator_flag
+    % %         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
+    %         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3 ],prom_spec, rbs_spec, gene_spec,{P3} );
+    %     else
+    % %         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
+    %         txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3});
+    %     end
+    %}
+    
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
+    listOfSpecies = varargin{1};
     if nargin==8
-    prom_spec = varargin{2};
-    rbs_spec = varargin{3};
-    gene_spec = varargin{4};
+        prom_spec = varargin{2};
+        rbs_spec = varargin{3};
+        gene_spec = varargin{4};
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    % Parameters that describe this promoter (this is where the variation
-    % in the promoter strength comes in. 
-    parameters = {'TXTL_PLASR_RNAPbound_F',paramObj.RNAPbound_Forward;...
-                  'TXTL_PLASR_RNAPbound_R',paramObj.RNAPbound_Reverse};
-              
-    Robj3 = addreaction(tube, [dna.Name ' + ' P3 ' <-> [' dna.Name ':' P3 ']' ]);
-    Kobj3 = addkineticlaw(Robj3, 'MassAction');
-    Pobj3f = addparameter(Kobj3, 'kf', paramObj.activation_F);
-    Pobj3r = addparameter(Kobj3, 'kr', paramObj.activation_R);
-    set(Kobj3, 'ParameterVariableNames', {'kf', 'kr'});
-     
-    Robj6 = addreaction(tube, [dna.Name ':' P3 ' + ' RNAP ' <-> [' RNAPbound ':' P3 ']' ]);
-    Kobj6 = addkineticlaw(Robj6, 'MassAction');
-    Pobj6f = addparameter(Kobj6, 'kf', paramObj.RNAPbound_Forward_actv);
-    Pobj6r = addparameter(Kobj6, 'kr', paramObj.RNAPbound_Reverse_actv);
-    set(Kobj6, 'ParameterVariableNames', {'kf', 'kr'});
- 
-    if mode.utr_attenuator_flag
-%         txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec ); 
-        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' P3],prom_spec, rbs_spec, gene_spec,{P3} );  
-    else
-%         txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound); 
-        txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' P3 ],{P3});  
+    
+    %   Parameters that describe this promoter. No leaky expression for now.
+    %     parameters = {'TXTL_PLAS_RNAPbound_F',paramObj.RNAPbound_Forward;...
+    %                   'TXTL_PLAS_RNAPbound_R',paramObj.RNAPbound_Reverse};
+    %     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
+    %             'MassAction',parameters);
+    
+    p = regexp(listOfSpecies,'^OC12HSL:protein lasR(-lva)?$', 'match');
+    TF = vertcat(p{:});
+    for k = 1:size(TF,1)
+        setup_promoter_reactions(mode, tube, dna, rna, RNAP,RNAPbound,...
+            prom_spec, rbs_spec, gene_spec,TF{k}, paramObj)
     end
     
-
-    
-%%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%   
+    %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
     error('txtltoolbox:txtl_prom_plas:undefinedmode', ...
-      'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
-end 
+        'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
+end
+end
+
+
+function setup_promoter_reactions(mode, tube, dna,rna, RNAP, RNAPbound,...
+    prom_spec, rbs_spec, gene_spec, TF, paramObj)
+
+txtl_addreaction(tube, ...
+    [dna.Name ' + ' TF ' <-> [' dna.Name ':' TF ']' ],...
+    'MassAction',{'TXTL_PLAS_TFBIND_F',paramObj.activation_F;...
+    'TXTL_PLAS_TFBIND_R',paramObj.activation_R});
+
+txtl_addreaction(tube, ...
+    [dna.Name ':' TF ' + ' RNAP ' <-> [' RNAPbound ':' TF ']' ],...
+    'MassAction',{'TXTL_PLAS_TFRNAPbound_F',paramObj.RNAPbound_Forward_actv;...
+    'TXTL_PLAS_TFRNAPbound_R',paramObj.RNAPbound_Reverse_actv});
+
+
+if mode.utr_attenuator_flag
+    mode.add_dna_driver = 'Setup Species';
+    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
+    mode.add_dna_driver = 'Setup Reactions';
+    txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' TF],prom_spec, rbs_spec, gene_spec,{TF} );
+else
+    mode.add_dna_driver = 'Setup Species';
+    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
+    mode.add_dna_driver = 'Setup Reactions';
+    txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' TF ],{TF});
+end
+
+end
 
 
 

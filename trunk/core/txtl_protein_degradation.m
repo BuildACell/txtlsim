@@ -62,31 +62,36 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     Microbiology, vol. 64, Jun. 1998, pp. 2240�2246.
     %}
     
-    
-    coreSpecies = {'protein ClpX', 'protein ClpX*',[protein.Name ':protein ClpX*']};
-    % empty cellarray for amount => zero amount
-    txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
-    
+%     
+%     coreSpecies = {'protein ClpX', 'protein ClpX*',['protein ClpX*:' protein.Name]};
+%     % empty cellarray for amount => zero amount
+%     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
+%     
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver, 'Setup Reactions')
+    listOfSpecies = get(tube.species, 'Name');
     
     % Protein monomer binds with protein ClpX*P protease
     reactionRate = varargin{1};
     
+    p1 = regexp(listOfSpecies,'^protein ClpX(-lva)*?$', 'match'); % test whether the star causes problems
+    listOfProtein = vertcat(p1{:});
     
-    Robj = addreaction(tube, [ protein.Name ' + protein ClpX* <-> [' protein.Name ':protein ClpX*]']);
+    for k = 1:size(listOfProtein,1)
+    Robj = addreaction(tube, [ protein.Name ' + ' listOfProtein{k} ' <-> [' listOfProtein{k} ':' protein.Name ']']);
     Kobj = addkineticlaw(Robj,'MassAction');
     Pobjf = addparameter(Kobj, 'TXTL_PROT_DEGRAD_F',paramObj.prot_deg_F); % 0.0000012);
     Pobjr = addparameter(Kobj, 'TXTL_PROT_DEGRAD_R',paramObj.prot_deg_R); %0.00006);
     set(Kobj, 'ParameterVariableNames', {'TXTL_PROT_DEGRAD_F', 'TXTL_PROT_DEGRAD_F'});
     
 
-    txtl_addreaction(tube,['[' protein.Name ':protein ClpX*] + AGTP -> [' protein.Name '**]  +  protein ClpX*'],...
+    txtl_addreaction(tube,['[' listOfProtein{k} ':' protein.Name '] + AGTP -> [' protein.Name '**]  +  ' listOfProtein{k} ],...
         'MassAction',{'TXTL_prot_unfold',paramObj.prot_deg_unfold});
   
-    txtl_addreaction(tube,['protein ClpX* -> null'],...
+    txtl_addreaction(tube,[listOfProtein{k} ' -> null'],...
         'MassAction',{'TXTL_clpx_deg',paramObj.ClpX_deg}); %1.7022e-08 older->0.001
+    end
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else

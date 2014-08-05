@@ -1,13 +1,11 @@
-% txtl_prom_pBAD.m - promoter information for pBAD promoter
-% Zoltan Tuza, Oct 2012
+% txtl_prom_OR1OR2.m - promoter information for pOR1OR2 promoter
+% VS July 2014
 %
-% This file contains a description of the p28 and ptet combinatorial promoter.
-% Calling the function txtl_prom_pBAD() will set up the reactions for
+% This file contains a description of the ptet promoter.
+% Calling the function txtl_prom_pOR1OR2() will set up the reactions for
 % transcription with the measured binding rates and transription rates.
-%
-%
 
-% Written by Zoltan Tuza, Oct 2012
+% Written by Richard Murray, Sep 2012
 %
 % Copyright (c) 2012 by California Institute of Technology
 % All rights reserved.
@@ -38,17 +36,16 @@
 % IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 % POSSIBILITY OF SUCH DAMAGE.
 
-function varargout= txtl_prom_pBAD(mode, tube, dna, rna, varargin)
+function varargout = txtl_prom_pOR1OR2(mode, tube, dna, rna,varargin)
 
 % Create strings for reactants and products
 DNA = ['[' dna.Name ']'];		% DNA species name for reactions
 RNA = ['[' rna.Name ']'];		% RNA species name for reactions
 RNAP = 'RNAP70';			% RNA polymerase name for reactions
 RNAPbound = ['RNAP70:' dna.Name];
-P1 = 'protein sigma70';
-
 % importing the corresponding parameters
-paramObj = txtl_component_config('pBAD');
+paramObj = txtl_component_config('pOR1OR2');
+
 
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')
@@ -61,14 +58,21 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    defaultBasePairs = {'pBAD','junk','thio';150,500,0};
+    defaultBasePairs = {'pOR1OR2','junk','thio';...
+        paramObj.Promoter_Length,paramObj.Junk_Length,paramObj.Thio_Length};
     promoterData = txtl_setup_default_basepair_length(tube,promoterData,...
         defaultBasePairs);
     
     varargout{1} = promoterData;
     
-    coreSpecies = {RNAP,RNAPbound,P1};
+    coreSpecies = {RNAP,RNAPbound};
+    % empty cellarray for amount => zero amount
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)), 'Internal');
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Reactions %%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif strcmp(mode.add_dna_driver,'Setup Reactions')
@@ -80,57 +84,41 @@ elseif strcmp(mode.add_dna_driver,'Setup Reactions')
     elseif nargin~=5
         error('the number of argument should be 5 or 8, not %d',nargin);
     end
-    % Parameters that describe this promoter (this is where the variation
-    % in the promoter strength comes in.
-    parameters = {'TXTL_PBAD_RNAPbound_F',paramObj.RNAPbound_Forward;...
-        'TXTL_PBAD_RNAPbound_R',paramObj.RNAPbound_Reverse};
+    % Parameters that describe this promoter
+    parameters = {'TXTL_POR1OR2_RNAPbound_F',paramObj.RNAPbound_Forward;...
+        'TXTL_POR1OR2_RNAPbound_R',paramObj.RNAPbound_Reverse};
     % Set up binding reaction
     txtl_addreaction(tube,[DNA ' + ' RNAP ' <-> [' RNAPbound ']'],...
         'MassAction',parameters);
+   
+    if mode.utr_attenuator_flag
+        txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, RNAPbound, prom_spec, rbs_spec, gene_spec );
+    else
+        txtl_transcription(mode, tube, dna, rna, RNAP, RNAPbound);
+    end
     
-    p = regexp(listOfSpecies,'^arabinose:protein AraC(-lva)?$', 'match');
-    activatedProtein = vertcat(p{:});
     
-    for k = 1:size(activatedProtein,1)
-        txtl_addreaction(tube, ...
-            [dna.Name ' + ' activatedProtein{k} ' <-> [' dna.Name ':' activatedProtein{k} ']' ],...
-            'MassAction',{'TXTL_PBAD_TFBIND_F',paramObj.activation_F;...
-            'TXTL_PBAD_TFBIND_R',paramObj.activation_R});
-        
-        txtl_addreaction(tube, ...
-            [RNAPbound ' + ' activatedProtein{k} ' <-> [' RNAPbound ':' activatedProtein{k} ']' ],...
-            'MassAction',{'TXTL_PBAD_TFBIND_F',paramObj.activation_F;...
-            'TXTL_PBAD_TFBIND_R',paramObj.activation_R});
-        
-        txtl_addreaction(tube, ...
-            [dna.Name ':' activatedProtein{k} ' + ' RNAP ' <-> [' RNAPbound ':' activatedProtein{k} ']' ],...
-            'MassAction',{'TXTL_PBAD_TFRNAPbound_F',paramObj.RNAPbound_Forward_actv;...
-            'TXTL_PBAD_TFRNAPbound_R',paramObj.RNAPbound_Reverse_actv});
-        
-        if mode.utr_attenuator_flag
-            mode.add_dna_driver = 'Setup Species';
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' activatedProtein{k} ],prom_spec, rbs_spec, gene_spec,{activatedProtein{k} } );
-            mode.add_dna_driver = 'Setup Reactions';
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP,RNAPbound, prom_spec, rbs_spec, gene_spec );
-            txtl_transcription_RNAcircuits(mode, tube, dna, rna, RNAP, [RNAPbound ':' activatedProtein{k} ],prom_spec, rbs_spec, gene_spec,{activatedProtein{k}} );
-        else
-            mode.add_dna_driver = 'Setup Species';
-            txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
-            txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' activatedProtein{k} ],{activatedProtein{k}});
-            mode.add_dna_driver = 'Setup Reactions';
-            txtl_transcription(mode, tube, dna, rna, RNAP,RNAPbound);
-            txtl_transcription(mode, tube, dna, rna, RNAP,[RNAPbound ':' activatedProtein{k} ],{activatedProtein{k}});
+    matchStr = regexp(listOfSpecies,'(^protein cLambda.*dimer$)','tokens','once');
+    listOfcLambdadimer = vertcat(matchStr{:});
+    
+    
+    % repression of ptet by tetR dimer
+    if ~isempty(listOfcLambdadimer)
+        for k = 1:size(listOfcLambdadimer,1)
+            txtl_addreaction(tube,...
+                [DNA ' + ' listOfcLambdadimer{k} ' <-> [' dna.name ':' listOfcLambdadimer{k} ']'],...
+                'MassAction',{'pOR1OR2_sequestration_F',getDNASequestrationRates(paramObj,'F');...
+                'pOR1OR2_sequestration_R',getDNASequestrationRates(paramObj,'R')});
+            
         end
-        
     end
     
     %%%%%%%%%%%%%%%%%%% DRIVER MODE: error handling %%%%%%%%%%%%%%%%%%%%%%%%%%%
 else
-    error('txtltoolbox:txtl_prom_pBAD:undefinedmode', ...
+    error('txtltoolbox:txtl_prom_pOR1OR2:undefinedmode', ...
         'The possible modes are ''Setup Species'' and ''Setup Reactions''.');
 end
-
+end
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

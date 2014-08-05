@@ -84,10 +84,12 @@ classdef txtl_component_config
                                 p = 2;
                             end
                             compConf.DNA_Sequestration(str2double(r{1}),p) = str2double(M{k,3});
-                        elseif ~isempty(oneComplex{1}) && ischar(oneComplex{1})
+                        elseif ~isempty(oneComplex)
+                            if ~isempty(oneComplex{1}) && ischar(oneComplex{1})
                             p = 1;
-                            if strcmp(oneComplex{1},'R')
-                                p = 2;
+                                if strcmp(oneComplex{1},'R')
+                                    p = 2;
+                                end
                             end
                             compConf.DNA_Sequestration(1,p) = str2double(M{k,3});
                         end 
