@@ -1,13 +1,13 @@
 %% load datasets
+% 
+% e15_pr_gfp_mg_0821 = wholeExpfileReader('ACS_paper_data/e15_pr_gfp_pr_gfp_mg_grad_0821_data.csv',';',2);
+% e15_pr_gfp_mg_0821 = processMGData(e15_pr_gfp_mg_0821);
+% e15_pr_gfp_mg_0821.valveNames = {'pos cont','neg cont','pr-gfp 1nM','pr-gfp 2nM','pr-gfp 3nM','pr-gfp 5nM','pr-gfp 10nM','pr-gfp 15nM'...
+%                                  'pr-gfp-s15-mg 1nm','pr-gfp-s15-mg 2nM','pr-gfp-s15-mg 3nM','pr-gfp-s15-mg 5nM','pr-gfp-s15-mg 10nM','pr-gfp-s15-mg 15nM'};
+%  
 
-e15_pr_gfp_mg_0821 = wholeExpfileReader('ACS_paper_data/e15_pr_gfp_pr_gfp_mg_grad_0821_data.csv',';',2);
-e15_pr_gfp_mg_0821 = processMGData(e15_pr_gfp_mg_0821);
-e15_pr_gfp_mg_0821.valveNames = {'pos cont','neg cont','pr-gfp 1nM','pr-gfp 2nM','pr-gfp 3nM','pr-gfp 5nM','pr-gfp 10nM','pr-gfp 15nM'...
-                                 'pr-gfp-s15-mg 1nm','pr-gfp-s15-mg 2nM','pr-gfp-s15-mg 3nM','pr-gfp-s15-mg 5nM','pr-gfp-s15-mg 10nM','pr-gfp-s15-mg 15nM'};
- 
-
-data.xdata = e15_pr_gfp_mg_0821.t_vec;
-data.ydata = e15_pr_gfp_mg_0821.noBg(:,3:8,2)./2683.9;
+data.xdata = 1:281; %e15_pr_gfp_mg_0821.t_vec;
+data.ydata = rand(1,281)*50+10; %e15_pr_gfp_mg_0821.noBg(:,3:8,2)./2683.9;
 
 %% initial values and parameters
 
@@ -42,7 +42,7 @@ end
 % select parameters for estimation, list is given by parseGetEqOutput (parameterNames field)
 ParametersToEstimate  = {'TXTL_TL_rate',...
                          'TXTL_UTR_RBS_F',...
-                         'ATPdeg_F'
+                         'TXTL_transcription_rate1'
                          };
                      
 pSelect = cellfun(@(x) findStringInAList(dataOut.parameterNames,x),ParametersToEstimate);

@@ -133,7 +133,10 @@ for k=1:size(experimentData.channels,1)
     
 end
 
-
+% convert back matrices
+experimentData.rate = cell2mat(experimentData.rate);
+experimentData.endTimeIndex = cell2mat(experimentData.endTimeIndex);
+experimentData.endTime = cell2mat(experimentData.endTime);
 
 
 

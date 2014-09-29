@@ -13,7 +13,7 @@ for inducer = inducerInitial
     tube3 = txtl_newtube('gene_expression');
 
     dna_tetR = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'lasR(1000)',  1,  'plasmid');					% type
-    dna_deGFP = txtl_add_dna(tube3, 'plasR(50)', 'rbs(20)', 'deGFP(1000)', 2, 'plasmid');
+    dna_deGFP = txtl_add_dna(tube3, 'plas(50)', 'rbs(20)', 'deGFP(1000)', 2, 'plasmid');
     
     Mobj{count} = txtl_combine([tube1, tube2, tube3]);
     txtl_addspecies(Mobj{count}, 'OC12HSL', inducer);

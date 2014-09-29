@@ -1,9 +1,13 @@
+2014-09-29 Zoltan Tuza <zoltuz@zoltuz-laptop>
+	* docs/: reorganization of the docs files, each chapter one file
+	* examples/import_plate_reader_data.m: new example how to import plate reader data
+	* auxiliary/parseGetEqOutput.m: transforming events from the Simbiology Object to the ODE RHS file 
 2013-10-10 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* auxiliary/stdshade.m: major refactoring in stdshade, now handles
 	matrices of data. no backward compatibility!  
 2013-09-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* auxiliary/mergeWholeExpFile.m: the MG signal curvefit is calculated after averaging the data. The background well from each experiment files is added to the return structure.  
-	* auxiliary/wholeExpfileReader.m: MG background curvefit is based on smoothingspline insted of gauss2. 
+	* auxiliary/wholeExpfileReader.m: MG background curvefit is based on smoothingspline instead of gauss2. 
 	* auxiliary/processMGData.m: added option for choose fitting type, default is smoothingspline.  
 2013-09-30 DSG <dsg@DansMachine>
 	* auxiliary/replaceMissingData.m: function to move data from one experiment file to another
@@ -13,24 +17,24 @@
 2013-09-07 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* auxiliary/mergeWholeExpFile.m: this function merges biotek plate reader data into one object (by calculating mean std for each data field, e.g. rates,endtime,rawdata)
 2013-09-04 Zoltan Tuza <zoltuz@zoltuz-laptop>
-	* modules/paramest/parameter_estimation_patternsearch.m: added, initial parameter value perturbation. Number of initial paramter vectors can be generated with latin hypercube sampling. 
+	* modules/paramest/parameter_estimation_patternsearch.m: added, initial parameter value perturbation. Number of initial paramter vectors can be generated with Latin hypercube sampling. 
 2013-08-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
-	* auxiliary/parseGetEqOutput.m: bugfix, simbiology's getequation output can have more initial values than state variables, that leads to error in ode15s() function. A simple check looks for initial values with state equtions.
-	* core/txtl_plot.m: built in check to recognize simdata object when the function is called with 3 aruments txtl_plot(t,x,Mobj) vs txtl_(simData,Mobj,dataGroups).
+	* auxiliary/parseGetEqOutput.m: bugfix, simbiology's getequation output can have more initial values than state variables, that leads to error in ode15s() function. A simple check looks for initial values with state equations.
+	* core/txtl_plot.m: built in check to recognize simdata object when the function is called with 3 arguments txtl_plot(t,x,Mobj) vs txtl_(simData,Mobj,dataGroups).
 2013-08-28 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* doc/Makefile: makefile for the usersmanual, thanks to SCL
 2013-08-26 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* examples/incoherent_ff_loop_function.m: function for of the IFFL for rapid testing exp conditions. + example file
 2013-08-25 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* tests/test_basic_examples.m: test file to test basic functionality through example files
-	* core/findspecies.m: finding species within complexes 3rd arugment: withinComplex, used for calculate totel concentration of species.
+	* core/findspecies.m: finding species within complexes 3rd argument: withinComplex, used for calculate total concentration of species.
 	* auxiliary/findStringInAList.m: substring search to find all instances of the searched string within strings
 	* core/txtl_getDefaultPlotDataStruct.m: creates a default data struct for txtl_plot
 	* core/txtl_plot.m: refactoring to accommodate the new plot data struct
 	* core/txtl_setup_new_protein_added.m: in Matlab 2013a the implementation of union has changed, list comparison is modified accordingly
 	* auxiliary/wholeExpfileReader.m: complex experiment file reader, reads biotek platereader generated excel files (in csv format), then loads up related matrices and adjust the background signal in each valve.
 	* auxiliary/calcAdditionalData.m: calculates experiment related files, e.g. expression rates, endtimes.
-	* auxiliary/processMGData.m: calculetes mRNA signal fits for each valves.
+	* auxiliary/processMGData.m: calculates mRNA signal fits for each valves.
 	* examples/genetic_toggle_switch_function.m: function form of the toggle switch for rapid testing experimental conditions.
 	* examples/genetic_toggle_switch_gradient.m: example file for toggle switch experiment conditions.  
 2013-08-16 Zoltan Tuza <zoltuz@zoltuz-laptop>
@@ -44,8 +48,8 @@
 	* core/txtl_runsim.m: version detection to switch off AbsoluteToleranceScaling in >=Matlab 8.0v (without that the ODE solver fails with the current model) 
 
 2013-07-30 Zoltan Tuza <zoltuz@zoltuz-laptop>
-	* core/findspecies.m: complete code refactoring, multicompartment compatibility
-	* core/txtl_addspecies.m: major code refactoring, multicompartment spcesies adding.
+	* core/findspecies.m: complete code refactoring, multi compartment compatibility
+	* core/txtl_addspecies.m: major code refactoring, multi compartment species adding.
 	* examples/geneexpr_vesicule.m: first cut for vesicule based simulations.
 	* core/txtl_enzyme_resource_degradation.m: enzyme and resource related degradations are moved here for txtl_runsim.
 	* auxiliary/: new aux functions, see svn commit for further information.
@@ -57,7 +61,7 @@
 	* components/txtl_protein_lacI.m: inducer degradation has been removed
 	* core/txtl_setup_new_protein_added.m: cross check function, this function maintains integrity of reactions if a protein manually added to the TXTL reaction. 
 2013-07-09 Zoltan Tuza <zoltuz@zoltuz-laptop>
-	* core/txtl_mrna_degradation.m: separate file for mRNA degrations reactions, mainly to keep the code maintainable
+	* core/txtl_mrna_degradation.m: separate file for mRNA degradations reactions, mainly to keep the code maintainable
 	* core/txtl_plot_gui.m: bugfix
 2013-06-24 Zoltan Tuza <zoltuz@zoltuz-laptop>
 	* aux/: this folder is renamed to auxiliary due to compatibility issues with Windows
@@ -89,11 +93,11 @@
 	are moved to the extract config (EX.csv), actual numbers are multiplied since we
 	working with final concentrations in the parameter files before the
 	final MasterMix is assembled
-	* core/txtl_combine.m: the buffer,extract and dna ratio is wired in as a
+	* core/txtl_combine.m: the buffer, extract and dna ratio is wired in as a
 	default value. 
 	* core/txtl_plot.m: keyword handling, e.g. ALL_DNA to show all DNA and
 	RNA in the system. 
-	* core/txtl_add_dna.m: atp regeneration stops after 3hours and NTP
+	* core/txtl_add_dna.m: atp regeneration stops after 3 hours and NTP
 	become unusable -> reaction for this process is added.   
 
 
@@ -127,7 +131,7 @@
 2013-01-14  Zoltan Tuza <zoltuz@zoltuz-laptop>
 
 	* core/txtl_reaction_config.m: all extract related parameters are
-	added to this objectall extract related parameters areadded to this
+	added to this object all extract related parameters are added to this
 	object.
 	* core/txtl_component_config.m: object for component (promoter,protein) related
 	parameters.
