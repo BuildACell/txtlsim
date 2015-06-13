@@ -180,7 +180,12 @@ for k = 1:numOfGroups
         end
         
         lgh =legend(currentHandler,listOfRNAs, 'Location', 'NorthEast');
-        lgh.Box = 'off';
+        if verLessThan('matlab', '8.4')
+            legend(lgh,'boxoff');
+        else
+            lgh.Box = 'off';
+        end
+        
         ylabel(currentHandler,'mRNA amounts [nM]');
         ylabel(ax2,'DNA amounts [nM]');
         xlabel(currentHandler,'Time [min]');
@@ -279,7 +284,11 @@ for k = 1:numOfGroups
         
         
         lgh = legend(currentHandler,listOfProteins, 'Location', 'NorthEast');
-        lgh.Box = 'off';
+        if verLessThan('matlab', '8.4')
+            legend(lgh,'boxoff');
+        else
+            lgh.Box = 'off';
+        end
         ylabel(currentHandler,'Species amounts [nM]');
         xlabel(currentHandler,'Time [min]');
         title(currentHandler,dataGroups(k).plotName);
@@ -313,7 +322,11 @@ for k = 1:numOfGroups
         lgh = legend(currentHandler,...
             {'AGTP [nM]', 'CUTP [nM]', 'AA [mM]', 'RNAP [nM]', 'Ribo [nM]'}, ...
             'Location', 'Best');
-        lgh.Box = 'off';
+        if verLessThan('matlab', '8.4')
+            legend(lgh,'boxoff');
+        else
+            lgh.Box = 'off';
+        end
         ylabel(currentHandler,'Species amounts [normalized]');
         xlabel(currentHandler,'Time [min]');
         

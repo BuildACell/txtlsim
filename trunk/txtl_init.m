@@ -8,7 +8,6 @@ addpath([pwd '/modules/paramest'])
 addpath([pwd '/tests'])
 addpath([pwd '/tmp'])
 addpath([pwd '/data'])
-addpath([pwd '/characterization/VipultetRcharacterization'])
 addpath([pwd '/characterization'])
 
 

@@ -38,10 +38,10 @@ classdef txtl_reaction_config
             listOfProperties = properties(rConf);
             fileName = [name '_config.csv'];
             if exist(fileName,'file') == 2
-                fid = fopen(fileName);
+                fid = fopen(fileName, 'rt');
                 % current parameter file format
                 % Param_name, Param_type, Value, Comment
-                M =  textscan(fid,'%q%q%q%q', 'delimiter',',','CollectOutput',true);
+                M =  textscan(fid,'%q%q%q%q','EndOfLine','\r\n', 'delimiter',',','CollectOutput',true);
                 M = M{1};
                 fclose(fid);
                 

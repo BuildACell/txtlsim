@@ -51,10 +51,10 @@ classdef txtl_component_config
             listOfProperties = properties(compConf);
             fileName = ['txtl_param_' name '.csv'];
             if exist(fileName,'file') == 2
-                fid = fopen(fileName);
+                fid = fopen(fileName, 'rt');
                 % current parameter file format
                 % Param_name, Param_type, Value, Comment
-                M =  textscan(fid,'%q%q%q%q', 'delimiter',',','CollectOutput',true);
+                M =  textscan(fid,'%q%q%q%q','EndOfLine','\r\n', 'delimiter',',','CollectOutput',true);
                 M = M{1};
                 fclose(fid);
 
