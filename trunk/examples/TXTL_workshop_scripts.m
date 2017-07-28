@@ -78,7 +78,7 @@ for i = 1:6
 tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('induction');
-txtl_add_dna(tube3, 'placI(50)', 'rbs(20)',...
+txtl_add_dna(tube3, 'plac(50)', 'rbs(20)',...
     'tetR(1200)', tetRconc(i), 'linear');
 txtl_add_dna(tube3, 'ptet(50)', 'rbs(20)',...
     'deGFP(1000)', 10, 'linear');
@@ -106,8 +106,8 @@ tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('IFFL_Sguo_plasmid');
 
-dna_lasR = txtl_add_dna(tube3,  'placI(50)', 'rbs(20)', 'lasR(1000)',  1, 'plasmid'); % 163 in zach's index	
-dna_tetR = txtl_add_dna(tube3,  'plasR(50)', 'rbs(20)', 'tetR(1000)', 0.1,'plasmid'); % 196
+dna_lasR = txtl_add_dna(tube3,  'plac(50)', 'rbs(20)', 'lasR(1000)',  1, 'plasmid'); % 163 in zach's index	
+dna_tetR = txtl_add_dna(tube3,  'plas(50)', 'rbs(20)', 'tetR(1000)', 0.1,'plasmid'); % 196
 dna_deGFP = txtl_add_dna(tube3,  'plasR_ptet(50)', 'rbs(20)', 'deGFP(1000)-lva', 2,'plasmid');
 
 Mobj = txtl_combine([tube1, tube2, tube3]);
@@ -134,8 +134,8 @@ tube1 = txtl_extract('E30VNPRL');
 tube2 = txtl_buffer('E30VNPRL');
 tube3 = txtl_newtube('IFFL_Sguo_linear');
 
-dna_lasR = txtl_add_dna(tube3,  'placI(50)', 'rbs(20)', 'lasR(1000)',  10, 'linear'); % 163 in zach's index	
-dna_tetR = txtl_add_dna(tube3,  'plasR(50)', 'rbs(20)', 'tetR(1200)', 10,'linear'); % 196
+dna_lasR = txtl_add_dna(tube3,  'plac(50)', 'rbs(20)', 'lasR(1000)',  10, 'linear'); % 163 in zach's index	
+dna_tetR = txtl_add_dna(tube3,  'plas(50)', 'rbs(20)', 'tetR(1200)', 10,'linear'); % 196
 dna_deGFP = txtl_add_dna(tube3,  'plasR_ptet(50)', 'rbs(20)', 'deGFP(1000)-lva', 10,'linear');
 
 Mobj = txtl_combine([tube1, tube2, tube3]);

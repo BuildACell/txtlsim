@@ -285,15 +285,15 @@ x_ode{i} = simData{i}.Data;
 end
 
 
-
-cellOfSpecies ={'protein sfGFP*';
-'protein RFP*'};
-
-titleString = {'protein sfGFP*';
-'protein RFP*'};
-
-legends = {[num2str(array(1)) 'nM Anti'],[num2str(array(2)) 'nM Anti'],[num2str(array(3)) 'nM Anti']};%,[num2str(array(4)) 'nM Anti'],[num2str(array(5)) 'nM Anti'],num2str(array(5))
-outputCurves = plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
+% 
+% cellOfSpecies ={'protein sfGFP*';
+% 'protein RFP*'};
+% 
+% titleString = {'protein sfGFP*';
+% 'protein RFP*'};
+% 
+% legends = {[num2str(array(1)) 'nM Anti'],[num2str(array(2)) 'nM Anti'],[num2str(array(3)) 'nM Anti']};%,[num2str(array(4)) 'nM Anti'],[num2str(array(5)) 'nM Anti'],num2str(array(5))
+% outputCurves = plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
 % 
 % 
 % cellOfSpecies ={'RNA att2-anti1';

@@ -10,8 +10,8 @@
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('E6');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -19,7 +19,7 @@ tube3 = txtl_newtube('circuit');
 
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-placI(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
+dna_tetR = txtl_add_dna(tube3, 'thio-junk(500)-plac(50)', 'rbs(20)', 'tetR(647)-lva(40)-terminator(100)', 5, 'linear');%
 dna_lacI = txtl_add_dna(tube3, 'thio-junk(500)-plambda(50)', 'rbs(20)', 'lacI(647)-lva(40)-terminator(100)', 5, 'linear');%
 dna_lambda = txtl_add_dna(tube3, 'thio-junk(500)-ptet(50)', 'rbs(20)', 'lambda(647)-lva(40)-terminator(100)', 5, 'linear');%
 dna_deGFP = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'deGFP(1000)', 5, 'linear');

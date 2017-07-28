@@ -4,7 +4,7 @@ clc
 clearvars
 
 % 
-extract = 'E15';
+extract = 'E30VNPRL';
 tspan = 7; % hours
 
 % inducer levels

@@ -40,7 +40,7 @@ ylabel('GFP A.U.');
 
 colorCodes = {'r','b','g','c','m','k',[1 1 .5],[.7 .5 .2],[0 1 .2],[.35 .8 .8],[.9 0 .4],[1 .2 .2]};
 intensity = 0.3;
-h = stdshade(expData.t_vec/60,expData.Data(:,3:end,2),std,intensity,colorCodes);
+% h = stdshade(expData.t_vec/60,expData.Data(:,3:end,2),std,intensity,colorCodes);
 
 
 %% basic data analysis

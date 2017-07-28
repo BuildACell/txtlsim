@@ -60,4 +60,4 @@ x_ode{i} = simData{i}.Data;
 
 end
 
-plotGeneticToggle2_troubleshoot
+% plotGeneticToggle2_troubleshoot

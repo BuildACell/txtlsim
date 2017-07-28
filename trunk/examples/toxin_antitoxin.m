@@ -9,8 +9,8 @@ clc
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E8');
-tube2 = txtl_buffer('E8');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -70,22 +70,22 @@ simulationTime = 10*60*60;
 % 1st run
 [t_ode,x_ode,~,simData] = txtl_runsim(Mobj,simulationTime);
 
-%% plot the result
+% %% plot the result
+% 
+% % DNA and mRNA plot
+% dataGroups{1,1} = 'DNA and mRNA';
+% dataGroups{1,2} = {'ALL_DNA'};
+% dataGroups{1,3} = {'r','g','b','k','m'};
+% 
+% % Gene Expression Plot
+% dataGroups{2,1} = 'Gene Expression';
+% dataGroups{2,2} = {'protein deGFP*','protein parEdimerparDdimer','protein parEdimer','protein parDdimer'};
+% dataGroups{2,3} = {'g','g--','b-','b--','r-.','k','m','y'};
+% 
+% % Resource Plot
+% dataGroups{3,1} = 'Resource usage';
 
-% DNA and mRNA plot
-dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'ALL_DNA'};
-dataGroups{1,3} = {'r','g','b','k','m'};
-
-% Gene Expression Plot
-dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein deGFP*','protein parEdimerparDdimer','protein parEdimer','protein parDdimer'};
-dataGroups{2,3} = {'g','g--','b-','b--','r-.','k','m','y'};
-
-% Resource Plot
-dataGroups{3,1} = 'Resource usage';
-
-txtl_plot(t_ode,x_ode,Mobj,dataGroups);
+txtl_plot(t_ode,x_ode,Mobj);
 
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:

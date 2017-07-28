@@ -51,7 +51,7 @@ function varargout= txtl_prom_plasR_ptet(mode, tube, dna, rna, varargin)
     P3 = 'OC12HSL:protein lasR';
     DNAP3 = [ dna.Name ':' P3 ];
     % importing the corresponding parameters
-    paramObj = txtl_component_config('lasR_tetR');
+    paramObj = txtl_component_config('plas_tetO');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')

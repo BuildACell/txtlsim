@@ -55,26 +55,26 @@ Mobj = txtl_combine([tube1, tube2, tube3]);
 % Run a simulation
 configsetObj = getconfigset(Mobj, 'active');
 set(configsetObj, 'StopTime', 14*60*60)
-set(configsetObj, 'SolverType', 'ode23s');
+set(configsetObj, 'SolverType', 'ode15s');
 [t_ode, x_ode, mObj, simData] = txtl_runsim(Mobj, configsetObj);
 
 
-%% plot the result
-% close all
-% DNA and mRNA plot
-dataGroups{1,1} = 'DNA and mRNA';
-dataGroups{1,2} = {'ALL_DNA'};
-dataGroups{1,3} = {'b-','r-','g--','r--','y-','c-','g-','g--','m-','k-','y--'};
-
-% Gene Expression Plot
-dataGroups{2,1} = 'Gene Expression';
-dataGroups{2,2} = {'protein tetR-lva-terminatordimer'};% 'protein deGFP*',
-%dataGroups{2,3} = {'g-','b-','g--','b--','r--','b-.','c-','y--','m-','k-','r-'};
-
-% Resource Plot
-dataGroups{3,1} = 'Resource usage';
-%
- txtl_plot(t_ode,x_ode,Mobj,dataGroups);
+% %% plot the result
+% % close all
+% % DNA and mRNA plot
+% dataGroups{1,1} = 'DNA and mRNA';
+% dataGroups{1,2} = {'ALL_DNA'};
+% dataGroups{1,3} = {'b-','r-','g--','r--','y-','c-','g-','g--','m-','k-','y--'};
+% 
+% % Gene Expression Plot
+% dataGroups{2,1} = 'Gene Expression';
+% dataGroups{2,2} = {'protein tetR-lva-terminatordimer'};% 'protein deGFP*',
+% %dataGroups{2,3} = {'g-','b-','g--','b--','r--','b-.','c-','y--','m-','k-','r-'};
+% 
+% % Resource Plot
+% dataGroups{3,1} = 'Resource usage';
+% %
+%  txtl_plot(t_ode,x_ode,Mobj,dataGroups);
 
 
 % Automatically use MATLAB mode in Emacs (keep at end of file)

@@ -7,14 +7,14 @@
 close all
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('clare_latching_v2');
 
 % Define the DNA strands (defines TX-TL species + reactions)
-dna_AraC = txtl_add_dna(tube3, 'placI(50)', 'anti2(91)-rbs(20)', 'AraC(647)', 1, 'plasmid');
+dna_AraC = txtl_add_dna(tube3, 'plac(50)', 'anti2(91)-rbs(20)', 'AraC(647)', 1, 'plasmid');
  dna_LuxR = txtl_add_dna(tube3, 'ptet(50)', 'anti1(91)-rbs(20)', 'LuxR(647)', 1, 'plasmid');
  % separate att2-kinase and att2_luxR because thats what Clare is doing experimentally!
 dna_att2_LuxR = txtl_add_dna(tube3, 'plux(50)', 'att2(287)-rbs(20)', 'LuxR(647)-lva(20)', 1, 'plasmid'); 

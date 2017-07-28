@@ -79,7 +79,7 @@ dataGroups(2).SpeciesToPlot   = {'protein deGFP-lva*','protein ClpX*'};
 txtl_plot(t,x,Mobj,dataGroups);
 cellofspecies = {'protein deGFP-lva***','protein ClpX*','protein ClpX';
     'protein deGFP-lva','protein deGFP-lva*:protein ClpX*','protein deGFP-lva*'};
-plotCustomSpecies2({Mobj}, {x}, {t}, cellofspecies)
+% plotCustomSpecies2({Mobj}, {x}, {t}, cellofspecies)
 
 % Automatically use matlab mode in emacs (keep at end of file)
 % Local variables:

@@ -9,14 +9,14 @@ close all
 %% set up the tubes and Species
 
 % Set up the standard TXTL tubes
-tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('E6');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
 dna_deGFP = txtl_add_dna(tube3, ...
-  'placI(50)', 'rbs(20)', 'betaGal(1000)', 15, 'linear');
+  'plac(50)', 'rbs(20)', 'betaGal(1000)', 15, 'linear');
 dna_gamS = txtl_add_dna(tube3, ...
   'p70(50)', 'rbs(20)', 'gamS(1000)', 10, 'plasmid');
 

@@ -242,20 +242,20 @@ end
 
 Mobj{1}.species
 
-cellOfSpecies ={'protein sfGFP*';
-'protein RFP*'};
+% cellOfSpecies ={'protein sfGFP*';
+% 'protein RFP*'};
+% 
+% titleString = {'protein sfGFP*';
+% 'protein RFP*'};
 
-titleString = {'protein sfGFP*';
-'protein RFP*'};
-
-legends = {[num2str(array(1)) 'nM Anti'],[num2str(array(2)) 'nM Anti']};%,[num2str(array(3)) 'nM Anti'],[num2str(array(4)) 'nM Anti'],[num2str(array(5)) 'nM Anti'],num2str(array(5))
-plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends);
-
-cellOfSpecies ={'RNA att2','RNAP70:DNA pJ23119--att2-anti1:RNA att2','CUTP:AGTP:RNAP70:DNA pJ23119--att2-anti1:RNA att2';}
-
-titleString = {'RNA att2'};
-
-plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
+% legends = {[num2str(array(1)) 'nM Anti'],[num2str(array(2)) 'nM Anti']};%,[num2str(array(3)) 'nM Anti'],[num2str(array(4)) 'nM Anti'],[num2str(array(5)) 'nM Anti'],num2str(array(5))
+% plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends);
+% 
+% cellOfSpecies ={'RNA att2','RNAP70:DNA pJ23119--att2-anti1:RNA att2','CUTP:AGTP:RNAP70:DNA pJ23119--att2-anti1:RNA att2';}
+% 
+% titleString = {'RNA att2'};
+% 
+% plotCustomSpecies(Mobj,x_ode, t_ode, cellOfSpecies, titleString, legends)
 
 % 
 % cellOfSpecies ={'RNA att1-att1-rbs--sfGFP','Ribo:RNA att1-att1-rbs--sfGFP','AA:ATP:Ribo:RNA att1-att1-rbs--sfGFP'; 

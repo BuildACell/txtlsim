@@ -5,7 +5,7 @@
 %
 clear vars
 close all
-
+clear all
 %% Do runs at different inducer levels, linearly spaced
 levels = [0 2 5 10 20 40 100 300 1000];
 maxtetR = zeros(1, length(levels));
@@ -31,7 +31,7 @@ hold off
 % Label the time trace
 title('Time Responses');
 lgh = legend(labels, 'Location', 'NorthWest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 

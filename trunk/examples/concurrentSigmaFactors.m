@@ -7,8 +7,8 @@ clc
 %% simple circuit with 2 genes
 
 % Set up the standard TXTL tubes
-tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('E6');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 % Set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');

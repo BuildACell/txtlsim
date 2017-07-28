@@ -53,7 +53,7 @@ function varargout= txtl_prom_pBAD_ptetIFFL(mode, tube, dna, rna, varargin)
     AraCbound = ['arabinose:' P3];
     
     % importing the corresponding parameters
-    paramObj = txtl_component_config('pBAD_tetR');
+    paramObj = txtl_component_config('pBAD_tetO');
     
 %%%%%%%%%%%%%%%%%%% DRIVER MODE: Setup Species %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if strcmp(mode.add_dna_driver, 'Setup Species')

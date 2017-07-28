@@ -7,8 +7,8 @@
 close all
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('gene_expression');
 
@@ -16,7 +16,7 @@ tube3 = txtl_newtube('gene_expression');
 dna_AraC = txtl_add_dna(tube3, 'p70(50)', 'rbs(20)', 'AraC', 1, 'plasmid');
 dna_tetR = txtl_add_dna(tube3, 'pBAD(50)', 'rbs(20)', 'tetR(647)-lva(20)', 1, 'plasmid');
 dna_anti1 = txtl_add_dna(tube3, 'pBAD_ptet(50)', 'anti1(91)', 'no_protein', 1, 'plasmid');
-dna_att1 = txtl_add_dna(tube3, 'placI(50)', 'att1(287)-anti2(91)', 'no_protein', 1, 'plasmid');
+dna_att1 = txtl_add_dna(tube3, 'plac(50)', 'att1(287)-anti2(91)', 'no_protein', 1, 'plasmid');
 dna_lacI = txtl_add_dna(tube3, ...
   'p70(50)', 'att2(287)-rbs(20)', 'lacI(1000)', ...	% promoter, rbs, gene
    0.5, ...					% concentration (nM)

@@ -177,5 +177,5 @@ legend(sp4, {[Param ' = ' num2str(vParam(1)) 'nM'], [Param ' = ' num2str(vParam(
     [Param ' = ' num2str(vParam(4)) 'nM'], [Param ' = ' num2str(vParam(5)) 'nM']})
 title(['aTc conc, ' Param ' varying'])
 
-[ax1,h1]=suplabel('Time/min');
-[ax2,h2]=suplabel('Conc/nM','y');
+% [ax1,h1]=suplabel('Time/min');
+% [ax2,h2]=suplabel('Conc/nM','y');

@@ -3,8 +3,8 @@
 close all
 clear all
 
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 initialDNA = [1 2 4 8 16];
 Mobj = cell(2*length(initialDNA),1);
 simData = cell(2*length(initialDNA),1);
@@ -32,8 +32,8 @@ plotCustomSpecies2(Mobj(1:length(initialDNA)), x_ode(1:length(initialDNA)),...
 
 
 %% Linear DNA
-tube1 = txtl_extract('E15');
-tube2 = txtl_buffer('E15');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 initialDNA = [1 2 4 8 16];
 for i = length(initialDNA)+1:2*length(initialDNA)
 tube3 = txtl_newtube('gene_expression');

@@ -49,9 +49,9 @@ function varargout= txtl_prom_pBAD_ptet(mode, tube, dna, rna, varargin)
     RNAPbound = ['RNAP70:' dna.Name];
     P1 = 'protein sigma70';
     
-%     P2 = 'protein tetRdimer';
-%     P3 = 'protein AraC';
-%     AraCbound = ['arabinose:' P3];
+    P2 = 'protein tetRdimer';
+    P3 = 'protein AraC';
+    AraCbound = ['arabinose:' P3];
     
     % importing the corresponding parameters
     paramObj = txtl_component_config('pBAD_tetO');
@@ -74,6 +74,7 @@ if strcmp(mode.add_dna_driver, 'Setup Species')
     varargout{1} = promoterData;
     
     coreSpecies = {RNAP,RNAPbound,P1,P2, AraCbound, P3};
+
     txtl_addspecies(tube, coreSpecies, cell(1,size(coreSpecies,2)),'Internal');
     % empty cellarray for amount => zero amount
     if mode.utr_attenuator_flag

@@ -8,8 +8,8 @@ clear all
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E9');
-tube2 = txtl_buffer('E9');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 
 RFPlevels = [0 1 2 3 5 10 20 40];%3 4 5 6 7 8 9 10 
@@ -49,7 +49,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -63,7 +63,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -77,7 +77,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -92,7 +92,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 %print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure1'])
@@ -109,7 +109,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -123,7 +123,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -137,7 +137,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -151,7 +151,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 %print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure2'])
@@ -167,7 +167,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -181,7 +181,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -195,7 +195,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -209,7 +209,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 %print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure3'])
@@ -225,7 +225,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -239,7 +239,7 @@ for count = 1:size(RFPlevels,2)
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 %print('-dtiff','-r200',[pwd '\examples\Shaobin\high aTc case 1000nM\' 'figure4'])

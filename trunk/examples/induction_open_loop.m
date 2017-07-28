@@ -13,8 +13,8 @@ clear all
 
 % Set up the standard TXTL tubes
 % These load up the RNAP, Ribosome and degradation enzyme concentrations
-tube1 = txtl_extract('E6');
-tube2 = txtl_buffer('E6');
+tube1 = txtl_extract('E30VNPRL');
+tube2 = txtl_buffer('E30VNPRL');
 
 % Now set up a tube that will contain our DNA
 tube3 = txtl_newtube('circuit');
@@ -87,7 +87,7 @@ for count = 1:9
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 for count = 1:9
@@ -102,7 +102,7 @@ for count = 1:9
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 for count = 1:9
@@ -117,7 +117,7 @@ for count = 1:9
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -133,7 +133,7 @@ for count = 1:9
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -149,7 +149,7 @@ for count = 1:9
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
@@ -165,7 +165,7 @@ for count = 1:9
 end
 %title('Time Responses');
 lgh = legend(labels, 'Location', 'Northwest');
-legend(lgh, 'boxoff');
+legend(gca, 'boxoff');
 ylabel('Species amounts [nM]');
 xlabel('Time [min]');
 
