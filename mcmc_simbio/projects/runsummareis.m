@@ -15,12 +15,6 @@
 
 
 
-
-
-
-
-
-
  proj_ZSIFFL_trainingC_v6('stepSize', 1.1,...
 'nW', 500,...
 'nPoints', 100*500,...
