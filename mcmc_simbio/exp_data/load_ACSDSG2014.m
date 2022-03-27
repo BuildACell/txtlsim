@@ -12,15 +12,24 @@ function [t, y, meta] = load_ACSDSG2014(mode)
 % !TODO fill this
 
 if ispc
-    fp = mfilename('fullpath');
-    slashes = regexp(fp, '\');
-    filedir = fp(1:slashes(end)-1);
-    run([filedir '\rawdata_ACSDSG2014.m'])
+    try
+        fp = mfilename('fullpath');
+        slashes = regexp(fp, '\');
+        filedir = fp(1:slashes(end)-1);
+        run([filedir '\rawdata_ACSDSG2014.m'])
+    catch
+        run('rawdata_ACSDSG2014.m')
+    end
 else
-    fp = mfilename('fullpath');
-    slashes = regexp(fp, '/');
-    filedir = fp(1:slashes(end)-1);
-    run([filedir '/rawdata_ACSDSG2014.m'])
+    try 
+        fp = mfilename('fullpath');
+        slashes = regexp(fp, '/');
+        filedir = fp(1:slashes(end)-1);
+        run([filedir '/rawdata_ACSDSG2014.m'])
+    catch
+        run('rawdata_ACSDSG2014.m')
+    end
+    
     
 end
 
@@ -74,6 +83,6 @@ switch mode
         end
         meta = {'t is in minutes'; 
             'DNA conc for the GFP were 0.2, 0.5, 1, 2, 5, 20'};    
-    end
+end
 end
 
