@@ -1,9 +1,4 @@
 function [mi,mai, ri, tstamp, projdir, di]  = proj_test015_corr1(varargin)
-% proj_acs_dsg2014
-% In this project, we fit RNA degradation and mRNA expression to data from
-% the paper
-% Gene Circuit Performance Characterization and Resource Usage in a Cell-Free “Breadboard”
-% ACS Synth. Biol., 2014, 3 (6), pp 416–425, DOI: 10.1021/sb400203p,
 
 % Vipul Singhal,
 % California Institute of Technology

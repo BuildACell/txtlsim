@@ -1,6 +1,4 @@
 
-% In this file we try to find a set of parameter values that allow the
-% model from model_dsg2014_regen to fit the data from data_dsg2014_full.
 % Vipul Singhal, 2019
 
 % simulate txtl model with custom parameter values, and look at the species

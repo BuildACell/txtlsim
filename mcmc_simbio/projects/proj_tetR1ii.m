@@ -1,6 +1,5 @@
-%% MCMC toolbox demo - proj_protein_constgfp3i.m
-%
-% const gfp 3, artificial data, separate, 2 extracts. Check if the CSPs line up exactly. 
+%% MCMC toolbox demo -
+% artificial data, separate, 2 extracts. Check if the CSPs line up exactly. 
 % 
 % Vipul Singhal, 
 % California Institute of Technology

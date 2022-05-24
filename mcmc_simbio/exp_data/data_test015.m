@@ -1,11 +1,4 @@
 function di = data_test015
-% Generate the data_info struct containing the data from Figure 1 of 
-% the 2014 ACS Synthetic Biology paper titled: 
-% Gene Circuit Performance Characterization and Resource Usage in a 
-% Cell-Free “Breadboard” by Siegal-Gaskins et al. This data involves a
-% measurement of malachite green aptamer and green fluorescent protein 
-% over a period of 800 minutes in the TX-TL cell free expression system. 
-% The DNA initial conditions used are 0.5nM, 2nM, 5nM, and 20nM. 
 % 
 % ------------------------------------------
 % The data_info struct has the fields: 

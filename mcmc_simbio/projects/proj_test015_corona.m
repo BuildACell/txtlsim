@@ -1,10 +1,5 @@
-function [mi,mai, ri, tstamp, projdir, di]  = proj_test015_corr1_Ffix2(varargin)
-% proj_acs_dsg2014
-% In this project, we fit RNA degradation and mRNA expression to data from
-% the paper
-% Gene Circuit Performance Characterization and Resource Usage in a Cell-Free “Breadboard”
-% ACS Synth. Biol., 2014, 3 (6), pp 416–425, DOI: 10.1021/sb400203p,
-
+function [mi,mai, ri, tstamp, projdir, di]  = proj_test015_corona(varargin)
+%
 % Vipul Singhal,
 % California Institute of Technology
 % 2018
@@ -13,40 +8,30 @@ p = inputParser;
 p.addParameter('prevtstamp', []);
 p.addParameter('prevtstampID', []);
 p.addParameter('stepSize', 1.2);
-p.addParameter('nW', 40);
-p.addParameter('nPoints', 100*40);
-p.addParameter('thinning', 1);
+p.addParameter('nW', 30);
+p.addParameter('nPoints', 30*40);
+p.addParameter('thinning', 2);
 p.addParameter('nIter', 2);
 p.addParameter('parallel', false);
 p.addParameter('stdev', 1);
 p.addParameter('poolsize', []);
 p.addParameter('multiplier', 1);
-
 p.addParameter('stepLadder', linspace(2, 1, 4), @isnumeric); % A vector of multipliers for the
 % step size. Must have length > 0.5*nIter, since only the first nIter/2
 % iterations get their step sizes changed.
 % if stepLadder is specified, the multiplier is automatically set to 1.
 p.addParameter('literalStepLadder', false)
-p.addParameter('temperatureLadder', 0.002); % can be a boolean: true or false,
+p.addParameter('temperatureLadder', [0.01]); % can be a boolean: true or false,
 % or can be a vector of multipliers to allow for a simulated annealing type
 % approach
-
-p.addParameter('rkcp', exp([-2.8704]));
-p.addParameter('cpol', exp([ 2.6442]));
-
 p.parse(varargin{:});
 p = p.Results;
 
-% data_init
-% proj_acs_dsg2014_regen_A('nW', 50, 'nPoints', 50*10*5, 'nIter', 5,...
-% 'parallel', false, 'multiplier', 2, 'thinning', 10)
-% proj_acs_dsg2014_regen_A('nW', 6400, 'nPoints', 6400*10*20, 'nIter',...
-% 20, 'poolsize', 36, 'multiplier', 3, 'thinning', 10)
 %% construct simbiology model object(s)
-mobj = model_tetR_repression1;
+mobj = model_protein3;
 
 %% setup the mcmc_info struct
-mcmc_info = mcmc_info_test015_corr1_Ffix2(mobj, p.rkcp, p.cpol);
+mcmc_info = mcmc_info_test015(mobj);
 
 mi = mcmc_info.model_info;
 
@@ -193,10 +178,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
             pID = 1:length(mai.estNames);
             marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
             if size(marray_cut, 2) < ri.nW
-                warning(['too few initial points, using a few timesteps from previous',... 
-                    'runs to create initial walker positions.']);
-                walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/2,...
-                    size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
+                warning('too few initial points, using a few timesteps from previous runs to create initial walker positions.');
+                walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/2, size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
                 minit = marray_cut(:,:, walker_timepoints(1));
                 for i = 2:length(walker_timepoints)
                     minit = [minit marray_cut(:,:,walker_timepoints(i)) ];
@@ -244,8 +227,7 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     specificprojdir = [projdir '/simdata_' p.prevtstamp];
                     SS = load([specificprojdir '/full_variable_set_' p.prevtstamp], 'mcmc_info');
                     if isempty(p.prevtstampID)
-                        marray = mcmc_get_walkers({p.prevtstamp},...
-                            {SS.mcmc_info.runsim_info.nIter},...
+                        marray = mcmc_get_walkers({p.prevtstamp}, {SS.mcmc_info.runsim_info.nIter},...
                             projdir);
                     else
                         marray = mcmc_get_walkers({p.prevtstamp}, {p.prevtstampID},...
@@ -257,10 +239,8 @@ if islogical(p.temperatureLadder) % if p.temperatureLadder is logical
                     pID = 1:length(mai.estNames);
                     marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
                     if size(marray_cut, 2) < ri.nW
-                        warning(['too few initial points, using a few timesteps from previous',...
-                            'runs to create initial walker positions.']);
-                        walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/2, ...
-                            size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
+                        warning('too few initial points, using a few timesteps from previous runs to create initial walker positions.');
+                        walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/2, size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
                         minit = marray_cut(:,:, walker_timepoints(1));
                         for i = 2:length(walker_timepoints)
                             minit = [minit marray_cut(:,:,walker_timepoints(i)) ];
@@ -354,10 +334,8 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
                 pID = 1:length(mai.estNames);
                 marray_cut = mcmc_cut(marray, pID, flipud((mai.paramRanges)'));
                 if size(marray_cut, 2) < ri.nW
-                    warning(['too few initial points, using a few timesteps from previous ',...
-                        'runs to create initial walker positions.']);
-                    walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/2,...
-                        size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
+                    warning('too few initial points, using a few timesteps from previous runs to create initial walker positions.');
+                    walker_timepoints = ceil(linspace(ceil(size(marray_cut,3))/2, size(marray_cut,3), ceil(ri.nW/size(marray_cut, 2))))
                     minit = marray_cut(:,:, walker_timepoints(1));
                     for i = 2:length(walker_timepoints)
                         minit = [minit marray_cut(:,:,walker_timepoints(i)) ];
@@ -398,7 +376,7 @@ elseif isnumeric(p.temperatureLadder) && isvector(p.temperatureLadder)
     
     
 else
-    error('temperature ladder need to be specified as a boolean or a numeric vector')
+    error('temterature ladder need to be specified as a boolean or a numeric vector')
 end
 
 
