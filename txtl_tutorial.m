@@ -1,8 +1,9 @@
 %% TXTL Tutorial
 % txtl_tutorial.m - basic usage of the TXTL modeling toolbox
+%
 % Vipul Singhal, 28 July 2017
 %
-% This file contains a simple tutorial of the TXTL modeling toolbox. You
+% This file contains a tutorial of the TXTL modeling toolbox. You
 % will learn about setting up a negative autoregulation circuit, simulating it, 
 % plotting the results, creating variations of the circuit, and
 % understanding the object structure of the models. 
@@ -33,7 +34,7 @@ txtl_add_dna(tube3, 'ptet(50)', 'utr1(20)', 'deGFP(1000)', 1, 'plasmid');
 Mobj = txtl_combine([tube1, tube2, tube3]);
 
 % Run a simulaton
-%
+%   
 % At this point, the entire experiment is set up and loaded into 'Mobj'.
 % So now we just use standard Simbiology and MATLAB commands to run
 % and plot our results!

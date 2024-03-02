@@ -1,9 +1,39 @@
-addpath([pwd '/auxiliary'])
-addpath([pwd '/components'])
-addpath([pwd '/config'])
-addpath([pwd '/core'])
-addpath([pwd '/examples'])
-addpath([pwd '/examples/CompanionFiles'])
-addpath([pwd '/modules/paramest'])
-addpath([pwd '/tests'])
-addpath([pwd '/data'])
+function txtldir = txtl_init
+if ispc
+    
+    fp = mfilename('fullpath');
+    slashes = regexp(fp, '\');
+    filedir = fp(1:slashes(end)-1);
+    addpath(filedir);
+    addpath(genpath([filedir '\auxiliary']))
+    addpath([filedir '\components'])
+    addpath([filedir '\config'])
+    addpath([filedir '\core'])
+    addpath([filedir '\examples'])
+    addpath([filedir '\examples\CompanionFiles'])
+    addpath([filedir '\tests'])
+    addpath([filedir '\data'])
+    addpath([filedir '\mcmc_simbio'])
+    addpath([filedir '\generate_paper_figs'])
+    
+    txtldir = filedir;
+else
+    
+    fp = mfilename('fullpath');
+    slashes = regexp(fp, '/');
+    filedir = fp(1:slashes(end)-1);
+    addpath(filedir);
+    addpath(genpath([filedir '/auxiliary']))
+    addpath([filedir '/components'])
+    addpath([filedir '/config'])
+    addpath([filedir '/core'])
+    addpath([filedir '/examples'])
+    addpath([filedir '/examples/CompanionFiles'])
+    addpath([filedir '/tests'])
+    addpath([filedir '/data'])
+    addpath([filedir '/mcmc_simbio'])
+    addpath([filedir '/generate_paper_figs'])
+    
+    txtldir = filedir;
+end
+end
